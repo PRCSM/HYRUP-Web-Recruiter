@@ -1,34 +1,33 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react'
+import { Route, Routes, useLocation } from 'react-router-dom'
+import SignUp from './pages/SignUp'
+import Home from './pages/Home'
+import Registration from './pages/Registration'
+import Chat from './pages/Chat'
+import Profile from './pages/Profile'
+import Application from './pages/Application'
+import SideNav from './components/SideNav'
+import PostJobButton from './components/PostJobButton'
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const location = useLocation();
+  const hidePostJob = ["/signup", "/registration"].includes(location.pathname.toLowerCase());
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="flex">
+      <SideNav />
+      <div className="flex-1">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/registration" element={<Registration />} />
+          <Route path="/chats" element={<Chat/>} />
+          <Route path="/Profile" element={<Profile/>} />
+          <Route path="/Application" element={<Application/>} />
+        </Routes>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      {!hidePostJob && <PostJobButton />}
+    </div>
   )
 }
 
