@@ -12,7 +12,7 @@ function NavButton({ name, isActive, onClick }) {
     
     return (  
         <div className={buttonClass} onClick={onClick}>
-            <h1 className="font-[JostBold] md:text-xl select-none text-2xl">{name}</h1> 
+            <h1 className="font-[Jost-Bold] md:text-xl select-none text-2xl">{name}</h1> 
         </div>
     );
 }

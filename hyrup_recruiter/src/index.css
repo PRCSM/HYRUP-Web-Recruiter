@@ -1,42 +1,60 @@
 @import "tailwindcss";
 
-body ,html{
-    background-color: #000;}
+body,
+html {
+  background-color: #000;
+}
 
 @font-face {
-    font-family: "Jost-Light";
-    src: url("../public/fonts/Jost-Light.ttf");
+  font-family: "Jost-Light";
+  src: url("../public/fonts/Jost-Light.ttf");
 }
 @font-face {
-    font-family: "Jost-ExtraBold";
-    src: url("../public/fonts/Jost-ExtraBold.ttf");
+  font-family: "Jost-ExtraBold";
+  src: url("../public/fonts/Jost-ExtraBold.ttf");
 }
 @font-face {
-    font-family: "Jost-Medium";
-    src: url("../public/fonts/Jost-Medium.ttf");
+  font-family: "Jost-Medium";
+  src: url("../public/fonts/Jost-Medium.ttf");
 }
 @font-face {
-    font-family: "Jost-Regular";
-    src: url("../public/fonts/Jost-Regular.ttf");
+  font-family: "Jost-Regular";
+  src: url("../public/fonts/Jost-Regular.ttf");
 }
 @font-face {
-    font-family: "BungeeShade";
-    src: url("../public/fonts/BungeeShade-Regular.ttf");
+  font-family: "BungeeShade";
+  src: url("../public/fonts/BungeeShade-Regular.ttf");
 }
 @font-face {
-    font-family: "Jost-Semibold";
-    src: url("../public/fonts/Jost-SemiBold.ttf");
+  font-family: "Jost-Semibold";
+  src: url("../public/fonts/Jost-SemiBold.ttf");
 }
 @font-face {
-    font-family: "JostBold";
-    src: url("../public/fonts/Jost-Bold.ttf");
+  font-family: "Jost-Bold";
+  src: url("../public/fonts/Jost-Bold.ttf");
 }
 @font-face {
-    font-family: "BungeeInline";
-    src: url("../public/fonts/BungeeInline-Regular.ttf");
+  font-family: "BungeeInline";
+  src: url("../public/fonts/BungeeInline-Regular.ttf");
 }
 /* Global placeholder size */
-input::placeholder, textarea::placeholder {
+input::placeholder,
+textarea::placeholder {
   font-size: 15px;
   font-family: Jost-Regular;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }

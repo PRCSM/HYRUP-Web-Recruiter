@@ -1,0 +1,2627 @@
+[
+  {
+    "id": 1,
+    "title": "UI/UX Designer",
+    "location": "California, USA",
+    "applicants": [
+      {
+        "id": 101,
+        "name": "Maria",
+        "email": "maria.design@example.com",
+        "phone": "9123456780",
+        "bio": "Seeking to leverage my UI/UX design skills to create beautiful and intuitive interfaces for mobile applications.",
+        "desc": "Specializes in user-centered design principles and has a strong portfolio in mobile app prototyping.",
+        "match": 82,
+        "img": "https://i.pravatar.cc/150?img=5",
+        "status": "pending",
+        "skills": ["FIGMA", "ADOBE XD", "SKETCH", "USER RESEARCH"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Creative Minds",
+            "position": "UI/UX Intern",
+            "timeline": "Jun 2024 - Aug 2024",
+            "description": "Designed mockups and prototypes for several mobile applications."
+          },
+          {
+            "id": 2,
+            "organization": "Creative Minds",
+            "position": "UI/UX Intern",
+            "timeline": "Jun 2024 - Aug 2024",
+            "description": "Designed mockups and prototypes for several mobile applications."
+          }
+        ],
+        "projects": [
+          {
+            "id": 1,
+            "name": "E-commerce App Redesign",
+            "link": "https://example.com",
+            "description": "Complete redesign of a mobile shopping app to improve user flow and conversion rates."
+          }
+        ],
+        "college": {
+          "name": "Design Institute of America",
+          "university": "DIA",
+          "degree": "B.Des, Interaction Design"
+        }
+      },
+      {
+        "id": 102,
+        "name": "Kenji",
+        "email": "kenji.art@example.com",
+        "phone": "9876543211",
+        "bio": "A visual designer with a passion for creating compelling brand identities and digital experiences.",
+        "desc": "Experienced in both graphic design and user interface design for web and mobile platforms.",
+        "match": 88,
+        "img": "https://i.pravatar.cc/150?img=8",
+        "status": "pending",
+        "skills": ["ADOBE ILLUSTRATOR", "PHOTOSHOP", "FIGMA"],
+        "experiences": [],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Brand Identity Kit",
+            "link": "https://example.com",
+            "description": "Developed a full brand guide for a local startup."
+          }
+        ],
+        "college": {
+          "name": "Global Arts University",
+          "university": "GAU",
+          "degree": "BFA, Graphic Design"
+        }
+      },
+      {
+        "id": 103,
+        "name": "Sophia",
+        "email": "sophia.ux@example.com",
+        "phone": "9123456781",
+        "bio": "User-centric designer focused on creating seamless and accessible digital products.",
+        "desc": "Strong background in accessibility standards (WCAG) and usability testing.",
+        "match": 91,
+        "img": "https://i.pravatar.cc/150?img=10",
+        "status": "pending",
+        "skills": ["FIGMA", "AXURE", "WCAG", "USER TESTING"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "AccessiTech",
+            "position": "UX Researcher",
+            "timeline": "Jan 2024 - Present",
+            "description": "Conducting user research and usability studies for accessibility-focused software."
+          }
+        ],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Accessible Banking App",
+            "link": "https://example.com",
+            "description": "Led the UX research and design for a banking application for users with disabilities."
+          }
+        ],
+        "college": {
+          "name": "Tech Forward University",
+          "university": "TFU",
+          "degree": "M.S. in Human-Computer Interaction"
+        }
+      },
+      {
+        "id": 104,
+        "name": "Leo",
+        "email": "leo.creative@example.com",
+        "phone": "9876543212",
+        "bio": "Creative thinker with a flair for motion graphics and interactive design.",
+        "desc": "Brings static designs to life with micro-interactions and animations.",
+        "match": 85,
+        "img": "https://i.pravatar.cc/150?img=11",
+        "status": "pending",
+        "skills": ["AFTER EFFECTS", "FIGMA", "PRINCIPLE", "LOTTIE"],
+        "experiences": [],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Interactive Storybook App",
+            "link": "https://example.com",
+            "description": "Designed and animated characters for a children's interactive mobile app."
+          }
+        ],
+        "college": {
+          "name": "School of Visual Arts",
+          "university": "SVA",
+          "degree": "BFA in Digital Arts"
+        }
+      },
+      {
+        "id": 105,
+        "name": "Isabella",
+        "email": "isabella.ui@example.com",
+        "phone": "9123456782",
+        "bio": "Detail-oriented UI designer passionate about pixel-perfect interfaces.",
+        "desc": "Expert in creating and maintaining comprehensive design systems.",
+        "match": 93,
+        "img": "https://i.pravatar.cc/150?img=12",
+        "status": "pending",
+        "skills": ["SKETCH", "FIGMA", "INVISION", "DESIGN SYSTEMS"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Pixel Perfect Inc.",
+            "position": "UI Designer",
+            "timeline": "Jul 2023 - Present",
+            "description": "Building and managing the company's design system used across all products."
+          }
+        ],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Component Library",
+            "link": "https://example.com",
+            "description": "Developed a robust component library in Figma for a large-scale enterprise application."
+          }
+        ],
+        "college": {
+          "name": "Metropolitan Institute of Design",
+          "university": "MID",
+          "degree": "Associate in Web Design"
+        }
+      },
+      {
+        "id": 106,
+        "name": "David",
+        "email": "david.research@example.com",
+        "phone": "9876543213",
+        "bio": "Analytical and empathetic UX researcher with a talent for uncovering user needs.",
+        "desc": "Experienced in qualitative and quantitative research methods.",
+        "match": 89,
+        "img": "https://i.pravatar.cc/150?img=14",
+        "status": "pending",
+        "skills": [
+          "USER INTERVIEWS",
+          "SURVEY DESIGN",
+          "DATA ANALYSIS",
+          "PERSONA CREATION"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Insightful Data",
+            "position": "UX Research Assistant",
+            "timeline": "Mar 2024 - Jun 2024",
+            "description": "Assisted senior researchers in conducting user interviews and analyzing feedback."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "University of Social Sciences",
+          "university": "USS",
+          "degree": "B.A. in Psychology"
+        }
+      },
+      {
+        "id": 107,
+        "name": "Chloe",
+        "email": "chloe.designs@example.com",
+        "phone": "9123456783",
+        "bio": "A fresh and innovative designer with a strong grasp of modern design trends.",
+        "desc": "Recent graduate eager to apply academic knowledge to real-world projects.",
+        "match": 80,
+        "img": "https://i.pravatar.cc/150?img=15",
+        "status": "pending",
+        "skills": ["FIGMA", "CANVA", "WIREFRAMING"],
+        "experiences": [],
+        "projects": [
+          {
+            "id": 1,
+            "name": "University Project: Travel App",
+            "link": "https://example.com",
+            "description": "Capstone project involving the end-to-end design of a conceptual travel planning app."
+          }
+        ],
+        "college": {
+          "name": "State Design College",
+          "university": "SDC",
+          "degree": "B.Des in Communication Design"
+        }
+      },
+      {
+        "id": 108,
+        "name": "Oscar",
+        "email": "oscar.uiux@example.com",
+        "phone": "9876543214",
+        "bio": "Problem-solver who bridges the gap between user needs and business goals.",
+        "desc": "Combines design thinking with a practical approach to product development.",
+        "match": 87,
+        "img": "https://i.pravatar.cc/150?img=16",
+        "status": "pending",
+        "skills": [
+          "FIGMA",
+          "JIRA",
+          "AGILE METHODOLOGY",
+          "STAKEHOLDER MANAGEMENT"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Business Solutions Ltd.",
+            "position": "Product Design Intern",
+            "timeline": "Sep 2023 - Dec 2023",
+            "description": "Worked closely with product managers to translate requirements into design specifications."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Institute of Technology & Business",
+          "university": "ITB",
+          "degree": "B.S. in Business and Information Systems"
+        }
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Frontend Developer",
+    "location": "Boston, USA",
+    "applicants": [
+      {
+        "id": 201,
+        "name": "Paikhomba",
+        "email": "paikhomba.cs21@nitmanipur.ac.in",
+        "phone": "9005687235",
+        "bio": "A passionate full-stack developer with a knack for creating elegant and efficient solutions.",
+        "desc": "Create a modern, responsive web app using React that helps students discover internship recommendations.",
+        "match": 85,
+        "img": "https://i.pravatar.cc/150?img=1",
+        "status": "pending",
+        "skills": ["REACT.JS", "NODE.JS", "TAILWIND", "FIGMA", "PYTHON", "GIT"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "MaxWells Corp",
+            "position": "AI Intern",
+            "timeline": "Jan 2025 - Feb 2025",
+            "description": "Worked on filtering logic for a job search platform."
+          },
+          {
+            "id": 2,
+            "organization": "Innovatech",
+            "position": "Frontend Intern",
+            "timeline": "May 2024 - Aug 2024",
+            "description": "Developed user-facing features using React.js."
+          }
+        ],
+        "projects": [
+          {
+            "id": 1,
+            "name": "MaxWells Project",
+            "link": "https://example.com",
+            "description": "A robust filtering system for a job search platform."
+          },
+          {
+            "id": 2,
+            "name": "Personal Portfolio",
+            "link": "https://github.com",
+            "description": "A personal portfolio website built with React."
+          }
+        ],
+        "college": {
+          "name": "National Institute of Technology, Manipur",
+          "university": "NIT Manipur",
+          "degree": "BTech, Computer Science"
+        }
+      },
+      {
+        "id": 202,
+        "name": "Elara",
+        "email": "elara@example.com",
+        "phone": "9876543210",
+        "bio": "An aspiring software developer with a passion for building scalable and user-friendly applications.",
+        "desc": "Passionate about building scalable and user-friendly applications from the ground up.",
+        "match": 92,
+        "img": "https://i.pravatar.cc/150?img=2",
+        "status": "pending",
+        "skills": ["JAVASCRIPT", "HTML5", "CSS3", "VUE.JS"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Tech Solutions",
+            "position": "Junior Developer",
+            "timeline": "Jun 2024 - Aug 2024",
+            "description": "Assisted in the development of a client-side rendering application using Vue.js."
+          }
+        ],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Task Management App",
+            "link": "https://example.com",
+            "description": "A single-page application for managing daily tasks."
+          }
+        ],
+        "college": {
+          "name": "State University",
+          "university": "State University",
+          "degree": "BSc, Information Technology"
+        }
+      },
+      {
+        "id": 203,
+        "name": "Javier",
+        "email": "javier.dev@example.com",
+        "phone": "9123456784",
+        "bio": "Experienced in both front-end and back-end development, looking for a challenging role in a dynamic team.",
+        "desc": "A versatile full-stack developer with a focus on React and Node.js.",
+        "match": 88,
+        "img": "https://i.pravatar.cc/150?img=3",
+        "status": "pending",
+        "skills": ["REACT.JS", "NODE.JS", "EXPRESS", "MONGODB"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "FullStack Co.",
+            "position": "Software Engineer",
+            "timeline": "Feb 2023 - Present",
+            "description": "Developing and maintaining MERN stack applications for various clients."
+          }
+        ],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Social Media Dashboard",
+            "link": "https://example.com",
+            "description": "A web app to aggregate and display social media analytics."
+          }
+        ],
+        "college": {
+          "name": "Polytechnic Institute",
+          "university": "PI",
+          "degree": "B.S. in Computer Engineering"
+        }
+      },
+      {
+        "id": 204,
+        "name": "Chen",
+        "email": "chen.codes@example.com",
+        "phone": "9876543215",
+        "bio": "A frontend specialist with a keen eye for performance and user experience.",
+        "desc": "Focuses on writing clean, efficient, and maintainable code.",
+        "match": 95,
+        "img": "https://i.pravatar.cc/150?img=4",
+        "status": "pending",
+        "skills": ["TYPESCRIPT", "REACT.JS", "NEXT.JS", "WEBPACK"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Speedy Web",
+            "position": "Frontend Developer",
+            "timeline": "Nov 2022 - Present",
+            "description": "Optimizing web applications for speed and performance, achieving a 40% reduction in load times."
+          }
+        ],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Static Site Generator",
+            "link": "https://example.com",
+            "description": "Built a custom static site generator using Next.js for a documentation website."
+          }
+        ],
+        "college": {
+          "name": "University of Technology",
+          "university": "UoT",
+          "degree": "B.S. in Software Engineering"
+        }
+      },
+      {
+        "id": 205,
+        "name": "Liam",
+        "email": "liam.js@example.com",
+        "phone": "9123456785",
+        "bio": "Recent computer science graduate with a strong foundation in algorithms and data structures.",
+        "desc": "Eager to apply my skills in a fast-paced and collaborative environment.",
+        "match": 81,
+        "img": "https://i.pravatar.cc/150?img=6",
+        "status": "pending",
+        "skills": ["JAVASCRIPT", "REACT.JS", "DATA STRUCTURES", "ALGORITHMS"],
+        "experiences": [],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Pathfinding Visualizer",
+            "link": "https://example.com",
+            "description": "A web application that visualizes pathfinding algorithms like A* and Dijkstra's."
+          }
+        ],
+        "college": {
+          "name": "State College of Science",
+          "university": "SCS",
+          "degree": "B.S. in Computer Science"
+        }
+      },
+      {
+        "id": 206,
+        "name": "Aisha",
+        "email": "aisha.dev@example.com",
+        "phone": "9876543216",
+        "bio": "Creative frontend developer who enjoys turning complex problems into beautiful, intuitive designs.",
+        "desc": "Proficient in modern CSS frameworks and animations.",
+        "match": 89,
+        "img": "https://i.pravatar.cc/150?img=7",
+        "status": "pending",
+        "skills": ["TAILWIND CSS", "SASS", "GSAP", "REACT.JS"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Designify",
+            "position": "Creative Developer",
+            "timeline": "May 2023 - Present",
+            "description": "Implementing complex animations and interactive UIs for marketing websites."
+          }
+        ],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Interactive Portfolio",
+            "link": "https://example.com",
+            "description": "A portfolio website featuring scroll-based animations and 3D elements."
+          }
+        ],
+        "college": {
+          "name": "Digital Arts & Technology School",
+          "university": "DATS",
+          "degree": "Associate in Web Development"
+        }
+      },
+      {
+        "id": 207,
+        "name": "Fatima",
+        "email": "fatima.coder@example.com",
+        "phone": "9123456786",
+        "bio": "Frontend developer with experience in building accessible and inclusive web applications.",
+        "desc": "Passionate about making the web usable for everyone.",
+        "match": 90,
+        "img": "https://i.pravatar.cc/150?img=9",
+        "status": "pending",
+        "skills": ["HTML5", "CSS3", "JAVASCRIPT", "WCAG", "JEST"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Inclusive Web Initiative",
+            "position": "Frontend Intern",
+            "timeline": "Jan 2024 - Apr 2024",
+            "description": "Audited and refactored websites to meet WCAG 2.1 AA standards."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Community College of Technology",
+          "university": "CCT",
+          "degree": "Certificate in Web Accessibility"
+        }
+      },
+      {
+        "id": 208,
+        "name": "Noah",
+        "email": "noah.react@example.com",
+        "phone": "9876543217",
+        "bio": "A results-driven developer with expertise in React and its ecosystem.",
+        "desc": "Loves building reusable components and managing complex application state.",
+        "match": 94,
+        "img": "https://i.pravatar.cc/150?img=17",
+        "status": "pending",
+        "skills": ["REACT.JS", "REDUX", "CONTEXT API", "STYLED-COMPONENTS"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "AppCrafters",
+            "position": "React Developer",
+            "timeline": "Aug 2022 - Present",
+            "description": "Architected and maintained the state management for a large-scale e-commerce platform."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Online Coding Bootcamp",
+          "university": "OCB",
+          "degree": "Full-Stack Web Development Certificate"
+        }
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Backend Developer",
+    "location": "New York, USA",
+    "applicants": [
+      {
+        "id": 301,
+        "name": "Ben",
+        "email": "ben.backend@example.com",
+        "phone": "9123456788",
+        "bio": "Backend engineer specializing in building robust and scalable APIs.",
+        "desc": "Expert in Node.js, Python, and cloud infrastructure.",
+        "match": 93,
+        "img": "https://i.pravatar.cc/150?img=18",
+        "status": "pending",
+        "skills": ["NODE.JS", "PYTHON", "DJANGO", "AWS", "DOCKER"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "ServerSide Solutions",
+            "position": "Backend Developer",
+            "timeline": "Mar 2022 - Present",
+            "description": "Designed and implemented RESTful APIs for a variety of microservices."
+          }
+        ],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Real-time Chat API",
+            "link": "https://example.com",
+            "description": "Built a scalable chat API using WebSockets and Node.js."
+          }
+        ],
+        "college": {
+          "name": "Institute of Engineering",
+          "university": "IE",
+          "degree": "M.S. in Computer Science"
+        }
+      },
+      {
+        "id": 302,
+        "name": "Grace",
+        "email": "grace.db@example.com",
+        "phone": "9876543218",
+        "bio": "Database specialist with extensive experience in SQL and NoSQL databases.",
+        "desc": "Focuses on database design, optimization, and security.",
+        "match": 90,
+        "img": "https://i.pravatar.cc/150?img=19",
+        "status": "pending",
+        "skills": ["POSTGRESQL", "MONGODB", "REDIS", "DATABASE DESIGN"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "DataCore",
+            "position": "Database Administrator",
+            "timeline": "Jun 2021 - Present",
+            "description": "Managing and optimizing large-scale databases for a financial services company."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "University of Information Sciences",
+          "university": "UIS",
+          "degree": "B.S. in Database Management"
+        }
+      },
+      {
+        "id": 303,
+        "name": "Tom",
+        "email": "tom.java@example.com",
+        "phone": "9123456789",
+        "bio": "Enterprise backend developer with a strong background in Java and Spring.",
+        "desc": "Experienced in building mission-critical systems for large corporations.",
+        "match": 88,
+        "img": "https://i.pravatar.cc/150?img=20",
+        "status": "pending",
+        "skills": ["JAVA", "SPRING BOOT", "MICROSERVICES", "KAFKA"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Corporate Systems Inc.",
+            "position": "Senior Java Developer",
+            "timeline": "Apr 2020 - Present",
+            "description": "Developing backend services for a core banking system."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "National University of Engineering",
+          "university": "NUE",
+          "degree": "B.E. in Computer Engineering"
+        }
+      },
+      {
+        "id": 304,
+        "name": "Zoe",
+        "email": "zoe.api@example.com",
+        "phone": "9876543219",
+        "bio": "API developer who loves creating clean, well-documented, and easy-to-use APIs.",
+        "desc": "Advocate for API-first design and modern authentication standards.",
+        "match": 86,
+        "img": "https://i.pravatar.cc/150?img=21",
+        "status": "pending",
+        "skills": ["RESTful APIs", "GraphQL", "OPENAPI", "OAUTH2"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Connective",
+            "position": "API Developer",
+            "timeline": "Sep 2023 - Present",
+            "description": "Designing the public-facing API for a SaaS product."
+          }
+        ],
+        "projects": [
+          {
+            "id": 1,
+            "name": "GraphQL Weather API",
+            "link": "https://example.com",
+            "description": "A personal project to create a flexible weather data API using GraphQL."
+          }
+        ],
+        "college": {
+          "name": "Online Tech Academy",
+          "university": "OTA",
+          "degree": "Backend Development Certificate"
+        }
+      },
+      {
+        "id": 305,
+        "name": "Ryan",
+        "email": "ryan.python@example.com",
+        "phone": "9123456790",
+        "bio": "Python developer with experience in web frameworks and data processing.",
+        "desc": "Skilled in both Django and Flask for building web applications.",
+        "match": 91,
+        "img": "https://i.pravatar.cc/150?img=22",
+        "status": "pending",
+        "skills": ["PYTHON", "DJANGO", "FLASK", "CELERY"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Web Weavers",
+            "position": "Python Developer",
+            "timeline": "Jan 2023 - Present",
+            "description": "Building backend logic and data processing pipelines for various web projects."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "State University",
+          "university": "SU",
+          "degree": "B.S. in Computer Science"
+        }
+      },
+      {
+        "id": 306,
+        "name": "Mia",
+        "email": "mia.cloud@example.com",
+        "phone": "9876543220",
+        "bio": "Cloud-native backend developer with a focus on serverless architectures.",
+        "desc": "Loves building cost-effective and highly scalable applications on AWS.",
+        "match": 94,
+        "img": "https://i.pravatar.cc/150?img=23",
+        "status": "pending",
+        "skills": [
+          "AWS LAMBDA",
+          "SERVERLESS FRAMEWORK",
+          "API GATEWAY",
+          "DYNAMODB"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Cloud First",
+            "position": "Cloud Engineer",
+            "timeline": "May 2023 - Present",
+            "description": "Migrating legacy monolithic applications to serverless microservices."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Cloud Computing College",
+          "university": "CCC",
+          "degree": "AWS Certified Developer"
+        }
+      },
+      {
+        "id": 307,
+        "name": "Lucas",
+        "email": "lucas.go@example.com",
+        "phone": "9123456791",
+        "bio": "Backend developer proficient in Go, focused on performance and concurrency.",
+        "desc": "Enjoys building high-performance services for distributed systems.",
+        "match": 89,
+        "img": "https://i.pravatar.cc/150?img=24",
+        "status": "pending",
+        "skills": ["GOLANG", "GRPC", "CONCURRENCY", "MICROSERVICES"],
+        "experiences": [],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Distributed Key-Value Store",
+            "link": "https://example.com",
+            "description": "A personal project to implement a distributed key-value store in Go."
+          }
+        ],
+        "college": {
+          "name": "Institute of Advanced Computing",
+          "university": "IAC",
+          "degree": "B.S. in Computer Science"
+        }
+      },
+      {
+        "id": 308,
+        "name": "Ava",
+        "email": "ava.backend@example.com",
+        "phone": "9876543221",
+        "bio": "Junior backend developer with a solid understanding of software engineering principles.",
+        "desc": "Eager to contribute to a team and grow her skills in a professional setting.",
+        "match": 80,
+        "img": "https://i.pravatar.cc/150?img=25",
+        "status": "pending",
+        "skills": ["NODE.JS", "EXPRESS", "GIT", "SQL"],
+        "experiences": [],
+        "projects": [],
+        "college": {
+          "name": "Community Coding Program",
+          "university": "CCP",
+          "degree": "Certificate of Completion"
+        }
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Data Scientist",
+    "location": "Austin, USA",
+    "applicants": [
+      {
+        "id": 401,
+        "name": "Dr. Evelyn Reed",
+        "email": "evelyn.reed@example.com",
+        "phone": "9123456800",
+        "bio": "Data scientist with a PhD and a passion for turning data into actionable insights.",
+        "desc": "Specializes in machine learning, statistical modeling, and data visualization.",
+        "match": 96,
+        "img": "https://i.pravatar.cc/150?img=26",
+        "status": "pending",
+        "skills": ["PYTHON", "R", "TENSORFLOW", "SCIKIT-LEARN", "TABLEAU"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Quantum Analytics",
+            "position": "Senior Data Scientist",
+            "timeline": "Aug 2020 - Present",
+            "description": "Leading projects on predictive modeling and customer segmentation."
+          }
+        ],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Fraud Detection Model",
+            "link": "https://example.com",
+            "description": "Developed a machine learning model that reduced fraudulent transactions by 25%."
+          }
+        ],
+        "college": {
+          "name": "Stanford University",
+          "university": "Stanford",
+          "degree": "Ph.D. in Statistics"
+        }
+      },
+      {
+        "id": 402,
+        "name": "Marco",
+        "email": "marco.data@example.com",
+        "phone": "9876543230",
+        "bio": "Data analyst with a strong ability to communicate complex data stories.",
+        "desc": "Expert in SQL, data cleaning, and creating insightful dashboards.",
+        "match": 88,
+        "img": "https://i.pravatar.cc/150?img=27",
+        "status": "pending",
+        "skills": ["SQL", "PYTHON", "PANDAS", "TABLEAU", "POWER BI"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Business Insights Group",
+            "position": "Data Analyst",
+            "timeline": "Jul 2022 - Present",
+            "description": "Analyzing sales data to identify trends and inform business strategy."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "University of Business",
+          "university": "UB",
+          "degree": "B.S. in Business Analytics"
+        }
+      },
+      {
+        "id": 403,
+        "name": "Nina",
+        "email": "nina.ml@example.com",
+        "phone": "9123456801",
+        "bio": "Machine learning engineer focused on deploying models into production.",
+        "desc": "Bridges the gap between data science and software engineering.",
+        "match": 92,
+        "img": "https://i.pravatar.cc/150?img=28",
+        "status": "pending",
+        "skills": ["PYTHON", "TENSORFLOW", "DOCKER", "KUBERNETES", "MLOPS"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Model Ops Inc.",
+            "position": "ML Engineer",
+            "timeline": "Jan 2023 - Present",
+            "description": "Building and maintaining the CI/CD pipeline for machine learning models."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Tech University",
+          "university": "TU",
+          "degree": "M.S. in Artificial Intelligence"
+        }
+      },
+      {
+        "id": 404,
+        "name": "Oliver",
+        "email": "oliver.stats@example.com",
+        "phone": "9876543231",
+        "bio": "Quantitative analyst with a background in finance and econometrics.",
+        "desc": "Applies statistical methods to solve complex financial problems.",
+        "match": 89,
+        "img": "https://i.pravatar.cc/150?img=29",
+        "status": "pending",
+        "skills": [
+          "R",
+          "PYTHON",
+          "STATISTICAL MODELING",
+          "TIME SERIES ANALYSIS"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Capital Investments",
+            "position": "Quantitative Analyst",
+            "timeline": "May 2022 - Present",
+            "description": "Developing trading algorithms based on statistical arbitrage."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "London School of Economics",
+          "university": "LSE",
+          "degree": "M.S. in Econometrics"
+        }
+      },
+      {
+        "id": 405,
+        "name": "Priya",
+        "email": "priya.nlp@example.com",
+        "phone": "9123456802",
+        "bio": "Data scientist specializing in Natural Language Processing (NLP).",
+        "desc": "Passionate about understanding and processing human language with machines.",
+        "match": 94,
+        "img": "https://i.pravatar.cc/150?img=30",
+        "status": "pending",
+        "skills": ["PYTHON", "NLTK", "SPACY", "PYTORCH", "TRANSFORMERS"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "LinguaTech",
+            "position": "NLP Scientist",
+            "timeline": "Feb 2023 - Present",
+            "description": "Building sentiment analysis and text summarization models."
+          }
+        ],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Sentiment Analysis API",
+            "link": "https://example.com",
+            "description": "Developed a deployable API for real-time sentiment analysis of text."
+          }
+        ],
+        "college": {
+          "name": "Carnegie Mellon University",
+          "university": "CMU",
+          "degree": "M.S. in Language Technologies"
+        }
+      },
+      {
+        "id": 406,
+        "name": "Sam",
+        "email": "sam.data@example.com",
+        "phone": "9876543232",
+        "bio": "Data engineering enthusiast who loves building reliable data pipelines.",
+        "desc": "Skilled in ETL processes, data warehousing, and big data technologies.",
+        "match": 90,
+        "img": "https://i.pravatar.cc/150?img=31",
+        "status": "pending",
+        "skills": ["APACHE SPARK", "HADOOP", "AIRFLOW", "SQL", "PYTHON"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "DataFlow Co.",
+            "position": "Data Engineer",
+            "timeline": "Apr 2022 - Present",
+            "description": "Designing and managing the company's data lake and ETL pipelines."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "University of Computing",
+          "university": "UC",
+          "degree": "B.S. in Computer Science"
+        }
+      },
+      {
+        "id": 407,
+        "name": "Talia",
+        "email": "talia.viz@example.com",
+        "phone": "9123456803",
+        "bio": "Data visualization expert who creates compelling and interactive dashboards.",
+        "desc": "Transforms raw data into beautiful and understandable stories.",
+        "match": 87,
+        "img": "https://i.pravatar.cc/150?img=32",
+        "status": "pending",
+        "skills": ["TABLEAU", "D3.JS", "POWER BI", "DATA STORYTELLING"],
+        "experiences": [],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Global Health Dashboard",
+            "link": "https://example.com",
+            "description": "An interactive dashboard visualizing public health data from around the world."
+          }
+        ],
+        "college": {
+          "name": "College of Art & Data",
+          "university": "CAD",
+          "degree": "Certificate in Data Visualization"
+        }
+      },
+      {
+        "id": 408,
+        "name": "Victor",
+        "email": "victor.science@example.com",
+        "phone": "9876543233",
+        "bio": "A recent graduate in data science, eager to apply my analytical skills.",
+        "desc": "Strong foundation in statistics, machine learning, and programming.",
+        "match": 81,
+        "img": "https://i.pravatar.cc/150?img=33",
+        "status": "pending",
+        "skills": ["PYTHON", "R", "SQL", "MACHINE LEARNING"],
+        "experiences": [],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Kaggle Competition: House Prices",
+            "link": "https://example.com",
+            "description": "Participated in a Kaggle competition to predict house prices using regression models."
+          }
+        ],
+        "college": {
+          "name": "State Data Science Program",
+          "university": "SDSP",
+          "degree": "B.S. in Data Science"
+        }
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Product Manager",
+    "location": "Seattle, USA",
+    "applicants": [
+      {
+        "id": 501,
+        "name": "Alice",
+        "email": "alice.pm@example.com",
+        "phone": "9123456810",
+        "bio": "Product manager with a track record of launching successful B2C products.",
+        "desc": "Drives product strategy from conception to launch and beyond.",
+        "match": 95,
+        "img": "https://i.pravatar.cc/150?img=34",
+        "status": "pending",
+        "skills": [
+          "PRODUCT ROADMAPPING",
+          "AGILE",
+          "USER RESEARCH",
+          "MARKET ANALYSIS"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "ConsumerTech",
+            "position": "Senior Product Manager",
+            "timeline": "Jun 2021 - Present",
+            "description": "Led the team that launched a mobile app with over 1 million downloads."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "University of Business",
+          "university": "UB",
+          "degree": "MBA"
+        }
+      },
+      {
+        "id": 502,
+        "name": "Brian",
+        "email": "brian.product@example.com",
+        "phone": "9876543240",
+        "bio": "Technical product manager who can speak the language of both engineers and stakeholders.",
+        "desc": "Brings a deep understanding of technology to the product management role.",
+        "match": 91,
+        "img": "https://i.pravatar.cc/150?img=35",
+        "status": "pending",
+        "skills": ["APIs", "SYSTEM DESIGN", "SQL", "JIRA", "PRODUCT SPECS"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "DevTools Inc.",
+            "position": "Technical Product Manager",
+            "timeline": "Mar 2022 - Present",
+            "description": "Managing the roadmap for a developer-focused API product."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Institute of Technology",
+          "university": "IT",
+          "degree": "B.S. in Computer Science"
+        }
+      },
+      {
+        "id": 503,
+        "name": "Clara",
+        "email": "clara.growth@example.com",
+        "phone": "9123456811",
+        "bio": "Growth product manager obsessed with data, experimentation, and user acquisition.",
+        "desc": "Focuses on A/B testing and optimizing the user funnel.",
+        "match": 93,
+        "img": "https://i.pravatar.cc/150?img=36",
+        "status": "pending",
+        "skills": [
+          "A/B TESTING",
+          "GROWTH HACKING",
+          "DATA ANALYSIS",
+          "USER ACQUISITION"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Growth Rocket",
+            "position": "Product Manager, Growth",
+            "timeline": "Sep 2022 - Present",
+            "description": "Increased user sign-ups by 30% through targeted experiments."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Marketing University",
+          "university": "MU",
+          "degree": "B.A. in Marketing"
+        }
+      },
+      {
+        "id": 504,
+        "name": "Daniel",
+        "email": "daniel.pm@example.com",
+        "phone": "9876543241",
+        "bio": "Associate product manager with a passion for learning and a user-first mindset.",
+        "desc": "Recent graduate with strong analytical and communication skills.",
+        "match": 82,
+        "img": "https://i.pravatar.cc/150?img=37",
+        "status": "pending",
+        "skills": ["JIRA", "USER STORIES", "COMPETITIVE ANALYSIS"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Startup Hub",
+            "position": "Product Intern",
+            "timeline": "May 2024 - Aug 2024",
+            "description": "Assisted in writing user stories and managing the product backlog."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "State College",
+          "university": "SC",
+          "degree": "B.A. in Economics"
+        }
+      },
+      {
+        "id": 505,
+        "name": "Eva",
+        "email": "eva.b2b@example.com",
+        "phone": "9123456812",
+        "bio": "B2B product manager experienced in building enterprise SaaS solutions.",
+        "desc": "Understands the complexities of enterprise sales cycles and customer needs.",
+        "match": 90,
+        "img": "https://i.pravatar.cc/150?img=38",
+        "status": "pending",
+        "skills": [
+          "SAAS",
+          "ENTERPRISE SOFTWARE",
+          "STAKEHOLDER MANAGEMENT",
+          "SALESFORCE"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Enterprise Cloud",
+            "position": "Product Manager",
+            "timeline": "Jan 2021 - Present",
+            "description": "Managing a suite of CRM and marketing automation tools."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Business School",
+          "university": "BS",
+          "degree": "B.S. in Business Administration"
+        }
+      },
+      {
+        "id": 506,
+        "name": "Frank",
+        "email": "frank.agile@example.com",
+        "phone": "9876543242",
+        "bio": "Agile product owner who excels at managing backlogs and facilitating sprint planning.",
+        "desc": "Certified Scrum Product Owner (CSPO) with a focus on team collaboration.",
+        "match": 88,
+        "img": "https://i.pravatar.cc/150?img=39",
+        "status": "pending",
+        "skills": ["SCRUM", "AGILE", "BACKLOG GROOMING", "USER STORY MAPPING"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Agile Innovations",
+            "position": "Product Owner",
+            "timeline": "Oct 2022 - Present",
+            "description": "Leading an Agile development team to deliver new features every sprint."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Agile Certification Institute",
+          "university": "ACI",
+          "degree": "Certified Scrum Product Owner"
+        }
+      },
+      {
+        "id": 507,
+        "name": "Gina",
+        "email": "gina.mobile@example.com",
+        "phone": "9123456813",
+        "bio": "Mobile product manager with experience in both iOS and Android platforms.",
+        "desc": "Passionate about creating engaging and high-retention mobile apps.",
+        "match": 92,
+        "img": "https://i.pravatar.cc/150?img=40",
+        "status": "pending",
+        "skills": ["MOBILE APPS", "ASO", "PUSH NOTIFICATIONS", "ANALYTICS"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "App World",
+            "position": "Mobile Product Manager",
+            "timeline": "Feb 2022 - Present",
+            "description": "Increased monthly active users by 50% through new feature development and ASO."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "University of Digital Media",
+          "university": "UDM",
+          "degree": "B.S. in Mobile Development"
+        }
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Mobile App Developer (iOS)",
+    "location": "Cupertino, USA",
+    "applicants": [
+      {
+        "id": 601,
+        "name": "Hannah",
+        "email": "hannah.ios@example.com",
+        "phone": "9123456820",
+        "bio": "Senior iOS developer with expertise in Swift and SwiftUI.",
+        "desc": "Loves crafting beautiful, high-performance applications for the Apple ecosystem.",
+        "match": 96,
+        "img": "https://i.pravatar.cc/150?img=41",
+        "status": "pending",
+        "skills": ["SWIFT", "SWIFTUI", "XCODE", "CORE DATA", "COMBINE"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Apple Apps Co.",
+            "position": "Lead iOS Engineer",
+            "timeline": "Mar 2020 - Present",
+            "description": "Architected and led the development of a featured App Store application."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Silicon Valley University",
+          "university": "SVU",
+          "degree": "M.S. in Software Engineering"
+        }
+      },
+      {
+        "id": 602,
+        "name": "Ian",
+        "email": "ian.swift@example.com",
+        "phone": "9876543250",
+        "bio": "Passionate iOS developer with a strong focus on clean code and good architecture.",
+        "desc": "Experienced with both UIKit and SwiftUI for building user interfaces.",
+        "match": 90,
+        "img": "https://i.pravatar.cc/150?img=42",
+        "status": "pending",
+        "skills": ["SWIFT", "UIKIT", "SWIFTUI", "MVVM", "TESTING"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Mobile Solutions",
+            "position": "iOS Developer",
+            "timeline": "Jul 2022 - Present",
+            "description": "Developing and maintaining a suite of productivity apps for iOS."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Code Academy",
+          "university": "CA",
+          "degree": "iOS Development Nanodegree"
+        }
+      },
+      {
+        "id": 603,
+        "name": "Julia",
+        "email": "julia.ios@example.com",
+        "phone": "9123456821",
+        "bio": "Junior iOS developer eager to learn and contribute to a talented team.",
+        "desc": "Recent graduate with several personal projects on the App Store.",
+        "match": 83,
+        "img": "https://i.pravatar.cc/150?img=43",
+        "status": "pending",
+        "skills": ["SWIFT", "SWIFTUI", "GIT"],
+        "experiences": [],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Simple Weather App",
+            "link": "https://example.com",
+            "description": "A clean and simple weather application built with SwiftUI."
+          }
+        ],
+        "college": {
+          "name": "State University",
+          "university": "SU",
+          "degree": "B.S. in Computer Science"
+        }
+      },
+      {
+        "id": 604,
+        "name": "Kevin",
+        "email": "kevin.objectivec@example.com",
+        "phone": "9876543251",
+        "bio": "Experienced iOS developer with a background in Objective-C and modernizing legacy codebases.",
+        "desc": "Expert at migrating older Objective-C projects to Swift.",
+        "match": 88,
+        "img": "https://i.pravatar.cc/150?img=44",
+        "status": "pending",
+        "skills": ["OBJECTIVE-C", "SWIFT", "UIKIT", "CODE MIGRATION"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Legacy Systems",
+            "position": "iOS Engineer",
+            "timeline": "Jan 2019 - Present",
+            "description": "Maintaining and modernizing a large, enterprise-level iOS application."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Polytechnic Institute",
+          "university": "PI",
+          "degree": "B.E. in Software Engineering"
+        }
+      },
+      {
+        "id": 605,
+        "name": "Laura",
+        "email": "laura.ar@example.com",
+        "phone": "9123456822",
+        "bio": "IOS developer with a specialization in Augmented Reality (AR).",
+        "desc": "Passionate about creating immersive AR experiences using ARKit.",
+        "match": 92,
+        "img": "https://i.pravatar.cc/150?img=45",
+        "status": "pending",
+        "skills": ["SWIFT", "ARKIT", "REALITYKIT", "SCENEKIT"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Future Vision",
+            "position": "AR Developer",
+            "timeline": "May 2023 - Present",
+            "description": "Building AR applications for retail and e-commerce clients."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "University of Creative Technologies",
+          "university": "UCT",
+          "degree": "M.S. in Emerging Media"
+        }
+      },
+      {
+        "id": 606,
+        "name": "Mike",
+        "email": "mike.games@example.com",
+        "phone": "9876543252",
+        "bio": "Game developer for iOS using SpriteKit and SceneKit.",
+        "desc": "Enjoys building fun and engaging mobile games.",
+        "match": 86,
+        "img": "https://i.pravatar.cc/150?img=46",
+        "status": "pending",
+        "skills": ["SWIFT", "SPRITEKIT", "SCENEKIT", "GAMEPLAYKIT"],
+        "experiences": [],
+        "projects": [
+          {
+            "id": 1,
+            "name": "2D Platformer Game",
+            "link": "https://example.com",
+            "description": "A personal project, a classic 2D platformer game for iPhone."
+          }
+        ],
+        "college": {
+          "name": "Game Design School",
+          "university": "GDS",
+          "degree": "Certificate in Mobile Game Development"
+        }
+      },
+      {
+        "id": 607,
+        "name": "Nancy",
+        "email": "nancy.perf@example.com",
+        "phone": "9123456823",
+        "bio": "IOS developer focused on performance, memory management, and debugging.",
+        "desc": "Expert with Instruments and other Xcode debugging tools.",
+        "match": 91,
+        "img": "https://i.pravatar.cc/150?img=47",
+        "status": "pending",
+        "skills": ["SWIFT", "INSTRUMENTS", "XCTEST", "PERFORMANCE TUNING"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Fast Apps",
+            "position": "Performance Engineer",
+            "timeline": "Feb 2022 - Present",
+            "description": "Responsible for profiling and optimizing the company's main iOS application."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Institute of Engineering",
+          "university": "IE",
+          "degree": "B.S. in Computer Engineering"
+        }
+      },
+      {
+        "id": 608,
+        "name": "Omar",
+        "email": "omar.swiftui@example.com",
+        "phone": "9876543253",
+        "bio": "A strong advocate for SwiftUI and declarative UI development.",
+        "desc": "Has built several complex applications entirely with SwiftUI.",
+        "match": 94,
+        "img": "https://i.pravatar.cc/150?img=48",
+        "status": "pending",
+        "skills": ["SWIFTUI", "COMBINE", "SWIFT", "MVVM"],
+        "experiences": [],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Recipe App",
+            "link": "https://example.com",
+            "description": "A recipe discovery and meal planning app built with SwiftUI and the Composable Architecture."
+          }
+        ],
+        "college": {
+          "name": "Modern Development Bootcamp",
+          "university": "MDB",
+          "degree": "Advanced iOS Certificate"
+        }
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "title": "DevOps Engineer",
+    "location": "Chicago, USA",
+    "applicants": [
+      {
+        "id": 701,
+        "name": "Peter",
+        "email": "peter.devops@example.com",
+        "phone": "9123456830",
+        "bio": "Senior DevOps engineer with a passion for automation and infrastructure as code.",
+        "desc": "Expert in CI/CD pipelines, cloud infrastructure, and containerization.",
+        "match": 97,
+        "img": "https://i.pravatar.cc/150?img=49",
+        "status": "pending",
+        "skills": [
+          "AWS",
+          "DOCKER",
+          "KUBERNETES",
+          "TERRAFORM",
+          "ANSIBLE",
+          "JENKINS"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Automate Everything Inc.",
+            "position": "Lead DevOps Engineer",
+            "timeline": "Apr 2019 - Present",
+            "description": "Designed and manage the entire cloud infrastructure and CI/CD process."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "University of Technology",
+          "university": "UoT",
+          "degree": "B.S. in Information Technology"
+        }
+      },
+      {
+        "id": 702,
+        "name": "Quinn",
+        "email": "quinn.ci@example.com",
+        "phone": "9876543260",
+        "bio": "Build and release engineer focused on creating efficient and reliable CI/CD pipelines.",
+        "desc": "Ensures that code gets from the developer's machine to production smoothly.",
+        "match": 90,
+        "img": "https://i.pravatar.cc/150?img=50",
+        "status": "pending",
+        "skills": [
+          "JENKINS",
+          "GITLAB CI",
+          "GITHUB ACTIONS",
+          "SCRIPTING (BASH, PYTHON)"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "CodeFlow",
+            "position": "Release Engineer",
+            "timeline": "Aug 2022 - Present",
+            "description": "Managing the build and deployment process for multiple development teams."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Online Tech Institute",
+          "university": "OTI",
+          "degree": "DevOps Certification"
+        }
+      },
+      {
+        "id": 703,
+        "name": "Rachel",
+        "email": "rachel.cloud@example.com",
+        "phone": "9123456831",
+        "bio": "Cloud engineer specializing in AWS and infrastructure automation.",
+        "desc": "Loves building scalable, resilient, and cost-effective cloud solutions.",
+        "match": 93,
+        "img": "https://i.pravatar.cc/150?img=51",
+        "status": "pending",
+        "skills": ["AWS (EC2, S3, RDS, VPC)", "TERRAFORM", "CLOUDFormation"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Cloud Builders",
+            "position": "Cloud Engineer",
+            "timeline": "May 2021 - Present",
+            "description": "Provisioning and managing cloud infrastructure using Terraform."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Cloud University",
+          "university": "CU",
+          "degree": "AWS Certified Solutions Architect"
+        }
+      },
+      {
+        "id": 704,
+        "name": "Steve",
+        "email": "steve.sre@example.com",
+        "phone": "9876543261",
+        "bio": "Site Reliability Engineer (SRE) with a focus on monitoring, observability, and incident response.",
+        "desc": "Passionate about keeping systems reliable and performing well.",
+        "match": 95,
+        "img": "https://i.pravatar.cc/150?img=52",
+        "status": "pending",
+        "skills": [
+          "PROMETHEUS",
+          "GRAFANA",
+          "ELASTICSEARCH",
+          "PYTHON",
+          "ON-CALL"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Reliable Systems",
+            "position": "SRE",
+            "timeline": "Nov 2021 - Present",
+            "description": "Implemented a new monitoring stack that reduced mean time to detection (MTTD) by 60%."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Institute of Engineering",
+          "university": "IE",
+          "degree": "B.S. in Computer Engineering"
+        }
+      },
+      {
+        "id": 705,
+        "name": "Tina",
+        "email": "tina.k8s@example.com",
+        "phone": "9123456832",
+        "bio": "Kubernetes administrator and containerization expert.",
+        "desc": "Specializes in deploying and managing applications on Kubernetes.",
+        "match": 92,
+        "img": "https://i.pravatar.cc/150?img=53",
+        "status": "pending",
+        "skills": ["KUBERNETES", "DOCKER", "HELM", "ISTIO"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Container Solutions",
+            "position": "Kubernetes Engineer",
+            "timeline": "Jan 2023 - Present",
+            "description": "Managing multi-cluster Kubernetes environments for SaaS products."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Container Certification Authority",
+          "university": "CCA",
+          "degree": "Certified Kubernetes Administrator (CKA)"
+        }
+      },
+      {
+        "id": 706,
+        "name": "Uma",
+        "email": "uma.script@example.com",
+        "phone": "9876543262",
+        "bio": "Automation engineer who loves scripting and eliminating manual tasks.",
+        "desc": "If a task needs to be done more than once, it should be automated.",
+        "match": 88,
+        "img": "https://i.pravatar.cc/150?img=54",
+        "status": "pending",
+        "skills": ["PYTHON", "BASH", "POWERSHELL", "ANSIBLE"],
+        "experiences": [],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Automated Server Provisioning",
+            "link": "https://example.com",
+            "description": "A set of Ansible playbooks to automate the setup of new web servers."
+          }
+        ],
+        "college": {
+          "name": "Community College of IT",
+          "university": "CCIT",
+          "degree": "Associate in Network Administration"
+        }
+      },
+      {
+        "id": 707,
+        "name": "Vince",
+        "email": "vince.devops@example.com",
+        "phone": "9123456833",
+        "bio": "Junior DevOps engineer with a strong desire to learn and grow in the field.",
+        "desc": "Solid foundation in Linux, networking, and scripting.",
+        "match": 81,
+        "img": "https://i.pravatar.cc/150?img=55",
+        "status": "pending",
+        "skills": ["LINUX", "BASH", "GIT", "DOCKER (BEGINNER)"],
+        "experiences": [],
+        "projects": [],
+        "college": {
+          "name": "State Tech",
+          "university": "ST",
+          "degree": "B.S. in Information Systems"
+        }
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "title": "Cybersecurity Analyst",
+    "location": "Washington D.C., USA",
+    "applicants": [
+      {
+        "id": 801,
+        "name": "Walter",
+        "email": "walter.sec@example.com",
+        "phone": "9123456840",
+        "bio": "Cybersecurity analyst specializing in threat detection and incident response.",
+        "desc": "Experienced in using SIEM tools to monitor for and respond to security threats.",
+        "match": 94,
+        "img": "https://i.pravatar.cc/150?img=56",
+        "status": "pending",
+        "skills": [
+          "SIEM (SPLUNK, ELK STACK)",
+          "INCIDENT RESPONSE",
+          "MALWARE ANALYSIS",
+          "WIRESHARK"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "SecureNet",
+            "position": "Security Analyst",
+            "timeline": "Jul 2021 - Present",
+            "description": "Monitoring network traffic and investigating security alerts in a 24/7 SOC."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "University of Cyber Defense",
+          "university": "UCD",
+          "degree": "M.S. in Cybersecurity"
+        }
+      },
+      {
+        "id": 802,
+        "name": "Xena",
+        "email": "xena.pen@example.com",
+        "phone": "9876543270",
+        "bio": "Penetration tester and ethical hacker who finds vulnerabilities before the bad guys do.",
+        "desc": "Loves the challenge of breaking into systems to make them more secure.",
+        "match": 96,
+        "img": "https://i.pravatar.cc/150?img=57",
+        "status": "pending",
+        "skills": [
+          "PENETRATION TESTING",
+          "METASPLOIT",
+          "BURP SUITE",
+          "NESSUS",
+          "PYTHON"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Red Team Consulting",
+            "position": "Ethical Hacker",
+            "timeline": "Feb 2022 - Present",
+            "description": "Conducting penetration tests on web applications, mobile apps, and networks."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Offensive Security",
+          "university": "OffSec",
+          "degree": "OSCP Certified"
+        }
+      },
+      {
+        "id": 803,
+        "name": "Yara",
+        "email": "yara.grc@example.com",
+        "phone": "9123456841",
+        "bio": "Governance, Risk, and Compliance (GRC) analyst.",
+        "desc": "Focuses on ensuring the organization meets security standards and regulations.",
+        "match": 89,
+        "img": "https://i.pravatar.cc/150?img=58",
+        "status": "pending",
+        "skills": ["ISO 27001", "NIST", "GDPR", "RISK ASSESSMENT"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Compliant Corp",
+            "position": "GRC Analyst",
+            "timeline": "Oct 2022 - Present",
+            "description": "Performing risk assessments and developing security policies."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "School of Business and Law",
+          "university": "SBL",
+          "degree": "B.S. in Information Security and Assurance"
+        }
+      },
+      {
+        "id": 804,
+        "name": "Zane",
+        "email": "zane.forensics@example.com",
+        "phone": "9876543271",
+        "bio": "Digital forensics expert who recovers and investigates material found in digital devices.",
+        "desc": "Specializes in computer forensics and data recovery.",
+        "match": 91,
+        "img": "https://i.pravatar.cc/150?img=59",
+        "status": "pending",
+        "skills": [
+          "DIGITAL FORENSICS",
+          "ENCASE",
+          "FTK IMAGER",
+          "DATA RECOVERY"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Digital Investigations Agency",
+            "position": "Forensic Analyst",
+            "timeline": "Mar 2021 - Present",
+            "description": "Conducting forensic investigations for legal and corporate cases."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Forensic Science Institute",
+          "university": "FSI",
+          "degree": "Certified Computer Forensics Examiner (CCFE)"
+        }
+      },
+      {
+        "id": 805,
+        "name": "Amy",
+        "email": "amy.soc@example.com",
+        "phone": "9123456842",
+        "bio": "Security Operations Center (SOC) analyst with a keen eye for detail.",
+        "desc": "First line of defense against cyber threats.",
+        "match": 87,
+        "img": "https://i.pravatar.cc/150?img=60",
+        "status": "pending",
+        "skills": [
+          "SECURITY MONITORING",
+          "ALERT TRIAGE",
+          "LOG ANALYSIS",
+          "TICKETING SYSTEMS"
+        ],
+        "experiences": [],
+        "projects": [],
+        "college": {
+          "name": "Cybersecurity Bootcamp",
+          "university": "CB",
+          "degree": "CompTIA Security+ Certified"
+        }
+      },
+      {
+        "id": 806,
+        "name": "Bill",
+        "email": "bill.appsec@example.com",
+        "phone": "9876543272",
+        "bio": "Application security engineer focused on securing the software development lifecycle.",
+        "desc": "Works with developers to build secure code from the start.",
+        "match": 93,
+        "img": "https://i.pravatar.cc/150?img=61",
+        "status": "pending",
+        "skills": ["SAST", "DAST", "SECURE CODING", "THREAT MODELING"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "DevSecOps United",
+            "position": "AppSec Engineer",
+            "timeline": "Jun 2022 - Present",
+            "description": "Integrating security tools into the CI/CD pipeline."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Secure Coding University",
+          "university": "SCU",
+          "degree": "Certified Application Security Engineer (CASE)"
+        }
+      },
+      {
+        "id": 807,
+        "name": "Carla",
+        "email": "carla.intel@example.com",
+        "phone": "9123456843",
+        "bio": "Threat intelligence analyst who tracks and analyzes cyber threats.",
+        "desc": "Stays up-to-date on the latest tactics, techniques, and procedures of threat actors.",
+        "match": 90,
+        "img": "https://i.pravatar.cc/150?img=62",
+        "status": "pending",
+        "skills": [
+          "THREAT INTELLIGENCE",
+          "OSINT",
+          "MALTEGO",
+          "CYBERCRIME TRACKING"
+        ],
+        "experiences": [],
+        "projects": [],
+        "college": {
+          "name": "Intelligence Studies College",
+          "university": "ISC",
+          "degree": "B.A. in Intelligence Studies"
+        }
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "title": "QA Engineer",
+    "location": "Dallas, USA",
+    "applicants": [
+      {
+        "id": 901,
+        "name": "Derek",
+        "email": "derek.qa@example.com",
+        "phone": "9123456850",
+        "bio": "Detail-oriented QA engineer with a passion for finding bugs.",
+        "desc": "Experienced in both manual and automated testing.",
+        "match": 92,
+        "img": "https://i.pravatar.cc/150?img=63",
+        "status": "pending",
+        "skills": [
+          "MANUAL TESTING",
+          "AUTOMATED TESTING",
+          "SELENIUM",
+          "CYPRESS",
+          "JIRA"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Quality First Software",
+            "position": "QA Engineer",
+            "timeline": "May 2022 - Present",
+            "description": "Writing and executing test plans for web and mobile applications."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Software Testing Institute",
+          "university": "STI",
+          "degree": "Certified Software Tester (CSTE)"
+        }
+      },
+      {
+        "id": 902,
+        "name": "Ella",
+        "email": "ella.auto@example.com",
+        "phone": "9876543280",
+        "bio": "Automation engineer who builds robust and reliable test automation frameworks.",
+        "desc": "Focuses on writing clean and maintainable test code.",
+        "match": 95,
+        "img": "https://i.pravatar.cc/150?img=64",
+        "status": "pending",
+        "skills": ["SELENIUM WEBDRIVER", "CYPRESS", "JAVA", "PYTHON", "TESTNG"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Test Automators",
+            "position": "SDET",
+            "timeline": "Mar 2021 - Present",
+            "description": "Built a new test automation framework from scratch using Selenium and Java."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "University of Engineering",
+          "university": "UE",
+          "degree": "B.S. in Computer Science"
+        }
+      },
+      {
+        "id": 903,
+        "name": "Finn",
+        "email": "finn.manual@example.com",
+        "phone": "9123456851",
+        "bio": "Meticulous manual tester with a knack for exploratory testing.",
+        "desc": "Loves thinking like a user to find edge cases that automation might miss.",
+        "match": 88,
+        "img": "https://i.pravatar.cc/150?img=65",
+        "status": "pending",
+        "skills": [
+          "EXPLORATORY TESTING",
+          "REGRESSION TESTING",
+          "USABILITY TESTING",
+          "TEST CASE DESIGN"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "User Focus Testing",
+            "position": "Manual QA Tester",
+            "timeline": "Sep 2023 - Present",
+            "description": "Performing manual testing on a variety of software products."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "QA Training Center",
+          "university": "QATC",
+          "degree": "Certificate in Manual Software Testing"
+        }
+      },
+      {
+        "id": 904,
+        "name": "Gia",
+        "email": "gia.perf@example.com",
+        "phone": "9876543281",
+        "bio": "Performance testing engineer who ensures applications can handle the load.",
+        "desc": "Specializes in load, stress, and scalability testing.",
+        "match": 91,
+        "img": "https://i.pravatar.cc/150?img=66",
+        "status": "pending",
+        "skills": ["JMeter", "GATLING", "LOADRUNNER", "PERFORMANCE ANALYSIS"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "ScaleUp Technologies",
+            "position": "Performance Tester",
+            "timeline": "Jun 2022 - Present",
+            "description": "Conducting performance tests on high-traffic e-commerce websites."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Institute of Performance Engineering",
+          "university": "IPE",
+          "degree": "Certified Performance Testing Engineer"
+        }
+      },
+      {
+        "id": 905,
+        "name": "Hugo",
+        "email": "hugo.mobile@example.com",
+        "phone": "9123456852",
+        "bio": "Mobile QA engineer with experience testing on both iOS and Android.",
+        "desc": "Familiar with mobile-specific testing challenges and tools.",
+        "match": 90,
+        "img": "https://i.pravatar.cc/150?img=67",
+        "status": "pending",
+        "skills": ["APPIUM", "XCUITest", "ESPRESSO", "MOBILE TESTING"],
+        "experiences": [],
+        "projects": [],
+        "college": {
+          "name": "Mobile Development School",
+          "university": "MDS",
+          "degree": "Associate in Mobile Technology"
+        }
+      },
+      {
+        "id": 906,
+        "name": "Ivy",
+        "email": "ivy.qa@example.com",
+        "phone": "9876543282",
+        "bio": "QA lead who manages test strategy, planning, and execution.",
+        "desc": "Leads a team of QA engineers to ensure product quality.",
+        "match": 94,
+        "img": "https://i.pravatar.cc/150?img=68",
+        "status": "pending",
+        "skills": [
+          "TEST STRATEGY",
+          "TEAM LEADERSHIP",
+          "PROJECT MANAGEMENT",
+          "JIRA"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Quality Assurance Pros",
+            "position": "QA Lead",
+            "timeline": "Jan 2020 - Present",
+            "description": "Managing all QA activities for a suite of financial software."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Management Institute",
+          "university": "MI",
+          "degree": "PMP Certification"
+        }
+      },
+      {
+        "id": 907,
+        "name": "Jack",
+        "email": "jack.entry@example.com",
+        "phone": "9123456853",
+        "bio": "Entry-level QA tester, quick learner, and highly motivated.",
+        "desc": "Looking for an opportunity to start a career in software quality assurance.",
+        "match": 80,
+        "img": "https://i.pravatar.cc/150?img=69",
+        "status": "pending",
+        "skills": [
+          "ATTENTION TO DETAIL",
+          "PROBLEM SOLVING",
+          "MICROSOFT OFFICE"
+        ],
+        "experiences": [],
+        "projects": [],
+        "college": {
+          "name": "Local Community College",
+          "university": "LCC",
+          "degree": "Associate in IT"
+        }
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "title": "Technical Writer",
+    "location": "Raleigh, USA",
+    "applicants": [
+      {
+        "id": 1001,
+        "name": "Karen",
+        "email": "karen.writer@example.com",
+        "phone": "9123456860",
+        "bio": "Technical writer who translates complex technical information into clear, concise documentation.",
+        "desc": "Experienced in creating user guides, API documentation, and online help.",
+        "match": 95,
+        "img": "https://i.pravatar.cc/150?img=13",
+        "status": "pending",
+        "skills": [
+          "MARKDOWN",
+          "GIT",
+          "API DOCUMENTATION",
+          "MADCAP FLARE",
+          "XML"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "DocuTech",
+            "position": "Senior Technical Writer",
+            "timeline": "Feb 2020 - Present",
+            "description": "Leading the documentation efforts for a complex developer platform."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "University of Communication",
+          "university": "UC",
+          "degree": "M.A. in Technical Communication"
+        }
+      },
+      {
+        "id": 1002,
+        "name": "Liam",
+        "email": "liam.docs@example.com",
+        "phone": "9876543290",
+        "bio": "A writer with a passion for technology and making it understandable for everyone.",
+        "desc": "Specializes in docs-as-code workflows and static site generators.",
+        "match": 91,
+        "img": "https://i.pravatar.cc/150?img=19",
+        "status": "pending",
+        "skills": ["HUGO", "JEKYLL", "GIT", "MARKDOWN", "REST APIs"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Open Source Project",
+            "position": "Volunteer Documentarian",
+            "timeline": "Jan 2023 - Present",
+            "description": "Maintaining the public documentation for a popular open-source library."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "State University",
+          "university": "SU",
+          "degree": "B.A. in English"
+        }
+      },
+      {
+        "id": 1003,
+        "name": "Mona",
+        "email": "mona.api@example.com",
+        "phone": "9123456861",
+        "bio": "API technical writer with a developer background.",
+        "desc": "Enjoys creating documentation that helps developers get up and running quickly.",
+        "match": 94,
+        "img": "https://i.pravatar.cc/150?img=24",
+        "status": "pending",
+        "skills": ["OPENAPI (SWAGGER)", "POSTMAN", "PYTHON", "JAVASCRIPT"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "API First Inc.",
+            "position": "Developer Advocate / Writer",
+            "timeline": "Aug 2022 - Present",
+            "description": "Writing API reference documentation, tutorials, and code samples."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Coding Bootcamp",
+          "university": "CB",
+          "degree": "Full-Stack Development Certificate"
+        }
+      },
+      {
+        "id": 1004,
+        "name": "Nate",
+        "email": "nate.writer@example.com",
+        "phone": "9876543291",
+        "bio": "Content strategist and information architect for technical documentation.",
+        "desc": "Focuses on organizing content logically and making it easily discoverable.",
+        "match": 90,
+        "img": "https://i.pravatar.cc/150?img=35",
+        "status": "pending",
+        "skills": [
+          "INFORMATION ARCHITECTURE",
+          "CONTENT STRATEGY",
+          "SEO",
+          "ANALYTICS"
+        ],
+        "experiences": [],
+        "projects": [],
+        "college": {
+          "name": "Library and Information Science School",
+          "university": "LISS",
+          "degree": "M.S. in Information Science"
+        }
+      },
+      {
+        "id": 1005,
+        "name": "Olivia",
+        "email": "olivia.ux@example.com",
+        "phone": "9123456862",
+        "bio": "UX writer who crafts clear and helpful microcopy for user interfaces.",
+        "desc": "Believes that words are a crucial part of the user experience.",
+        "match": 89,
+        "img": "https://i.pravatar.cc/150?img=42",
+        "status": "pending",
+        "skills": ["UX WRITING", "MICROCOPY", "FIGMA", "CONTENT STYLE GUIDES"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "User-Friendly Apps",
+            "position": "UX Writer",
+            "timeline": "Nov 2022 - Present",
+            "description": "Writing all in-app text, including button labels, error messages, and onboarding flows."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "University of Arts",
+          "university": "UA",
+          "degree": "B.A. in Journalism"
+        }
+      },
+      {
+        "id": 1006,
+        "name": "Paul",
+        "email": "paul.video@example.com",
+        "phone": "9876543292",
+        "bio": "Technical writer and video producer who creates engaging tutorial videos.",
+        "desc": "Simplifies complex topics through screencasts and video tutorials.",
+        "match": 87,
+        "img": "https://i.pravatar.cc/150?img=50",
+        "status": "pending",
+        "skills": ["CAMTASIA", "ADOBE PREMIERE", "SCRIPT WRITING", "VOICEOVER"],
+        "experiences": [],
+        "projects": [
+          {
+            "id": 1,
+            "name": "YouTube Tech Channel",
+            "link": "https://example.com",
+            "description": "A personal channel with tutorials on various software development topics."
+          }
+        ],
+        "college": {
+          "name": "Digital Media College",
+          "university": "DMC",
+          "degree": "Associate in Video Production"
+        }
+      },
+      {
+        "id": 1007,
+        "name": "Quincy",
+        "email": "quincy.editor@example.com",
+        "phone": "9123456863",
+        "bio": "Meticulous editor and proofreader for technical content.",
+        "desc": "Ensures that all documentation is accurate, consistent, and grammatically correct.",
+        "match": 88,
+        "img": "https://i.pravatar.cc/150?img=58",
+        "status": "pending",
+        "skills": [
+          "EDITING",
+          "PROOFREADING",
+          "STYLE GUIDES (MSTP, GOOGLE)",
+          "GRAMMAR"
+        ],
+        "experiences": [],
+        "projects": [],
+        "college": {
+          "name": "Liberal Arts College",
+          "university": "LAC",
+          "degree": "B.A. in English, Editing & Publishing"
+        }
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "title": "IT Support Specialist",
+    "location": "Phoenix, USA",
+    "applicants": [
+      {
+        "id": 1101,
+        "name": "Rita",
+        "email": "rita.it@example.com",
+        "phone": "9123456870",
+        "bio": "Friendly and patient IT support specialist with excellent problem-solving skills.",
+        "desc": "Helps end-users resolve technical issues with hardware and software.",
+        "match": 93,
+        "img": "https://i.pravatar.cc/150?img=2",
+        "status": "pending",
+        "skills": [
+          "HELPDESK SUPPORT",
+          "WINDOWS",
+          "MACOS",
+          "ACTIVE DIRECTORY",
+          "OFFICE 365"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Global Corp",
+            "position": "IT Helpdesk Analyst",
+            "timeline": "Sep 2022 - Present",
+            "description": "Providing Tier 1 and Tier 2 support to over 500 employees."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Technical College",
+          "university": "TC",
+          "degree": "Associate in IT Support"
+        }
+      },
+      {
+        "id": 1102,
+        "name": "Sam",
+        "email": "sam.support@example.com",
+        "phone": "9876543295",
+        "bio": "Desktop support technician with hands-on experience in hardware troubleshooting.",
+        "desc": "Experienced in diagnosing and repairing PCs, laptops, and peripherals.",
+        "match": 90,
+        "img": "https://i.pravatar.cc/150?img=4",
+        "status": "pending",
+        "skills": [
+          "HARDWARE TROUBLESHOOTING",
+          "PC REPAIR",
+          "A+ CERTIFIED",
+          "NETWORKING"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Computer Repair Shop",
+            "position": "Technician",
+            "timeline": "Jan 2023 - Present",
+            "description": "Providing hardware repair and support services to local businesses and individuals."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "CompTIA",
+          "university": "CompTIA",
+          "degree": "A+ and Network+ Certifications"
+        }
+      },
+      {
+        "id": 1103,
+        "name": "Tina",
+        "email": "tina.desk@example.com",
+        "phone": "9123456871",
+        "bio": "Customer-focused IT support professional with a talent for clear communication.",
+        "desc": "Excels at explaining technical concepts to non-technical users.",
+        "match": 91,
+        "img": "https://i.pravatar.cc/150?img=6",
+        "status": "pending",
+        "skills": [
+          "CUSTOMER SERVICE",
+          "COMMUNICATION",
+          "ZENDESK",
+          "JIRA SERVICE DESK"
+        ],
+        "experiences": [],
+        "projects": [],
+        "college": {
+          "name": "Community College",
+          "university": "CC",
+          "degree": "Associate in General Studies"
+        }
+      },
+      {
+        "id": 1104,
+        "name": "Umar",
+        "email": "umar.admin@example.com",
+        "phone": "9876543296",
+        "bio": "Systems administrator with experience in managing Windows Server environments.",
+        "desc": "Manages user accounts, permissions, and group policies in Active Directory.",
+        "match": 92,
+        "img": "https://i.pravatar.cc/150?img=8",
+        "status": "pending",
+        "skills": [
+          "WINDOWS SERVER",
+          "ACTIVE DIRECTORY",
+          "GROUP POLICY",
+          "POWERSHELL"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Corporate IT",
+            "position": "Junior Systems Administrator",
+            "timeline": "Apr 2023 - Present",
+            "description": "Assisting with the daily administration of the company's server infrastructure."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Microsoft Learning",
+          "university": "MS",
+          "degree": "Microsoft Certified: Windows Server Hybrid Administrator Associate"
+        }
+      },
+      {
+        "id": 1105,
+        "name": "Vera",
+        "email": "vera.it@example.com",
+        "phone": "9123456872",
+        "bio": "IT support specialist with experience in a fast-paced startup environment.",
+        "desc": "Adaptable and able to wear many hats, from helpdesk to basic network admin.",
+        "match": 89,
+        "img": "https://i.pravatar.cc/150?img=10",
+        "status": "pending",
+        "skills": ["GOOGLE WORKSPACE", "JAMF", "MERAKI", "TROUBLESHOOTING"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Tech Startup",
+            "position": "IT Generalist",
+            "timeline": "Jul 2023 - Present",
+            "description": "Handling all IT-related tasks for a growing company of 50 employees."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Online IT Program",
+          "university": "OIP",
+          "degree": "Google IT Support Professional Certificate"
+        }
+      },
+      {
+        "id": 1106,
+        "name": "Will",
+        "email": "will.net@example.com",
+        "phone": "9876543297",
+        "bio": "Network support technician with an understanding of networking fundamentals.",
+        "desc": "Assists with troubleshooting network connectivity issues.",
+        "match": 88,
+        "img": "https://i.pravatar.cc/150?img=12",
+        "status": "pending",
+        "skills": ["TCP/IP", "DNS", "DHCP", "CISCO IOS", "NETWORK+"],
+        "experiences": [],
+        "projects": [],
+        "college": {
+          "name": "Networking Academy",
+          "university": "NA",
+          "degree": "Cisco Certified Network Associate (CCNA)"
+        }
+      },
+      {
+        "id": 1107,
+        "name": "Yasmine",
+        "email": "yasmine.support@example.com",
+        "phone": "9123456873",
+        "bio": "Entry-level IT support candidate with a strong work ethic and a desire to learn.",
+        "desc": "A recent graduate looking for their first professional IT role.",
+        "match": 80,
+        "img": "https://i.pravatar.cc/150?img=14",
+        "status": "pending",
+        "skills": ["CUSTOMER SERVICE", "WINDOWS 10", "PROBLEM SOLVING"],
+        "experiences": [],
+        "projects": [],
+        "college": {
+          "name": "Vocational School",
+          "university": "VS",
+          "degree": "Diploma in Information Technology"
+        }
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "title": "Android Developer",
+    "location": "Mountain View, USA",
+    "applicants": [
+      {
+        "id": 1201,
+        "name": "Alex",
+        "email": "alex.android@example.com",
+        "phone": "9123456880",
+        "bio": "Senior Android developer with deep knowledge of the Android SDK and modern development practices.",
+        "desc": "Expert in Kotlin, Jetpack Compose, and building high-quality, scalable Android apps.",
+        "match": 97,
+        "img": "https://i.pravatar.cc/150?img=16",
+        "status": "pending",
+        "skills": [
+          "KOTLIN",
+          "JETPACK COMPOSE",
+          "ANDROID SDK",
+          "COROUTINES",
+          "DAGGER/HILT"
+        ],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Google Play Apps",
+            "position": "Lead Android Engineer",
+            "timeline": "May 2019 - Present",
+            "description": "Led the development of a popular productivity app with millions of users."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Top Engineering University",
+          "university": "TEU",
+          "degree": "M.S. in Mobile Computing"
+        }
+      },
+      {
+        "id": 1202,
+        "name": "Brenda",
+        "email": "brenda.kotlin@example.com",
+        "phone": "9876543300",
+        "bio": "Passionate Android developer who loves writing clean, idiomatic Kotlin code.",
+        "desc": "Focuses on architecture, performance, and creating great user experiences.",
+        "match": 92,
+        "img": "https://i.pravatar.cc/150?img=18",
+        "status": "pending",
+        "skills": ["KOTLIN", "MVVM", "RETROFIT", "ROOM", "ANDROID STUDIO"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Mobile Innovators",
+            "position": "Android Developer",
+            "timeline": "Sep 2022 - Present",
+            "description": "Building and maintaining the company's flagship Android application."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "Android Nanodegree Program",
+          "university": "ANP",
+          "degree": "Certified Android Developer"
+        }
+      },
+      {
+        "id": 1203,
+        "name": "Carlos",
+        "email": "carlos.java@example.com",
+        "phone": "9123456881",
+        "bio": "Experienced Android developer with a strong background in Java and the classic Android view system.",
+        "desc": "Skilled at maintaining and adding features to large, existing codebases.",
+        "match": 88,
+        "img": "https://i.pravatar.cc/150?img=20",
+        "status": "pending",
+        "skills": ["JAVA", "ANDROID SDK", "XML LAYOUTS", "SQLITE"],
+        "experiences": [
+          {
+            "id": 1,
+            "organization": "Legacy Apps Inc.",
+            "position": "Android Engineer",
+            "timeline": "Feb 2018 - Present",
+            "description": "Maintaining a large-scale logistics application built with Java."
+          }
+        ],
+        "projects": [],
+        "college": {
+          "name": "State University",
+          "university": "SU",
+          "degree": "B.S. in Computer Science"
+        }
+      },
+      {
+        "id": 1204,
+        "name": "Diana",
+        "email": "diana.compose@example.com",
+        "phone": "9876543301",
+        "bio": "An enthusiastic early adopter of Jetpack Compose for building declarative UIs.",
+        "desc": "Loves the modern approach to Android UI development and has built several apps with it.",
+        "match": 94,
+        "img": "https://i.pravatar.cc/150?img=22",
+        "status": "pending",
+        "skills": [
+          "JETPACK COMPOSE",
+          "KOTLIN",
+          "STATE MANAGEMENT",
+          "MATERIAL DESIGN"
+        ],
+        "experiences": [],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Note-Taking App",
+            "link": "https://example.com",
+            "description": "A beautiful and functional note-taking app built entirely with Jetpack Compose."
+          }
+        ],
+        "college": {
+          "name": "Modern Android Bootcamp",
+          "university": "MAB",
+          "degree": "Certificate in Advanced Android Development"
+        }
+      },
+      {
+        "id": 1205,
+        "name": "Eric",
+        "email": "eric.android@example.com",
+        "phone": "9123456882",
+        "bio": "Junior Android developer with a solid foundation and a drive to learn.",
+        "desc": "A recent coding bootcamp graduate ready to make an impact.",
+        "match": 82,
+        "img": "https://i.pravatar.cc/150?img=24",
+        "status": "pending",
+        "skills": ["KOTLIN", "XML", "ANDROID STUDIO", "GIT"],
+        "experiences": [],
+        "projects": [
+          {
+            "id": 1,
+            "name": "Tip Calculator App",
+            "link": "https://example.com",
+            "description": "A simple and intuitive tip calculator app, my first project on the Play Store."
+          }
+        ],
+        "college": {
+          "name": "Android Coding Bootcamp",
+          "university": "ACB",
+          "degree": "Certificate of Completion"
+        }
+      },
+      {
+        "id": 1206,
+        "name": "Fiona",
+        "email": "fiona.perf@example.com",
+        "phone": "9876543302",
+        "bio": "Android developer with a focus on application performance and battery life.",
+        "desc": "Expert at profiling apps to find and fix performance bottlenecks.",
+        "match": 91,
+        "img": "https://i.pravatar.cc/150?img=26",
+        "status": "pending",
+        "skills": [
+          "ANDROID PROFILER",
+          "PERFORMANCE OPTIMIZATION",
+          "MEMORY MANAGEMENT",
+          "BACKGROUND PROCESSING"
+        ],
+        "experiences": [],
+        "projects": [],
+        "college": {
+          "name": "Institute of Mobile Performance",
+          "university": "IMP",
+          "degree": "Certified Mobile Performance Engineer"
+        }
+      },
+      {
+        "id": 1207,
+        "name": "George",
+        "email": "george.crossplatform@example.com",
+        "phone": "9123456883",
+        "bio": "Developer with experience in both native Android and cross-platform frameworks like Flutter.",
+        "desc": "Can weigh the pros and cons of different approaches to mobile development.",
+        "match": 89,
+        "img": "https://i.pravatar.cc/150?img=28",
+        "status": "pending",
+        "skills": ["KOTLIN", "FLUTTER", "DART", "NATIVE INTEGRATION"],
+        "experiences": [],
+        "projects": [],
+        "college": {
+          "name": "Cross-Platform University",
+          "university": "CPU",
+          "degree": "B.S. in Mobile and Web Development"
+        }
+      }
+    ]
+  }
+]

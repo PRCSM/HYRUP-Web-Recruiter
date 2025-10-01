@@ -19,7 +19,7 @@ const PostJobButton = () => (
     "
   >
     <FaPlus className="text-2xl md:text-4xl" />
-    <h1 className="font-[JostBold] text-base md:text-xl ml-2">
+    <h1 className="font-[Jost-Bold] text-base md:text-xl ml-2">
       Post a Job
     </h1>
   </div>
