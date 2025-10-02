@@ -8,6 +8,8 @@ import Profile from './pages/Profile'
 import Application from './pages/Application'
 import SideNav from './components/SideNav'
 import PostJobButton from './components/PostJobButton'
+import PostJobPage from './pages/PostJobPage'
+
 
 const App = () => {
   const location = useLocation();
@@ -24,6 +26,7 @@ const App = () => {
           <Route path="/chats" element={<Chat/>} />
           <Route path="/Profile" element={<Profile/>} />
           <Route path="/Application" element={<Application/>} />
+          <Route path="/postjob" element={<PostJobPage />} />
         </Routes>
       </div>
       {!hidePostJob && <PostJobButton />}

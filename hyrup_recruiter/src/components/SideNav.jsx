@@ -5,7 +5,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import gsap from "gsap";
 
 function SideNav() {
-  const [activeButton, setActiveButton] = useState("Home");
+  // CHANGE 1: Initialize activeButton state with null instead of "Home"
+  const [activeButton, setActiveButton] = useState(null);
   const [isOpen, setIsOpen] = useState(false); // For mobile sidebar
   const navigate = useNavigate();
   const location = useLocation();
@@ -47,7 +48,9 @@ function SideNav() {
   const handleButtonClick = (buttonName) => {
     setActiveButton(buttonName);
     navigate(buttonRoutes[buttonName]);
-    handleCloseSidebar(); // Use the close animation
+    if (isOpen) {
+      handleCloseSidebar(); // Use the close animation only if mobile sidebar is open
+    }
   };
 
   // GSAP animation for mobile/tablet sidebar
@@ -75,17 +78,32 @@ function SideNav() {
     }
   }, [isOpen]);
 
+  // CHANGE 2: Updated logic to handle the /postjob route
   // Set activeButton based on current path
   const getActiveButton = () => {
+    const currentPath = location.pathname.toLowerCase();
+
+    // If the path is /postjob, no button should be active.
+    if (currentPath === "/postjob") {
+      return null;
+    }
+
     const found = Object.entries(buttonRoutes).find(
-      ([, path]) => path.toLowerCase() === location.pathname.toLowerCase()
+      ([, path]) => path.toLowerCase() === currentPath
     );
-    return found ? found[0] : "Home";
+
+    // If a matching route is found, return its name. Otherwise, default to "Home" for the root path or null for others.
+    if (found) {
+        return found[0];
+    }
+    
+    return currentPath === '/' ? 'Home' : null;
   };
+
 
   useEffect(() => {
     setActiveButton(getActiveButton());
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   return (
@@ -172,5 +190,4 @@ function SideNav() {
     </>
   );
 }
-
 export default SideNav;

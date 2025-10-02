@@ -53,7 +53,7 @@ function StudentProfile({ applicant, onClose }) {
 
       {/* --- Profile Header Section --- */}
       <div className=" flex-col flex md:flex-row justify-center gap-4 md:gap-10 items-start w-full px-4">
-        <img className="w-[180px] h-[180px] rounded-[10px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] object-cover" src={img} alt="Student profile" />
+        <img className="w-[180px] h-[180px] rounded-[10px] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] object-cover" src={img} alt="Student profile" />
         <div className="flex flex-col justify-center gap-2 items-start w-[90%] md:w-[55%]">
           <h1 className="font-[BungeeInline] text-3xl">{name}</h1>
           <h1 className="font-[Jost-Regular] flex flex-wrap gap-x-7 gap-y-1 text-base text-[#00000089]">
