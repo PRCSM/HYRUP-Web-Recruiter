@@ -1,7 +1,7 @@
 import { auth } from '../config/firebase';
 
 // Base API URL - replace with your actual backend URL
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 class ApiService {
     constructor() {
@@ -40,6 +40,9 @@ class ApiService {
 
         const url = `${this.baseURL}${endpoint}`;
 
+        console.log(`Making API request to: ${url}`);
+        console.log('Request config:', { ...config, headers: { ...config.headers } });
+
         try {
             const response = await fetch(url, config);
 
@@ -51,6 +54,46 @@ class ApiService {
             return await response.json();
         } catch (error) {
             console.error(`API request failed: ${endpoint}`, error);
+            console.error('Error details:', {
+                name: error.name,
+                message: error.message,
+                stack: error.stack
+            });
+            throw error;
+        }
+    }
+
+    // Helper method for public (non-authenticated) requests
+    async makePublicRequest(endpoint, options = {}) {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers,
+            },
+            ...options,
+        };
+
+        const url = `${this.baseURL}${endpoint}`;
+        
+        console.log(`Making public API request to: ${url}`);
+        console.log('Request config:', { ...config, headers: { ...config.headers } });
+
+        try {
+            const response = await fetch(url, config);
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ message: 'Network error' }));
+                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error(`Public API request failed: ${endpoint}`, error);
+            console.error('Error details:', {
+                name: error.name,
+                message: error.message,
+                stack: error.stack
+            });
             throw error;
         }
     }
@@ -133,9 +176,9 @@ class ApiService {
 
     // ============ COMPANY ROUTES ============
 
-    // Register company
+    // Register company (public endpoint - no auth required)
     async registerCompany(companyData) {
-        return this.makeRequest('/company/register', {
+        return this.makePublicRequest('/company/register', {
             method: 'POST',
             body: JSON.stringify(companyData),
         });

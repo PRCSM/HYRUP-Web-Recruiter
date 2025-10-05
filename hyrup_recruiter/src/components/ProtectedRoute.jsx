@@ -25,6 +25,12 @@ const ProtectedRoute = ({
     return <Navigate to={redirectTo} replace />;
   }
 
+  // Special handling for registration page
+  if (window.location.pathname === "/registration") {
+    // On registration page, just need to be authenticated
+    return children;
+  }
+
   // Authenticated but no user type (needs registration)
   if (currentUser && !userType) {
     return <Navigate to="/registration" replace />;

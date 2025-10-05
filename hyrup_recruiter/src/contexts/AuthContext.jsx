@@ -88,6 +88,10 @@ export function AuthProvider({ children }) {
       const response = await apiService.recruiterSignup(recruiterData);
       setUserType("recruiter");
       setUserData(response.user);
+      // Force check user type after registration to ensure proper state
+      setTimeout(() => {
+        checkUserType();
+      }, 500);
       return response;
     } catch (error) {
       console.error("Error registering recruiter:", error);
@@ -125,15 +129,20 @@ export function AuthProvider({ children }) {
       setCurrentUser(user);
 
       if (user) {
-        // User is signed in, check their type
-        await checkUserType();
+        // Only check user type if we're not on the registration page
+        // This prevents redirect loops for new users
+        const currentPath = window.location.pathname;
+        if (currentPath !== "/registration") {
+          await checkUserType();
+        }
+        // Always set loading to false after handling auth state
+        setLoading(false);
       } else {
         // User is signed out
         setUserType(null);
         setUserData(null);
+        setLoading(false);
       }
-
-      setLoading(false);
     });
 
     return unsubscribe;

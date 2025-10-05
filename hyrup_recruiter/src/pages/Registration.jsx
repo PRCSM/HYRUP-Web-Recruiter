@@ -7,7 +7,8 @@ import apiService from "../services/apiService";
 
 const Registration = () => {
   const navigate = useNavigate();
-  const { currentUser, registerRecruiter, error, setError } = useAuth();
+  const { currentUser, registerRecruiter, error, setError, loading } =
+    useAuth();
 
   const [formData, setFormData] = useState({
     companyName: "",
@@ -35,10 +36,28 @@ const Registration = () => {
 
   // Redirect if user is not authenticated
   useEffect(() => {
-    if (!currentUser) {
+    console.log(
+      "Registration page - currentUser:",
+      currentUser,
+      "loading:",
+      loading
+    );
+    if (!currentUser && !loading) {
       navigate("/signup");
     }
-  }, [currentUser, navigate]);
+  }, [currentUser, navigate, loading]);
+
+  // Show loading while authentication is being processed
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FFFFF3]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-lg font-medium">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -105,28 +124,46 @@ const Registration = () => {
     setError(null);
 
     try {
-      // First, register the company
+      console.log("Starting registration process...");
+
+      // Test basic connectivity first
+      try {
+        console.log("Testing API connectivity...");
+        const testResponse = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/`);
+        console.log("API connectivity test response:", testResponse.status);
+      } catch (connectivityError) {
+        console.error("API connectivity test failed:", connectivityError);
+      }
+
+      // First, register the company - match API documentation format exactly
       const companyData = {
-        name: formData.companyName,
-        description: formData.description,
+        name: formData.companyName.trim(),
+        description: formData.description.trim(),
         industry: formData.industry || "Technology",
-        website: formData.website,
+        website: formData.website.trim(),
         location: {
-          address: formData.street,
-          city: formData.city,
-          state: formData.state,
-          country: formData.country,
-          zipcode: formData.pincode,
+          address: formData.street.trim(),
+          city: formData.city.trim(),
+          state: formData.state.trim(),
+          country: formData.country.trim(),
+          zipcode: formData.pincode.trim(),
         },
         size: formData.size || "1-10",
         companyType: formData.companyType || "Startup",
         founded: formData.founded
           ? parseInt(formData.founded)
-          : new Date().getFullYear(),
-        logo: formData.logo ? URL.createObjectURL(formData.logo) : null,
+          : new Date().getFullYear()
+        // Removed logo temporarily for testing
       };
 
+      // Validate required fields before making API call
+      if (!companyData.name || !companyData.description || !companyData.website) {
+        throw new Error("Company name, description, and website are required");
+      }
+
+      console.log("Registering company with data:", companyData);
       const companyResponse = await apiService.registerCompany(companyData);
+      console.log("Company registration response:", companyResponse);
 
       // Then register the recruiter with the company ID
       const recruiterData = {
@@ -136,13 +173,29 @@ const Registration = () => {
         companyId: companyResponse.company._id,
       };
 
+      console.log("Registering recruiter with data:", recruiterData);
       await registerRecruiter(recruiterData);
+      console.log("Recruiter registration successful!");
 
-      // Navigate to dashboard on success
-      navigate("/");
+      // Small delay to ensure state updates, then navigate
+      setTimeout(() => {
+        navigate("/", { replace: true });
+      }, 100);
     } catch (error) {
       console.error("Registration error:", error);
-      setError(error.message || "Registration failed. Please try again.");
+      
+      // Provide more specific error messages
+      let errorMessage = "Registration failed. Please try again.";
+      
+      if (error.message.includes("Failed to fetch") || error.name === "TypeError") {
+        errorMessage = "Cannot connect to server. Please ensure your backend server is running on port 3000.";
+      } else if (error.message.includes("Network error")) {
+        errorMessage = "Network error. Please check your connection and try again.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
