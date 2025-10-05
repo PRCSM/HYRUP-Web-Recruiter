@@ -1,54 +1,149 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import CircularProgress from "../components/CircularProgress";
 import { FaMapLocation } from "react-icons/fa6";
 import { BsArrowRightSquare } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
-import allJobsData from "../demodata/Jobs.json";
-
-const companyDescription = `Google LLC is an American multinational technology company
-that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware. It is considered one of the Big Five technology companies in the U.S. information`;
-
-const totalJobs = allJobsData.length;
-const totalApplications = allJobsData.reduce(
-  (sum, job) => sum + job.applicants.length,
-  0
-);
-const shortlisted = 40;
-
-const applicationJobRate =
-  totalApplications > 0 ? Math.round((shortlisted / totalApplications) * 100) : 0;
-
-const topFourJobs = allJobsData.slice(0, 4);
+import { useAuth } from "../hooks/useAuth";
+import apiService from "../services/apiService";
 
 const Home = () => {
   const navigate = useNavigate();
+  const { userData } = useAuth();
+
+  const [dashboardData, setDashboardData] = useState({
+    company: null,
+    jobs: [],
+    applications: [],
+    stats: {
+      totalJobs: 0,
+      totalApplications: 0,
+      shortlisted: 0,
+      applicationJobRate: 0,
+    },
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      if (!userData?.companyId) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+
+        // Fetch company information
+        const companyResponse = await apiService.getCompany(
+          userData.companyId._id
+        );
+
+        // Fetch company jobs
+        const jobsResponse = await apiService.getCompanyJobs(
+          userData.companyId._id
+        );
+
+        // Fetch applications (this will need to be implemented in API)
+        const applicationsResponse = await apiService.getApplications();
+
+        const jobs = jobsResponse.jobs || [];
+        const applications = applicationsResponse.opportunities || [];
+
+        // Calculate stats
+        const totalJobs = jobs.length;
+        const totalApplications = applications.length;
+        const shortlisted = applications.filter(
+          (app) => app.status === "shortlisted"
+        ).length;
+        const applicationJobRate =
+          totalJobs > 0 ? Math.round((totalApplications / totalJobs) * 100) : 0;
+
+        setDashboardData({
+          company: companyResponse.company,
+          jobs: jobs.slice(0, 4), // Top 4 jobs for display
+          applications,
+          stats: {
+            totalJobs,
+            totalApplications,
+            shortlisted,
+            applicationJobRate,
+          },
+        });
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        setError("Failed to load dashboard data");
+
+        // Set fallback data
+        setDashboardData({
+          company: {
+            name: userData?.companyId?.name || "Your Company",
+            description: "Company description will be loaded here...",
+            logo: userData?.companyId?.logo || "public/images/Googlelogo.webp",
+          },
+          jobs: [],
+          applications: [],
+          stats: {
+            totalJobs: 0,
+            totalApplications: 0,
+            shortlisted: 0,
+            applicationJobRate: 0,
+          },
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [userData]);
+
+  if (loading) {
+    return (
+      <div className="bg-[#FFFFF3] min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-lg font-medium">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#FFFFF3] w-full h-screen select-none custom-scrollbar overflow-x-hidden p-4  sm:p-8">
+      {error && (
+        <div className="max-w-7xl mx-auto mb-4">
+          <div className="bg-red-100 border-2 border-red-400 rounded-[10px] p-4">
+            <p className="text-red-700 text-center">{error}</p>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col lg:flex-row justify-center items-center md:items-start gap-8 w-full max-w-7xl mx-auto">
         <div className="hidden sm:block w-[220px] h-full bg-[#FFFFF3]"></div>
-       
-        
+
         <div className="flex pt-15 md:pt-0 flex-col justify-center items-center sm:items-end lg:justify-start lg:items-start gap-8 w-full lg:w-auto">
-          
-          
           {/* Company Info Card */}
           <div className="flex flex-col">
             <h1 className="font-[BungeeShade] text-3xl">COMPANY INFO</h1>
             <div className="w-full max-w-lg bg-[#FBF3E7] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] rounded-[10px] p-4 mt-3">
               <div className="flex justify-between items-start">
-                
                 <div className="w-[100px] h-[80px] sm:w-[120px] sm:h-[98px] bg-[#FBF3E7] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] rounded-[10px] flex justify-center items-center flex-shrink-0">
                   <img
                     className="w-[59px] h-[59px]"
-                    src="public/images/Googlelogo.webp"
-                    alt="Google Logo"
+                    src={
+                      dashboardData.company?.logo ||
+                      "public/images/Googlelogo.webp"
+                    }
+                    alt="Company Logo"
                   />
                 </div>
                 <div className="flex flex-col justify-start text-left ml-4 flex-grow">
-                  <h1 className="font-[Jost-ExtraBold] text-3xl sm:text-[40px] break-words">Google</h1>
+                  <h1 className="font-[Jost-ExtraBold] text-3xl sm:text-[40px] break-words">
+                    {dashboardData.company?.name || "Your Company"}
+                  </h1>
                   <p className="font-[Jost-Regular] text-lg sm:text-xl text-[#00000086]">
-                    google@gmail.com
+                    {userData?.email}
                   </p>
                 </div>
                 <div>
@@ -60,28 +155,26 @@ const Home = () => {
               <div>
                 <p
                   className="font-[Jost-Medium] text-base sm:text-lg mt-4"
-                  title={companyDescription}
+                  title={dashboardData.company?.description}
                 >
-                  {companyDescription}
+                  {dashboardData.company?.description ||
+                    "Company description will appear here..."}
                 </p>
               </div>
             </div>
           </div>
 
           {/* Stats Card */}
-         
+
           <div className="flex flex-col">
             <h1 className="font-[BungeeShade] text-3xl">STATS</h1>
-           
+
             <div className="w-full max-w-lg bg-[#FBF3E7] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] rounded-[10px] p-4 mt-3">
-             
               <div className="flex justify-around flex-wrap gap-4">
-              
                 <div className="flex justify-center gap-2 flex-col items-center">
-                 
                   <div className="w-full min-w-[120px] h-[85px] bg-[#FBF3E7] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] rounded-[10px] flex justify-center items-center p-4">
                     <h1 className="font-[BungeeInline] text-[40px]">
-                      {totalJobs}
+                      {dashboardData.stats.totalJobs}
                     </h1>
                   </div>
                   <h1 className="font-[Jost-ExtraBold] text-xl">Total Jobs</h1>
@@ -89,7 +182,7 @@ const Home = () => {
                 <div className="flex justify-center gap-2 flex-col items-center">
                   <div className="w-full min-w-[120px] h-[85px] bg-[#FBF3E7] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] rounded-[10px] flex justify-center items-center p-4">
                     <h1 className="font-[BungeeInline] text-[40px]">
-                      {totalApplications}
+                      {dashboardData.stats.totalApplications}
                     </h1>
                   </div>
                   <h1 className="font-[Jost-ExtraBold] text-xl text-center">
@@ -99,7 +192,7 @@ const Home = () => {
                 <div className="flex justify-center gap-2 flex-col items-center">
                   <div className="w-full min-w-[120px] h-[85px] bg-[#FBF3E7] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] rounded-[10px] flex justify-center items-center p-4">
                     <h1 className="font-[BungeeInline] text-[40px]">
-                      {shortlisted}
+                      {dashboardData.stats.shortlisted}
                     </h1>
                   </div>
                   <h1 className="font-[Jost-ExtraBold] text-xl">Shortlisted</h1>
@@ -110,14 +203,16 @@ const Home = () => {
               <div className="flex flex-wrap justify-center sm:justify-around items-center gap-4 mt-3">
                 <div className="flex flex-col justify-center items-center text-center">
                   <h1 className="font-[BungeeShade] text-[40px]">
-                    {applicationJobRate}%
+                    {dashboardData.stats.applicationJobRate}%
                   </h1>
                   <h1 className="font-[Jost-ExtraBold] text-xl">
                     Application/Job Rate
                   </h1>
                 </div>
                 <div className="flex mt-2 justify-center items-center">
-                  <CircularProgress percentage={applicationJobRate} />
+                  <CircularProgress
+                    percentage={dashboardData.stats.applicationJobRate}
+                  />
                 </div>
               </div>
             </div>
@@ -129,35 +224,44 @@ const Home = () => {
           <h1 className="font-[BungeeShade] text-3xl mb-2">OPEN POSITIONS</h1>
           <div className="w-full max-w-md bg-[#FBF3E7] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] rounded-[10px] flex flex-col justify-between items-center gap-6 p-6">
             <div className="flex flex-col justify-center items-center gap-4 w-full">
-              {topFourJobs.map((job) => (
-                <div
-                  key={job.id}
-                  className="w-full bg-[#FBF3E7] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] rounded-[10px] cursor-pointer py-3 px-5 flex justify-between items-center
-                    hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.7)] hover:translate-x-[-2px] hover:translate-y-[-2px] 
-                    transition-all duration-200 ease-out active:translate-x-[2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)]"
-                  onClick={() => navigate("/Application")}
-                >
-                  <div>
-                    <h1 className="font-[Jost-Medium] text-[16px]">
-                      {job.title}
-                    </h1>
-                    <div className="flex items-center mt-1">
-                      <FaMapLocation />
-                      <span className="font-[Jost-Regular] text-[14px] text-[#00000086] ml-2">
-                        {job.location}
-                      </span>
+              {dashboardData.jobs.length > 0 ? (
+                dashboardData.jobs.map((job) => (
+                  <div
+                    key={job._id}
+                    className="w-full bg-[#FBF3E7] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] rounded-[10px] cursor-pointer py-3 px-5 flex justify-between items-center
+                      hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.7)] hover:translate-x-[-2px] hover:translate-y-[-2px] 
+                      transition-all duration-200 ease-out active:translate-x-[2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)]"
+                    onClick={() => navigate("/Application")}
+                  >
+                    <div>
+                      <h1 className="font-[Jost-Medium] text-[16px]">
+                        {job.title}
+                      </h1>
+                      <div className="flex items-center mt-1">
+                        <FaMapLocation />
+                        <span className="font-[Jost-Regular] text-[14px] text-[#00000086] ml-2">
+                          {job.preferences?.location || job.mode || "Remote"}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col justify-center items-center text-center flex-shrink-0 ml-2">
+                      <h1 className="font-[BungeeInline] text-[20px]">
+                        {job.applications?.length || 0}
+                      </h1>
+                      <h1 className="font-[Jost-ExtraBold] text-[16px]">
+                        Applicants
+                      </h1>
                     </div>
                   </div>
-                  <div className="flex flex-col justify-center items-center text-center flex-shrink-0 ml-2">
-                    <h1 className="font-[BungeeInline] text-[20px]">
-                      {job.applicants.length}
-                    </h1>
-                    <h1 className="font-[Jost-ExtraBold] text-[16px]">
-                      Applicants
-                    </h1>
-                  </div>
+                ))
+              ) : (
+                <div className="w-full bg-[#FBF3E7] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] rounded-[10px] py-8 px-5 text-center">
+                  <p className="font-[Jost-Medium] text-gray-600">
+                    No jobs posted yet. Click "Post Job" to create your first
+                    job listing!
+                  </p>
                 </div>
-              ))}
+              )}
             </div>
             <button
               className="w-full max-w-xs bg-[#E3FEAA] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.7)] hover:translate-x-[-2px] hover:translate-y-[-2px] 
@@ -169,7 +273,6 @@ const Home = () => {
             </button>
           </div>
         </div>
-
       </div>
     </div>
   );
