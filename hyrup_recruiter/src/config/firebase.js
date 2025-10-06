@@ -32,4 +32,14 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 
+// Configure Google provider to reduce popup blocking
+googleProvider.setCustomParameters({
+    prompt: 'select_account',  // Always show account selection
+    access_type: 'offline',    // Get refresh token
+});
+
+// Add additional scopes if needed
+googleProvider.addScope('profile');
+googleProvider.addScope('email');
+
 export default app;

@@ -7,8 +7,7 @@ import apiService from "../services/apiService";
 
 const Registration = () => {
   const navigate = useNavigate();
-  const { currentUser, registerRecruiter, error, setError, loading } =
-    useAuth();
+  const { currentUser, error, setError, loading, checkUserType } = useAuth();
 
   const [formData, setFormData] = useState({
     companyName: "",
@@ -33,27 +32,83 @@ const Registration = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
+  const [registrationChecked, setRegistrationChecked] = useState(false);
+  const [isCheckingRegistration, setIsCheckingRegistration] = useState(false);
 
-  // Redirect if user is not authenticated
+  // Check if user is already registered and redirect accordingly
   useEffect(() => {
     console.log(
       "Registration page - currentUser:",
       currentUser,
       "loading:",
-      loading
+      loading,
+      "registrationChecked:",
+      registrationChecked
     );
-    if (!currentUser && !loading) {
-      navigate("/signup");
-    }
-  }, [currentUser, navigate, loading]);
 
-  // Show loading while authentication is being processed
-  if (loading) {
+    // Prevent multiple checks
+    if (registrationChecked || isCheckingRegistration) {
+      return;
+    }
+
+    const checkRegistrationStatus = async () => {
+      if (!currentUser && !loading) {
+        // User is not authenticated, redirect to signup
+        console.log("User not authenticated, redirecting to signup");
+        navigate("/signup");
+        setRegistrationChecked(true);
+        return;
+      }
+
+      if (currentUser && currentUser.uid && !loading) {
+        setIsCheckingRegistration(true);
+
+        try {
+          console.log("Checking if user is already registered...");
+          const response = await apiService.checkUserRegistration(
+            currentUser.uid
+          );
+
+          if (response.success && response.isRegistered) {
+            console.log("User is already registered, redirecting to home...");
+            console.log("User data:", response.data);
+
+            // User is already registered, redirect to home immediately
+            navigate("/", { replace: true });
+          } else {
+            console.log(
+              "User is not registered yet, showing registration form"
+            );
+            // User is authenticated but not registered, stay on registration page
+          }
+        } catch (error) {
+          console.error("Error checking registration status:", error);
+          // If there's an error checking, let them try to register
+        } finally {
+          setIsCheckingRegistration(false);
+          setRegistrationChecked(true);
+        }
+      }
+    };
+
+    checkRegistrationStatus();
+  }, [
+    currentUser,
+    loading,
+    navigate,
+    registrationChecked,
+    isCheckingRegistration,
+  ]);
+
+  // Show loading while authentication is being processed or checking registration
+  if (loading || isCheckingRegistration) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FFFFF3]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-lg font-medium">Loading...</p>
+          <p className="mt-4 text-lg font-medium">
+            {loading ? "Loading..." : "Checking registration status..."}
+          </p>
         </div>
       </div>
     );
@@ -129,72 +184,102 @@ const Registration = () => {
       // Test basic connectivity first
       try {
         console.log("Testing API connectivity...");
-        const testResponse = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/`);
+        const testResponse = await fetch(
+          `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/`
+        );
         console.log("API connectivity test response:", testResponse.status);
       } catch (connectivityError) {
         console.error("API connectivity test failed:", connectivityError);
       }
 
-      // First, register the company - match API documentation format exactly
+      // Get Firebase user ID
+      const uid = currentUser?.uid;
+      if (!uid) {
+        throw new Error("User not authenticated");
+      }
+
+      // First, register the company - match backend API format exactly
       const companyData = {
-        name: formData.companyName.trim(),
-        description: formData.description.trim(),
+        // Company fields
+        companyName: formData.companyName.trim(),
+        companyEmail: formData.email.trim(), // Company email from form
         industry: formData.industry || "Technology",
+        companySize: formData.size || "1-10",
         website: formData.website.trim(),
-        location: {
-          address: formData.street.trim(),
-          city: formData.city.trim(),
-          state: formData.state.trim(),
-          country: formData.country.trim(),
-          zipcode: formData.pincode.trim(),
-        },
-        size: formData.size || "1-10",
-        companyType: formData.companyType || "Startup",
-        founded: formData.founded
-          ? parseInt(formData.founded)
-          : new Date().getFullYear()
-        // Removed logo temporarily for testing
+        description: formData.description.trim(),
+        location: `${formData.city.trim()}${
+          formData.state ? ", " + formData.state.trim() : ""
+        }`,
+
+        // Recruiter fields (required by backend)
+        recruiterName: formData.recruiterName.trim(),
+        recruiterEmail: currentUser.email, // Use Firebase user's email
+        recruiterPhone: formData.phone.trim(),
+        position: formData.designation || "Recruiter",
+        uid: uid,
       };
 
       // Validate required fields before making API call
-      if (!companyData.name || !companyData.description || !companyData.website) {
-        throw new Error("Company name, description, and website are required");
+      if (
+        !companyData.companyName ||
+        !companyData.companyEmail ||
+        !companyData.recruiterName ||
+        !companyData.recruiterEmail ||
+        !companyData.uid
+      ) {
+        throw new Error(
+          "All required fields must be filled: Company Name, Company Email, Recruiter Name, and you must be signed in"
+        );
       }
 
       console.log("Registering company with data:", companyData);
       const companyResponse = await apiService.registerCompany(companyData);
       console.log("Company registration response:", companyResponse);
 
-      // Then register the recruiter with the company ID
-      const recruiterData = {
-        name: formData.recruiterName,
-        phone: formData.phone,
-        designation: formData.designation,
-        companyId: companyResponse.company._id,
-      };
+      // The backend handles both company and recruiter registration in one call
+      console.log("Registration successful!");
+      console.log("Registration response data:", companyResponse);
 
-      console.log("Registering recruiter with data:", recruiterData);
-      await registerRecruiter(recruiterData);
-      console.log("Recruiter registration successful!");
+      // Update the AuthContext with the new user data after successful registration
+      if (companyResponse.success && companyResponse.data) {
+        // Force a re-check of user type in AuthContext
+        try {
+          await checkUserType();
+        } catch (authError) {
+          console.error(
+            "Error updating auth context after registration:",
+            authError
+          );
+        }
+      }
 
-      // Small delay to ensure state updates, then navigate
+      // Show success message
+      alert("Registration successful! Welcome to Hyrup!");
+
+      // Navigate to dashboard after a short delay to ensure state is updated
       setTimeout(() => {
+        console.log("Navigating to home page after registration...");
         navigate("/", { replace: true });
-      }, 100);
+      }, 500);
     } catch (error) {
       console.error("Registration error:", error);
-      
+
       // Provide more specific error messages
       let errorMessage = "Registration failed. Please try again.";
-      
-      if (error.message.includes("Failed to fetch") || error.name === "TypeError") {
-        errorMessage = "Cannot connect to server. Please ensure your backend server is running on port 3000.";
+
+      if (
+        error.message.includes("Failed to fetch") ||
+        error.name === "TypeError"
+      ) {
+        errorMessage =
+          "Cannot connect to server. Please ensure your backend server is running on port 3000.";
       } else if (error.message.includes("Network error")) {
-        errorMessage = "Network error. Please check your connection and try again.";
+        errorMessage =
+          "Network error. Please check your connection and try again.";
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
+
       setError(errorMessage);
     } finally {
       setIsSubmitting(false);

@@ -4,12 +4,15 @@ import { FaArrowRightLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
 import Nav_sign from "../components/Nav_sign";
+import GoogleSignInButton from "../components/GoogleSignInButton";
+import AuthErrorHandler from "../components/AuthErrorHandler";
 import animationData from "../../public/animations/business workshop.json";
 import { useAuth } from "../hooks/useAuth";
 const SignUp = () => {
   const navigate = useNavigate();
-  const { signInWithGoogle, currentUser, userType, loading, error } = useAuth();
-  const [isSigningIn, setIsSigningIn] = useState(false);
+  const { currentUser, userType, loading, error, signInWithGoogle, setError } =
+    useAuth();
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   // Check if user is already authenticated and redirect accordingly
   useEffect(() => {
@@ -21,16 +24,24 @@ const SignUp = () => {
     }
   }, [currentUser, userType, navigate]);
 
-  const handleGoogleSignup = async () => {
-    try {
-      setIsSigningIn(true);
-      await signInWithGoogle();
-      // Navigation will be handled by useEffect after auth state changes
-    } catch (error) {
-      console.error("Sign in error:", error);
-    } finally {
-      setIsSigningIn(false);
+  // Show error modal when there's an auth error
+  useEffect(() => {
+    if (error) {
+      setShowErrorModal(true);
     }
+  }, [error]);
+
+  const handleRetrySignIn = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error("Retry sign-in failed:", error);
+    }
+  };
+
+  const handleDismissError = () => {
+    setShowErrorModal(false);
+    setError(null);
   };
 
   if (loading) {
@@ -99,27 +110,33 @@ const SignUp = () => {
                     {error}
                   </div>
                 )}
-                <div
-                  onClick={handleGoogleSignup}
+
+                <GoogleSignInButton
                   className="w-full max-w-[420px] mx-auto px-6 sm:px-8 md:px-10 border-4 gap-5 border-black rounded-[10px]
-                py-4 flex bg-white justify-center items-center 
-                hover:cursor-pointer hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.7)] hover:translate-x-[-2px] hover:translate-y-[-2px] 
-                transition-all duration-200 ease-out active:translate-x-[2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)]
-                disabled:opacity-50 disabled:cursor-not-allowed"
+                    py-4 flex bg-white justify-center items-center 
+                    hover:cursor-pointer hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.7)] hover:translate-x-[-2px] hover:translate-y-[-2px] 
+                    transition-all duration-200 ease-out active:translate-x-[2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)]
+                    disabled:opacity-50 disabled:cursor-not-allowed font-[Jost-Medium] text-sm sm:text-base"
+                  onSuccess={() => console.log("Sign-in successful")}
+                  onError={(error) => console.error("Sign-in failed:", error)}
                 >
-                  <FcGoogle />
-                  <h1 className="flex gap-3 font-[Jost-Medium] items-center justify-center text-sm sm:text-base">
-                    {isSigningIn ? "Signing in..." : "Continue with Google"}
-                    <span>
-                      <FaArrowRightLong />
-                    </span>
-                  </h1>
-                </div>
+                  <span className="flex gap-3 items-center justify-center">
+                    Continue with Google
+                    <FaArrowRightLong />
+                  </span>
+                </GoogleSignInButton>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Error Handler Modal */}
+      <AuthErrorHandler
+        error={showErrorModal ? error : null}
+        onRetry={handleRetrySignIn}
+        onDismiss={handleDismissError}
+      />
     </div>
   );
 };

@@ -26,7 +26,7 @@ const Home = () => {
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-      if (!userData?.companyId) {
+      if (!userData?.uid) {
         setLoading(false);
         return;
       }
@@ -34,21 +34,13 @@ const Home = () => {
       try {
         setLoading(true);
 
-        // Fetch company information
-        const companyResponse = await apiService.getCompany(
-          userData.companyId._id
-        );
+        // Fetch company information using UID (public endpoint)
+        const companyResponse = await apiService.getCompanyByUID(userData.uid);
 
-        // Fetch company jobs
-        const jobsResponse = await apiService.getCompanyJobs(
-          userData.companyId._id
-        );
-
-        // Fetch applications (this will need to be implemented in API)
-        const applicationsResponse = await apiService.getApplications();
-
-        const jobs = jobsResponse.jobs || [];
-        const applications = applicationsResponse.opportunities || [];
+        // For now, we'll use mock data for jobs and applications since we need authentication for those
+        // TODO: Implement proper authenticated endpoints or find alternative approach
+        const jobs = [];
+        const applications = [];
 
         // Calculate stats
         const totalJobs = jobs.length;
@@ -60,7 +52,7 @@ const Home = () => {
           totalJobs > 0 ? Math.round((totalApplications / totalJobs) * 100) : 0;
 
         setDashboardData({
-          company: companyResponse.company,
+          company: companyResponse.data.company,
           jobs: jobs.slice(0, 4), // Top 4 jobs for display
           applications,
           stats: {
@@ -77,9 +69,9 @@ const Home = () => {
         // Set fallback data
         setDashboardData({
           company: {
-            name: userData?.companyId?.name || "Your Company",
+            name: "Your Company",
             description: "Company description will be loaded here...",
-            logo: userData?.companyId?.logo || "public/images/Googlelogo.webp",
+            logo: "public/images/Googlelogo.webp",
           },
           jobs: [],
           applications: [],

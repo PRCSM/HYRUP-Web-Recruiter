@@ -74,7 +74,7 @@ class ApiService {
         };
 
         const url = `${this.baseURL}${endpoint}`;
-        
+
         console.log(`Making public API request to: ${url}`);
         console.log('Request config:', { ...config, headers: { ...config.headers } });
 
@@ -176,12 +176,22 @@ class ApiService {
 
     // ============ COMPANY ROUTES ============
 
+    // Check if user is already registered by Firebase UID (public endpoint)
+    async checkUserRegistration(uid) {
+        return this.makePublicRequest(`/company/check-registration/${uid}`);
+    }
+
     // Register company (public endpoint - no auth required)
     async registerCompany(companyData) {
         return this.makePublicRequest('/company/register', {
             method: 'POST',
             body: JSON.stringify(companyData),
         });
+    }
+
+    // Get company by UID (public endpoint - no auth required)
+    async getCompanyByUID(uid) {
+        return this.makePublicRequest(`/company/by-uid/${uid}`);
     }
 
     // Get all companies
