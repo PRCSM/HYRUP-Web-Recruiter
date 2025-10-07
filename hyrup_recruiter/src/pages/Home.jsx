@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import CircularProgress from "../components/CircularProgress";
 import { FaMapLocation } from "react-icons/fa6";
 import { BsArrowRightSquare } from "react-icons/bs";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import apiService from "../services/apiService";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { userData } = useAuth();
+  const location = useLocation();
+  const { userData, currentUser } = useAuth();
 
   const [dashboardData, setDashboardData] = useState({
     company: null,
@@ -26,7 +27,13 @@ const Home = () => {
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-      if (!userData?.uid) {
+      console.log("fetchDashboardData called with:", {
+        currentUser: currentUser?.uid,
+        userData: userData,
+      });
+
+      if (!currentUser?.uid) {
+        console.log("No currentUser.uid, setting loading false");
         setLoading(false);
         return;
       }
@@ -35,12 +42,43 @@ const Home = () => {
         setLoading(true);
 
         // Fetch company information using UID (public endpoint)
-        const companyResponse = await apiService.getCompanyByUID(userData.uid);
+        console.log("Fetching company data for UID:", currentUser.uid);
+        const companyResponse = await apiService.getCompanyByUID(
+          currentUser.uid
+        );
+        console.log("Company response:", companyResponse);
 
-        // For now, we'll use mock data for jobs and applications since we need authentication for those
-        // TODO: Implement proper authenticated endpoints or find alternative approach
-        const jobs = [];
-        const applications = [];
+        if (!companyResponse.success) {
+          throw new Error(
+            companyResponse.message || "Failed to fetch company data"
+          );
+        }
+
+        // Extract company data
+        const companyData = companyResponse.data?.company || null;
+        const recruiterData = companyResponse.data?.recruiter || null;
+        console.log("Extracted company data:", companyData);
+        console.log("Extracted recruiter data:", recruiterData);
+
+        // Fetch jobs for this recruiter if we have recruiter ID
+        let jobs = [];
+        let applications = [];
+
+        if (recruiterData?.id) {
+          try {
+            console.log("Fetching jobs for recruiter ID:", recruiterData.id);
+            const jobsResponse = await apiService.getJobsByRecruiter(
+              recruiterData.id
+            );
+            if (jobsResponse.success) {
+              jobs = jobsResponse.data || [];
+              console.log("Fetched jobs:", jobs);
+            }
+          } catch (jobError) {
+            console.error("Error fetching jobs:", jobError);
+            // Continue with empty jobs array
+          }
+        }
 
         // Calculate stats
         const totalJobs = jobs.length;
@@ -52,7 +90,7 @@ const Home = () => {
           totalJobs > 0 ? Math.round((totalApplications / totalJobs) * 100) : 0;
 
         setDashboardData({
-          company: companyResponse.data.company,
+          company: companyData,
           jobs: jobs.slice(0, 4), // Top 4 jobs for display
           applications,
           stats: {
@@ -64,13 +102,25 @@ const Home = () => {
         });
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
-        setError("Failed to load dashboard data");
 
-        // Set fallback data
+        // Check if it's a "company not found" error vs other errors
+        if (
+          error.message?.includes("Company not found") ||
+          error.message?.includes("not found")
+        ) {
+          setError(
+            "No company profile found. Please complete your company registration first."
+          );
+        } else {
+          setError(`Failed to load dashboard data: ${error.message}`);
+        }
+
+        // Set fallback data for unregistered companies
         setDashboardData({
           company: {
-            name: "Your Company",
-            description: "Company description will be loaded here...",
+            name: "Complete Registration",
+            description:
+              "Please complete your company registration to see your dashboard data.",
             logo: "public/images/Googlelogo.webp",
           },
           jobs: [],
@@ -88,7 +138,17 @@ const Home = () => {
     };
 
     fetchDashboardData();
-  }, [userData]);
+  }, [currentUser?.uid, userData]);
+
+  // Check if we returned from posting a job and refresh data
+  useEffect(() => {
+    if (location.state?.jobPosted) {
+      console.log("Job was posted, refreshing dashboard data...");
+      // Clear the state to prevent repeated refreshes
+      navigate(location.pathname, { replace: true });
+      // The main useEffect will automatically refetch due to dependency changes
+    }
+  }, [location.state?.jobPosted, navigate, location.pathname]);
 
   if (loading) {
     return (
@@ -137,6 +197,11 @@ const Home = () => {
                   <p className="font-[Jost-Regular] text-lg sm:text-xl text-[#00000086]">
                     {userData?.email}
                   </p>
+                  {dashboardData.company?.industry && (
+                    <p className="font-[Jost-Medium] text-sm text-[#00000086]">
+                      {dashboardData.company.industry}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <button className="bg-[#FFFFF3] hover:bg-[#fefee6] border-2 rounded-[10px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] flex items-center justify-center cursor-pointer w-[60px] h-[50px] sm:w-[73px] sm:h-[58px]">
@@ -146,12 +211,30 @@ const Home = () => {
               </div>
               <div>
                 <p
-                  className="font-[Jost-Medium] text-base sm:text-lg mt-4"
+                  className="font-[Jost-Medium] text-base sm:text-lg mt-4 line-clamp-3"
                   title={dashboardData.company?.description}
                 >
-                  {dashboardData.company?.description ||
-                    "Company description will appear here..."}
+                  {dashboardData.company?.description &&
+                  dashboardData.company.description.trim()
+                    ? dashboardData.company.description
+                    : "Company description will appear here once you complete your profile..."}
                 </p>
+                {dashboardData.company?.website && (
+                  <p className="font-[Jost-Regular] text-sm text-blue-600 mt-2">
+                    <a
+                      href={
+                        dashboardData.company.website.startsWith("http")
+                          ? dashboardData.company.website
+                          : `https://${dashboardData.company.website}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:underline"
+                    >
+                      {dashboardData.company.website}
+                    </a>
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -223,7 +306,7 @@ const Home = () => {
                     className="w-full bg-[#FBF3E7] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] rounded-[10px] cursor-pointer py-3 px-5 flex justify-between items-center
                       hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.7)] hover:translate-x-[-2px] hover:translate-y-[-2px] 
                       transition-all duration-200 ease-out active:translate-x-[2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)]"
-                    onClick={() => navigate("/Application")}
+                    onClick={() => navigate(`/Application?jobId=${job._id}`)}
                   >
                     <div>
                       <h1 className="font-[Jost-Medium] text-[16px]">
@@ -258,9 +341,11 @@ const Home = () => {
             <button
               className="w-full max-w-xs bg-[#E3FEAA] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.7)] hover:translate-x-[-2px] hover:translate-y-[-2px] 
                 transition-all duration-200 ease-out active:translate-x-[2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] cursor-pointer border-2 border-black rounded-[10px] py-3 px-5 flex justify-center gap-4 items-center"
-              onClick={() => navigate("/Application")}
+              onClick={() => navigate("/postjob")}
             >
-              <h1 className="font-[Jost-Medium] text-[16px]">Show all</h1>
+              <h1 className="font-[Jost-Medium] text-[16px]">
+                {dashboardData.jobs.length > 0 ? "Post New Job" : "Post Job"}
+              </h1>
               <BsArrowRightSquare className="text-3xl" />
             </button>
           </div>

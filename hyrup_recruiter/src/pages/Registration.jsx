@@ -207,9 +207,13 @@ const Registration = () => {
         companySize: formData.size || "1-10",
         website: formData.website.trim(),
         description: formData.description.trim(),
-        location: `${formData.city.trim()}${
-          formData.state ? ", " + formData.state.trim() : ""
-        }`,
+        location: {
+          address: formData.street.trim(),
+          city: formData.city.trim(),
+          state: formData.state.trim(),
+          country: formData.country.trim(),
+          zipcode: formData.pincode.trim(),
+        },
 
         // Recruiter fields (required by backend)
         recruiterName: formData.recruiterName.trim(),

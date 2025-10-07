@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { TiTick } from "../assets/Icons"; // Assuming this path is correct
 import { useAuth } from "../hooks/useAuth";
 import apiService from "../services/apiService";
 
@@ -15,48 +14,47 @@ function CompanyProfile() {
         setLoading(true);
         setError(null);
 
-        // Get recruiter ID from userData or by checking registration
-        let recruiterId = userData?.id || userData?.recruiterId;
-
-        if (!recruiterId && currentUser?.uid) {
-          // If we don't have recruiterId, check registration to get it
-          const registrationCheck = await apiService.checkUserRegistration(
-            currentUser.uid
-          );
-          if (registrationCheck.success && registrationCheck.isRegistered) {
-            recruiterId = registrationCheck.data.recruiterId;
-          }
+        if (!currentUser?.uid) {
+          throw new Error("User not authenticated");
         }
 
-        if (recruiterId) {
-          console.log("Fetching company data for recruiter ID:", recruiterId);
-          const response = await apiService.getCompany(recruiterId);
+        console.log("Fetching company data for UID:", currentUser.uid);
 
-          if (response.success) {
-            setCompanyData(response.data);
-            console.log("Company data fetched:", response.data);
-          } else {
-            throw new Error(response.message || "Failed to fetch company data");
-          }
+        // Use the public endpoint that doesn't require authentication
+        const response = await apiService.getCompanyByUID(currentUser.uid);
+
+        if (response.success && response.data) {
+          setCompanyData(response.data);
+          console.log("Company data fetched successfully:", response.data);
         } else {
-          throw new Error("No recruiter ID available");
+          throw new Error(response.message || "Failed to fetch company data");
         }
       } catch (error) {
         console.error("Error fetching company data:", error);
         setError(error.message);
 
         // Set fallback data if available from userData
-        if (userData) {
+        if (userData || currentUser) {
           setCompanyData({
             company: {
-              name: userData.companyName || "Your Company",
+              name: userData?.companyName || "Your Company",
               description: "Company description not available",
               website: "",
-              location: { city: "Not specified" },
+              industry: "Not specified",
+              size: "Not specified",
+              founded: "Not specified",
+              location: {
+                city: "Not specified",
+                address: "",
+                state: "",
+                country: "",
+                zipcode: "",
+              },
             },
             recruiter: {
-              name: userData.name || currentUser?.displayName || "User",
-              email: userData.email || currentUser?.email || "Not specified",
+              name: userData?.name || currentUser?.displayName || "User",
+              email: userData?.email || currentUser?.email || "Not specified",
+              designation: "Not specified",
             },
           });
         }
@@ -98,15 +96,7 @@ function CompanyProfile() {
       )}
 
       <div className="w-full h-auto custom-scrollbar overflow-y-auto md:w-[600px] lg:w-[830px] md:h-auto lg:h-[540px] p-8 bg-[#FBF3E7] relative border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] rounded-[10px] flex flex-col items-start justify-start gap-5">
-        <div
-          className="absolute right-4 cursor-pointer top-4 px-1.5 md:px-3 py-1.5 bg-[#E3FEAA] rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] border-2 border-black hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] hover:translate-x-[-2px] hover:translate-y-[-2px]
-                     transition-all duration-200 ease-out flex justify-center items-center gap-1"
-        >
-          <TiTick size={25} />
-          <h1 className="font-[Jost-Medium] text-[16px]">EDIT PROFILE</h1>
-        </div>
-
-        <div className="flex flex-col md:flex-row justify-start items-center md:items-start md:gap-10 w-full pt-10 md:pt-0">
+        <div className="flex flex-col md:flex-row justify-start items-center md:items-start md:gap-10 w-full">
           <img
             className="scale-75 md:scale-100 w-[200px] h-[160px] rounded-[10px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] object-contain border-2 border-black"
             src={company.logo || "/images/Googlelogo.webp"}
@@ -164,23 +154,36 @@ function CompanyProfile() {
           <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-3 font-[Jost-Regular] text-lg">
             <p>
               <span className="font-[Jost-Medium]">Street :</span>{" "}
-              {company.location?.address || "Not provided during registration"}
+              {company.location?.address &&
+              company.location.address.trim() !== ""
+                ? company.location.address
+                : "Not provided during registration"}
             </p>
             <p>
               <span className="font-[Jost-Medium]">City :</span>{" "}
-              {company.location?.city || "Not specified"}
+              {company.location?.city && company.location.city.trim() !== ""
+                ? company.location.city
+                : "Not specified"}
             </p>
             <p>
               <span className="font-[Jost-Medium]">State :</span>{" "}
-              {company.location?.state || "Not specified"}
+              {company.location?.state && company.location.state.trim() !== ""
+                ? company.location.state
+                : "Not specified"}
             </p>
             <p>
               <span className="font-[Jost-Medium]">Country :</span>{" "}
-              {company.location?.country || "Not specified"}
+              {company.location?.country &&
+              company.location.country.trim() !== ""
+                ? company.location.country
+                : "Not specified"}
             </p>
             <p>
               <span className="font-[Jost-Medium]">Pincode :</span>{" "}
-              {company.location?.zipcode || "Not specified"}
+              {company.location?.zipcode &&
+              company.location.zipcode.trim() !== ""
+                ? company.location.zipcode
+                : "Not specified"}
             </p>
           </div>
         </div>

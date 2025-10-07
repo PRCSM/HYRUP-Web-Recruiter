@@ -2,20 +2,27 @@ import React, { useState, useEffect } from "react";
 import Applicants from "../components/Applicants";
 import Intership from "../components/Intership";
 import { useAuth } from "../hooks/useAuth";
+import { useSearchParams } from "react-router-dom";
 import apiService from "../services/apiService";
 
 function Application() {
-  const { userData } = useAuth();
+  const { currentUser } = useAuth();
+  const [searchParams] = useSearchParams();
   const [jobs, setJobs] = useState([]);
+  const [applications, setApplications] = useState([]);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [showApplicantsModal, setShowApplicantsModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [recruiterId, setRecruiterId] = useState(null);
+
+  // Get job ID from URL parameters
+  const jobIdFromUrl = searchParams.get("jobId");
 
   // Fetch jobs and applications from API
   useEffect(() => {
     const fetchJobsAndApplications = async () => {
-      if (!userData?.companyId) {
+      if (!currentUser?.uid) {
         setLoading(false);
         return;
       }
@@ -24,44 +31,89 @@ function Application() {
         setLoading(true);
         setError(null);
 
-        // Fetch company jobs with applications
-        const jobsResponse = await apiService.getCompanyJobs(
-          userData.companyId._id
+        // First get the recruiter ID
+        console.log("Fetching company data for UID:", currentUser.uid);
+        const companyResponse = await apiService.getCompanyByUID(
+          currentUser.uid
         );
-        const applicationsResponse = await apiService.getApplications();
 
-        const jobs = jobsResponse.jobs || [];
-        const allApplications = applicationsResponse.opportunities || [];
+        if (!companyResponse.success) {
+          throw new Error(companyResponse.message || "Company not found");
+        }
+
+        const recruiterData = companyResponse.data?.recruiter;
+        if (!recruiterData?.id) {
+          throw new Error("Recruiter information not found");
+        }
+
+        setRecruiterId(recruiterData.id);
+        console.log("Found recruiter ID:", recruiterData.id);
+
+        // Fetch jobs by recruiter ID
+        const jobsResponse = await apiService.getJobsByRecruiter(
+          recruiterData.id
+        );
+        const jobs = jobsResponse.success ? jobsResponse.data || [] : [];
+
+        // Fetch applications by recruiter ID
+        const applicationsResponse =
+          await apiService.getApplicationsByRecruiter(recruiterData.id);
+        const allApplications = applicationsResponse.success
+          ? applicationsResponse.data || []
+          : [];
+
+        console.log("Fetched jobs:", jobs);
+        console.log("Fetched applications:", allApplications);
+
+        setApplications(allApplications);
 
         // Map applications to their respective jobs
         const jobsWithApplications = jobs.map((job) => {
           const jobApplications = allApplications.filter(
-            (app) => app.job._id === job._id
+            (app) => app.job && app.job._id === job._id
           );
+
           return {
             ...job,
             id: job._id, // For compatibility with existing component
             applicants: jobApplications.map((app) => ({
               id: app._id,
-              name: app.candidate?.profile?.FullName || "Unknown",
+              name:
+                app.candidate?.name ||
+                app.candidate?.profile?.FullName ||
+                "Unknown",
               email: app.candidate?.email || "",
               profilePicture:
-                app.candidate?.profile?.profilePicture ||
-                "/public/images/profile.png",
+                app.candidate?.profile?.profilePicture || "/images/profile.png",
               skills: Object.keys(app.candidate?.user_skills || {}),
               experience: app.candidate?.experience || [],
               status: app.status || "applied",
               appliedAt: app.createdAt,
               matchScore: app.matchScore || 0,
+              applicationId: app._id,
               ...app,
             })),
           };
         });
 
         setJobs(jobsWithApplications);
+        console.log("Processed jobs with applications:", jobsWithApplications);
+
+        // If there's a job ID from URL, find and select that job
+        if (jobIdFromUrl && jobsWithApplications.length > 0) {
+          const jobIndex = jobsWithApplications.findIndex(
+            (job) => job._id === jobIdFromUrl
+          );
+          if (jobIndex !== -1) {
+            setSelectedIdx(jobIndex);
+            console.log(
+              `Pre-selected job at index ${jobIndex} for ID: ${jobIdFromUrl}`
+            );
+          }
+        }
       } catch (error) {
         console.error("Error fetching jobs and applications:", error);
-        setError("Failed to load applications data");
+        setError(`Failed to load applications data: ${error.message}`);
         // Set fallback empty state
         setJobs([]);
       } finally {
@@ -70,7 +122,7 @@ function Application() {
     };
 
     fetchJobsAndApplications();
-  }, [userData]);
+  }, [currentUser?.uid, jobIdFromUrl]);
 
   // Update an applicant's status both locally and on the server
   const handleUpdateApplicantStatus = async (jobId, applicantId, newStatus) => {

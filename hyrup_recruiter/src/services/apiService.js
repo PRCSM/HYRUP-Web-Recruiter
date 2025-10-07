@@ -153,23 +153,43 @@ class ApiService {
         });
     }
 
-    // Post job
+    // Post job (using public endpoint)
     async postJob(jobData) {
-        return this.makeRequest('/recruiter/jobs', {
+        return this.makePublicRequest('/jobs', {
             method: 'POST',
             body: JSON.stringify(jobData),
         });
     }
 
-    // Get applications
-    async getApplications() {
-        return this.makeRequest('/recruiter/jobs');
+    // Get all jobs (public endpoint)
+    async getJobs() {
+        return this.makePublicRequest('/jobs');
     }
 
-    // Update application status
+    // Get jobs by recruiter ID (public endpoint)
+    async getJobsByRecruiter(recruiterId) {
+        return this.makePublicRequest(`/jobs/recruiter/${recruiterId}`);
+    }
+
+    // Get all applications (public endpoint)
+    async getApplications() {
+        return this.makePublicRequest('/applications');
+    }
+
+    // Get applications by recruiter ID (public endpoint)
+    async getApplicationsByRecruiter(recruiterId) {
+        return this.makePublicRequest(`/applications/recruiter/${recruiterId}`);
+    }
+
+    // Get applications by job ID (public endpoint)
+    async getApplicationsByJob(jobId) {
+        return this.makePublicRequest(`/applications/job/${jobId}`);
+    }
+
+    // Update application status (public endpoint)
     async updateApplicationStatus(applicationId, status) {
-        return this.makeRequest(`/recruiter/applications/${applicationId}/status`, {
-            method: 'PUT',
+        return this.makePublicRequest(`/applications/${applicationId}/status`, {
+            method: 'PATCH',
             body: JSON.stringify({ status }),
         });
     }

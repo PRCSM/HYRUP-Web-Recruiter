@@ -5,7 +5,8 @@ import apiService from "../services/apiService";
 
 const PostJob = () => {
   const navigate = useNavigate();
-  const { userData } = useAuth();
+  const { currentUser } = useAuth();
+  const [recruiterId, setRecruiterId] = useState(null);
 
   const [jobData, setJobData] = useState({
     title: "",
@@ -37,7 +38,7 @@ const PostJob = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  // Fetch available skills on component mount
+  // Fetch available skills and recruiter ID on component mount
   useEffect(() => {
     const fetchSkills = async () => {
       try {
@@ -72,8 +73,25 @@ const PostJob = () => {
       }
     };
 
+    const fetchRecruiterId = async () => {
+      if (currentUser?.uid) {
+        try {
+          const companyResponse = await apiService.getCompanyByUID(
+            currentUser.uid
+          );
+          if (companyResponse.success && companyResponse.data?.recruiter?.id) {
+            setRecruiterId(companyResponse.data.recruiter.id);
+            console.log("Set recruiter ID:", companyResponse.data.recruiter.id);
+          }
+        } catch (error) {
+          console.error("Error fetching recruiter ID:", error);
+        }
+      }
+    };
+
     fetchSkills();
-  }, []);
+    fetchRecruiterId();
+  }, [currentUser?.uid]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -147,9 +165,16 @@ const PostJob = () => {
     setError(null);
 
     try {
+      // Validate recruiter ID before submitting
+      if (!recruiterId) {
+        throw new Error(
+          "Recruiter information not found. Please ensure you are properly registered."
+        );
+      }
+
       const submissionData = {
         ...jobData,
-        recruiter: userData._id,
+        recruiter: recruiterId, // Use the MongoDB ObjectId of the recruiter
         noOfOpenings: Number(jobData.noOfOpenings) || 1,
         stipend: jobData.stipend ? Number(jobData.stipend) : undefined,
         salaryRange: {
@@ -175,7 +200,8 @@ const PostJob = () => {
 
       if (response.success) {
         alert("Job posted successfully!");
-        navigate("/");
+        // Navigate to home and potentially refresh the page to show updated stats
+        navigate("/", { state: { jobPosted: true } });
       } else {
         throw new Error(response.message || "Failed to post job");
       }
