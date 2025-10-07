@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Test</title>
+</head>
+
+<body>
+    <h1>Backend Connectivity Test</h1>
+    <button onclick="testBackend()">Test Backend Connection</button>
+    <div id="result"></div>
+
+    <script>
+        async function testBackend() {
+            const resultDiv = document.getElementById('result');
+
+            try {
+                console.log('Testing backend connectivity...');
+                resultDiv.innerHTML = '<p>Testing backend connection...</p>';
+
+                // Test basic connectivity
+                const response = await fetch('http://localhost:3000/', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                console.log('Response:', response);
+                resultDiv.innerHTML = `
+                    <p><strong>Backend Status:</strong> ${response.status} ${response.statusText}</p>
+                    <p><strong>Response OK:</strong> ${response.ok}</p>
+                `;
+
+                // Test company registration endpoint
+                const testCompanyData = {
+                    name: "Test Company",
+                    description: "Test Description",
+                    industry: "Technology",
+                    website: "https://test.com",
+                    location: {
+                        address: "123 Test St",
+                        city: "Test City",
+                        state: "Test State",
+                        country: "Test Country",
+                        zipcode: "12345"
+                    },
+                    size: "1-10",
+                    companyType: "Startup",
+                    founded: 2023
+                };
+
+                const companyResponse = await fetch('http://localhost:3000/company/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testCompanyData)
+                });
+
+                const companyResult = await companyResponse.text();
+                console.log('Company registration response:', companyResult);
+
+                resultDiv.innerHTML += `
+                    <p><strong>Company Registration Test:</strong> ${companyResponse.status} ${companyResponse.statusText}</p>
+                    <p><strong>Response:</strong> ${companyResult}</p>
+                `;
+
+            } catch (error) {
+                console.error('Backend test error:', error);
+                resultDiv.innerHTML = `
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p><strong>Error Type:</strong> ${error.name}</p>
+                `;
+            }
+        }
+    </script>
+</body>
+
+</html>
