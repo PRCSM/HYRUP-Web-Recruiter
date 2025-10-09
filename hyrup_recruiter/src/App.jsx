@@ -14,14 +14,14 @@ import { AuthProvider } from "./contexts/AuthContext";
 
 const App = () => {
   const location = useLocation();
-  const hidePostJob = ["/signup", "/registration"].includes(
+  const hideSidebarAndPostJob = ["/signup", "/registration"].includes(
     location.pathname.toLowerCase()
   );
 
   return (
     <AuthProvider>
       <div className="flex">
-        <SideNav />
+        {!hideSidebarAndPostJob && <SideNav />}
         <div className="flex-1">
           <Routes>
             <Route path="/signup" element={<SignUp />} />
@@ -29,6 +29,7 @@ const App = () => {
               path="/registration"
               element={
                 <ProtectedRoute redirectTo="/signup">
+                  {hideSidebarAndPostJob && <SideNav />}
                   <Registration />
                 </ProtectedRoute>
               }
@@ -75,7 +76,7 @@ const App = () => {
             />
           </Routes>
         </div>
-        {!hidePostJob && <PostJobButton />}
+        {!hideSidebarAndPostJob && <PostJobButton />}
       </div>
     </AuthProvider>
   );
