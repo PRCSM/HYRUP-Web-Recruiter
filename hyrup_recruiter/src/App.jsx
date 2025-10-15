@@ -11,73 +11,76 @@ import PostJobButton from "./components/PostJobButton";
 import PostJobPage from "./pages/PostJobPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
+import { ChatProvider } from "./contexts/ChatContext";
 
 const App = () => {
   const location = useLocation();
-  const hideSidebarAndPostJob = ["/signup", "/registration"].includes(
-    location.pathname.toLowerCase()
-  );
+  const path = location.pathname.toLowerCase();
+  const hideSidebarAndPostJob = ["/signup", "/registration"].includes(path);
+  const hidePostJobOnChat = path === "/chats";
 
   return (
     <AuthProvider>
-      <div className="flex">
-        {!hideSidebarAndPostJob && <SideNav />}
-        <div className="flex-1">
-          <Routes>
-            <Route path="/signup" element={<SignUp />} />
-            <Route
-              path="/registration"
-              element={
-                <ProtectedRoute redirectTo="/signup">
-                  {hideSidebarAndPostJob && <SideNav />}
-                  <Registration />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute requiredUserType="recruiter">
-                  <Home />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/chats"
-              element={
-                <ProtectedRoute requiredUserType="recruiter">
-                  <Chat />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/Profile"
-              element={
-                <ProtectedRoute requiredUserType="recruiter">
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/Application"
-              element={
-                <ProtectedRoute requiredUserType="recruiter">
-                  <Application />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/postjob"
-              element={
-                <ProtectedRoute requiredUserType="recruiter">
-                  <PostJobPage />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
+      <ChatProvider>
+        <div className="flex">
+          {!hideSidebarAndPostJob && <SideNav />}
+          <div className="flex-1">
+            <Routes>
+              <Route path="/signup" element={<SignUp />} />
+              <Route
+                path="/registration"
+                element={
+                  <ProtectedRoute redirectTo="/signup">
+                    {hideSidebarAndPostJob && <SideNav />}
+                    <Registration />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute requiredUserType="recruiter">
+                    <Home />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/chats"
+                element={
+                  <ProtectedRoute requiredUserType="recruiter">
+                    <Chat />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/Profile"
+                element={
+                  <ProtectedRoute requiredUserType="recruiter">
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/Application"
+                element={
+                  <ProtectedRoute requiredUserType="recruiter">
+                    <Application />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/postjob"
+                element={
+                  <ProtectedRoute requiredUserType="recruiter">
+                    <PostJobPage />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </div>
+          {!hideSidebarAndPostJob && !hidePostJobOnChat && <PostJobButton />}
         </div>
-        {!hideSidebarAndPostJob && <PostJobButton />}
-      </div>
+      </ChatProvider>
     </AuthProvider>
   );
 };

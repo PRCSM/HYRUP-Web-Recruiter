@@ -54,3 +54,19 @@ export const RxCross2 = () => (
     <path d="M18 6L6 18M6 6l12 12"></path>
   </svg>
 );
+export const BackIcon = () => (
+  <svg
+    stroke="currentColor"
+    fill="none"
+    strokeWidth="2"
+    viewBox="0 0 24 24"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    height="1em"
+    width="1em"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M12 19l-7-7 7-7"></path>
+    <path d="M5 12h14"></path>
+  </svg>
+);

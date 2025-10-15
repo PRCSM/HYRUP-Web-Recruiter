@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import { TiTick } from "react-icons/ti";
 import { RxCross2 } from "react-icons/rx";
+import { useNavigate } from "react-router-dom";
+import { useChat } from "../contexts/ChatContext";
 import "../../src/index.css";
 
 function StudentProfile({ applicant, onClose }) {
   // This state is self-contained within the modal to track shortlisting status.
   const [isShortlisted, setIsShortlisted] = useState(false);
+  const navigate = useNavigate();
+  const { addChat } = useChat();
 
   const handleToggleShortlist = () => {
     setIsShortlisted(!isShortlisted);
@@ -45,7 +49,7 @@ function StudentProfile({ applicant, onClose }) {
           <h1 className="font-[Jost-Medium] text-[16px]">Reject</h1>
         </div>
       ) : (
-        <div onClick={handleToggleShortlist} className="absolute right-4 md:right-16 cursor-pointer top-16 md:top-14 px-1.5 md:px-3 py-1 bg-[#6AB8FA] rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] border-2 border-black flex justify-center items-center">
+        <div onClick={handleToggleShortlist} className="absolute right-4 md:right-16 cursor-pointer top-16 md:top-11 px-1.5 md:px-3 py-1 bg-[#6AB8FA] rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] border-2 border-black flex justify-center items-center">
           <TiTick size={30} />
           <h1 className="font-[Jost-Medium] text-[16px]">Shortlist</h1>
         </div>
@@ -60,9 +64,20 @@ function StudentProfile({ applicant, onClose }) {
             <span>{phone}</span>
             <span>{email}</span>
           </h1>
-          <div className="w-[150px] h-[39px] flex items-center justify-center font-[Jost-Medium] text-[20px] bg-[#E3FEAA] border-2 border-black rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] cursor-pointer">
+          <div className="flex gap-4 justify-center items-center flex-wrap">
+            <div className="w-[150px] h-[39px] flex items-center justify-center font-[Jost-Medium] text-[20px] bg-[#E3FEAA] border-2 border-black rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] cursor-pointer">
             Resume
           </div>
+          <div className="px-6 py-1 flex items-center justify-center font-[Jost-Medium] text-[20px] bg-orange-300 border-2 border-black rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] cursor-pointer"
+               onClick={() => {
+                 addChat(applicant);
+                 onClose?.();
+                 navigate("/chats");
+               }}>
+            Chat
+          </div>
+          </div>
+          
           <p className="font-[Jost-Medium] text-[16px] text-[#00000090]">{bio}</p>
         </div>
       </div>
