@@ -55,7 +55,7 @@ function ChatTextingArea() {
   const AttachmentCard = ({ file }) => (
     <div
       className={`relative overflow-hidden rounded-2xl border-2 border-neutral-800 bg-black/5 ${
-        file.isImage ? 'w-[300px] h-[320px] sm:w-[340px] sm:h-[360px]' : 'w-[300px]'
+        file.isImage ? 'w-[200px] h-[320px] sm:w-[340px] sm:h-[360px]' : 'w-[200px]'
       } group cursor-pointer`}
       onClick={() => { setAttachment(file); setShowPreview(true) }}
       title={file.name}
@@ -138,7 +138,7 @@ function ChatTextingArea() {
     <div
       className={`${selectedChat ? 'flex' : 'hidden'} lg:block fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 lg:top-auto lg:left-auto lg:translate-x-0 lg:translate-y-0 inset-0 lg:static z-50 w-[95%] lg:w-[45%] lg:z-auto items-center justify-center p-2 lg:p-0`}
     >
-      <div className="w-[85%] h-[90vh] lg:h-[87vh] lg:w-[100%] flex flex-col overflow-hidden rounded-[10px] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] bg-[#FFF7E4]">
+      <div className="w-[100%] h-[90vh] lg:h-[87vh] lg:w-[100%] flex flex-col overflow-hidden rounded-[10px] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] bg-[#FFF7E4]">
         {/* Header */}
         <div className="m-2 rounded-xl border-2 border-neutral-800 bg-white px-4 py-3">
           {selectedChat ? (
@@ -190,7 +190,7 @@ function ChatTextingArea() {
                       <div className="h-10 w-10 shrink-0 rounded-full bg-sky-300 ring-2 ring-neutral-800" />
                     )}
 
-                    <div className="flex max-w-[75%] flex-col items-start gap-2">
+                    <div className="flex max-w-[89%] md:max-w-[75%] flex-col items-start gap-2">
                       {cleanText && (
                         <div
                           className={`whitespace-pre-wrap break-words border-2 p-3 text-sm leading-relaxed text-neutral-900 ${
