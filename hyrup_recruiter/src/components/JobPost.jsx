@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import apiService from "../services/apiService";
@@ -12,7 +12,7 @@ const PostJob = () => {
     title: "",
     description: "",
     rolesAndResponsibilities: "",
-    perks: "",
+    perks: [],
     details: "",
     jobType: "company",
     employmentType: "full-time",
@@ -35,6 +35,34 @@ const PostJob = () => {
   const [skillInput, setSkillInput] = useState("");
   const [filteredSkills, setFilteredSkills] = useState([]);
   const [allSkills, setAllSkills] = useState([]);
+  const [allLocations, setAllLocations] = useState([]);
+  const [locationInput, setLocationInput] = useState("");
+  const [filteredLocations, setFilteredLocations] = useState([]);
+  const googleAutocompleteServiceRef = useRef(null);
+  const googleScriptLoadedRef = useRef(false);
+  const [popularPerks] = useState([
+    "Health insurance",
+    "Flexible hours",
+    "Remote work",
+    "Paid time off",
+    "401k",
+    "Stock options",
+    "Dental",
+    "Vision",
+    "Gym membership",
+    "Learning budget",
+  ]);
+  const [perkInput, setPerkInput] = useState("");
+  const [filteredPerks, setFilteredPerks] = useState([]);
+  const [educationOptions] = useState([
+    "Any",
+    "High School",
+    "Diploma",
+    "Associate Degree",
+    "Bachelor's Degree",
+    "Master's Degree",
+    "PhD",
+  ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
@@ -73,6 +101,31 @@ const PostJob = () => {
       }
     };
 
+    const fetchLocations = async () => {
+      try {
+        const res = await apiService.getLocations();
+        // Expecting backend to return an array of strings or objects. If response has .data, try to use it.
+        const locs = Array.isArray(res)
+          ? res
+          : Array.isArray(res?.data)
+          ? res.data
+          : [];
+        setAllLocations(locs);
+      } catch (err) {
+        console.error("Error fetching locations:", err);
+        // Fallback to some common cities
+        setAllLocations([
+          "Bengaluru",
+          "San Francisco",
+          "New York",
+          "London",
+          "Delhi",
+          "Mumbai",
+          "Chennai",
+        ]);
+      }
+    };
+
     const fetchRecruiterId = async () => {
       if (currentUser?.uid) {
         try {
@@ -90,7 +143,43 @@ const PostJob = () => {
     };
 
     fetchSkills();
+    fetchLocations();
     fetchRecruiterId();
+    // Try to load Google Maps Places script if API key provided
+    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+    if (apiKey && !googleScriptLoadedRef.current) {
+      const existing = document.querySelector(
+        `script[data-google-maps="places"]`
+      );
+      if (!existing) {
+        const s = document.createElement("script");
+        s.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+        s.async = true;
+        s.defer = true;
+        s.setAttribute("data-google-maps", "places");
+        s.onload = () => {
+          googleScriptLoadedRef.current = true;
+          try {
+            if (window.google?.maps?.places) {
+              googleAutocompleteServiceRef.current =
+                new window.google.maps.places.AutocompleteService();
+            }
+          } catch (err) {
+            console.warn("Google Maps Places failed to initialize:", err);
+          }
+        };
+        s.onerror = (e) => {
+          console.warn("Failed to load Google Maps script", e);
+        };
+        document.head.appendChild(s);
+      } else {
+        googleScriptLoadedRef.current = true;
+        if (window.google?.maps?.places) {
+          googleAutocompleteServiceRef.current =
+            new window.google.maps.places.AutocompleteService();
+        }
+      }
+    }
   }, [currentUser?.uid]);
 
   const handleInputChange = (e) => {
@@ -133,6 +222,62 @@ const PostJob = () => {
     }
   };
 
+  // Location typeahead handlers
+  const handleLocationInputChange = (e) => {
+    const v = e.target.value;
+    setLocationInput(v);
+    setJobData((prev) => ({
+      ...prev,
+      preferences: { ...prev.preferences, location: v },
+    }));
+    if (v.trim()) {
+      // If Google Autocomplete service is available, use it
+      const svc = googleAutocompleteServiceRef.current;
+      if (svc && svc.getPlacePredictions) {
+        svc.getPlacePredictions({ input: v }, (preds, status) => {
+          try {
+            if (
+              status === window.google.maps.places.PlacesServiceStatus.OK &&
+              Array.isArray(preds)
+            ) {
+              const mapped = preds.map((p) => p.description);
+              setFilteredLocations(mapped);
+            } else {
+              // Fallback to local filtering
+              const filtered = allLocations.filter((loc) =>
+                loc.toLowerCase().includes(v.toLowerCase())
+              );
+              setFilteredLocations(filtered);
+            }
+          } catch (err) {
+            console.warn("Places predictions error:", err);
+            const filtered = allLocations.filter((loc) =>
+              loc.toLowerCase().includes(v.toLowerCase())
+            );
+            setFilteredLocations(filtered);
+          }
+        });
+      } else {
+        // No Google service available — use local filtering
+        const filtered = allLocations.filter((loc) =>
+          loc.toLowerCase().includes(v.toLowerCase())
+        );
+        setFilteredLocations(filtered);
+      }
+    } else {
+      setFilteredLocations([]);
+    }
+  };
+
+  const selectLocation = (loc) => {
+    setJobData((prev) => ({
+      ...prev,
+      preferences: { ...prev.preferences, location: loc },
+    }));
+    setLocationInput(loc);
+    setFilteredLocations([]);
+  };
+
   const handleAddSkill = (skill) => {
     if (!jobData.preferences.skills.includes(skill)) {
       setJobData((prev) => ({
@@ -158,6 +303,61 @@ const PostJob = () => {
       },
     }));
   };
+
+  const removePerk = (perkToRemove) => {
+    setJobData((prev) => ({
+      ...prev,
+      perks: prev.perks.filter((p) => p !== perkToRemove),
+    }));
+  };
+
+  // Perk input/typeahead handlers
+  const handlePerkInputChange = (e) => {
+    const v = e.target.value;
+    setPerkInput(v);
+    if (v.trim()) {
+      const suggestions = popularPerks.filter(
+        (p) =>
+          p.toLowerCase().includes(v.toLowerCase()) &&
+          !(jobData.perks || []).includes(p)
+      );
+      setFilteredPerks(suggestions);
+    } else {
+      setFilteredPerks([]);
+    }
+  };
+
+  const addPerk = (val) => {
+    const value = (val || "").trim();
+    if (!value) return;
+    setJobData((prev) => {
+      const current = prev.perks || [];
+      if (current.includes(value)) return prev;
+      return { ...prev, perks: [...current, value] };
+    });
+    setPerkInput("");
+    setFilteredPerks([]);
+  };
+
+  const handlePerkKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (filteredPerks.length > 0) {
+        addPerk(filteredPerks[0]);
+      } else {
+        addPerk(perkInput);
+      }
+    } else if (e.key === "Backspace" && !perkInput) {
+      // Remove last perk
+      setJobData((prev) => {
+        const current = prev.perks || [];
+        if (current.length === 0) return prev;
+        return { ...prev, perks: current.slice(0, -1) };
+      });
+    }
+  };
+
+  const selectSuggestion = (s) => addPerk(s);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -186,6 +386,18 @@ const PostJob = () => {
           minExperience: Number(jobData.preferences.minExperience) || 0,
         },
       };
+
+      // If perks is an empty array, remove it so backend receives no perks field (preserve prior behavior)
+      if (Array.isArray(submissionData.perks)) {
+        if (submissionData.perks.length === 0) {
+          // remove empty perks array to preserve prior behavior
+          delete submissionData.perks;
+        } else {
+          // Backend expects a string for perks; convert array to a single string (CSV)
+          // e.g., ["401k", "Health insurance"] -> "401k, Health insurance"
+          submissionData.perks = submissionData.perks.join(", ");
+        }
+      }
 
       // Remove empty fields
       Object.keys(submissionData).forEach((key) => {
@@ -284,19 +496,60 @@ const PostJob = () => {
               />
             </div>
 
-            {/* Perks */}
+            {/* Perks: tokenized input with inline typeahead suggestions */}
             <div>
               <label className="block text-sm md:text-lg font-[Jost-Semibold] text-gray-700 mb-2">
                 Perks & Benefits
               </label>
-              <textarea
-                name="perks"
-                value={jobData.perks}
-                onChange={handleInputChange}
-                placeholder="Health insurance, flexible hours, remote work..."
-                rows={4}
-                className="w-full px-3 py-3 bg-[#FFF7E4] border-2 border-black rounded-[10px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] transition-all duration-200 resize-none"
-              />
+
+              {/* Selected perks tags */}
+              <div className="flex flex-wrap gap-3 mb-3 p-3 bg-[#FFF7E4] border-2 border-black rounded-lg min-h-[48px]">
+                {jobData.perks && jobData.perks.length > 0 ? (
+                  jobData.perks.map((p, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center gap-2 px-3 py-1 bg-[#FFFFF3] border-2 border-black rounded-full"
+                    >
+                      <span className="text-sm">{p}</span>
+                      <button
+                        type="button"
+                        onClick={() => removePerk(p)}
+                        className="text-black font-bold"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-sm text-gray-500">No perks selected</div>
+                )}
+              </div>
+
+              {/* Inline token input + suggestions */}
+              <div className="relative">
+                <input
+                  type="text"
+                  value={perkInput}
+                  onChange={handlePerkInputChange}
+                  onKeyDown={handlePerkKeyDown}
+                  placeholder="Type to search or add perks (press Enter to add)"
+                  className="w-full px-3 py-2 bg-[#FFF7E4] border-2 border-black rounded-[8px]"
+                />
+
+                {filteredPerks.length > 0 && (
+                  <div className="absolute z-20 w-full mt-1 bg-[#FFF7E4] border-2 border-black rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] max-h-40 overflow-y-auto">
+                    {filteredPerks.map((sugg, i) => (
+                      <div
+                        key={i}
+                        onClick={() => selectSuggestion(sugg)}
+                        className="px-4 py-2 cursor-pointer hover:bg-gray-200"
+                      >
+                        {sugg}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -461,30 +714,49 @@ const PostJob = () => {
                 <label className="block text-sm font-[Jost-Medium] text-gray-700 mb-1">
                   Education
                 </label>
-                <input
-                  type="text"
+                <select
                   name="preferences.education"
                   value={jobData.preferences.education}
                   onChange={handleInputChange}
-                  placeholder="e.g., Bachelor's Degree"
                   className="w-full px-3 py-3 bg-[#FFF7E4] border-2 border-black rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)]"
                   required
-                />
+                >
+                  {educationOptions.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
               </div>
               {/* Location */}
               <div className="md:col-span-2">
                 <label className="block text-sm font-[Jost-Medium] text-gray-700 mb-1">
                   Location
                 </label>
-                <input
-                  type="text"
-                  name="preferences.location"
-                  value={jobData.preferences.location}
-                  onChange={handleInputChange}
-                  placeholder="e.g., San Francisco"
-                  className="w-full px-3 py-3 bg-[#FFF7E4] border-2 border-black rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)]"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    name="preferences.location"
+                    value={locationInput || jobData.preferences.location}
+                    onChange={handleLocationInputChange}
+                    placeholder="eg., Bengaluru"
+                    className="w-full px-3 py-3 bg-[#FFF7E4] border-2 border-black rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)]"
+                    required
+                  />
+                  {filteredLocations.length > 0 && (
+                    <div className="absolute z-30 w-full mt-1 bg-[#FFF7E4] border-2 border-black rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] max-h-40 overflow-y-auto">
+                      {filteredLocations.map((loc, i) => (
+                        <div
+                          key={i}
+                          onClick={() => selectLocation(loc)}
+                          className="px-4 py-2 cursor-pointer hover:bg-gray-200"
+                        >
+                          {loc}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

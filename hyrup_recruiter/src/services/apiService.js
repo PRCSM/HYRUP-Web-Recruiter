@@ -265,6 +265,13 @@ class ApiService {
         return this.makeRequest('/jobs/');
     }
 
+    // Delete a job by ID (requires auth)
+    async deleteJob(jobId) {
+        return this.makeRequest(`/jobs/${jobId}`, {
+            method: 'DELETE',
+        });
+    }
+
     // ============ STUDENT ROUTES ============
 
     // Student signup
@@ -382,6 +389,11 @@ class ApiService {
     // Get skills
     async getSkills() {
         return this.makeRequest('/skills/getSkills');
+    }
+
+    // Get locations (public endpoint)
+    async getLocations() {
+        return this.makePublicRequest('/locations');
     }
 
     // Get job preferences
