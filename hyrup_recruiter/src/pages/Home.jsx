@@ -204,7 +204,17 @@ const Home = () => {
                   )}
                 </div>
                 <div>
-                  <button className="bg-[#FFFFF3] hover:bg-[#fefee6] border-2 rounded-[10px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] flex items-center justify-center cursor-pointer w-[60px] h-[50px] sm:w-[73px] sm:h-[58px]">
+                  <button
+                    className="bg-[#FFFFF3] hover:bg-[#fefee6] border-2 rounded-[10px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] flex items-center justify-center cursor-pointer w-[60px] h-[50px] sm:w-[73px] sm:h-[58px]"
+                    onClick={() => {
+                      const site = dashboardData.company?.website;
+                      if (!site) return;
+                      const url = site.startsWith("http") ? site : `https://${site}`;
+                      window.open(url, "_blank", "noopener,noreferrer");
+                    }}
+                    aria-label="Open company website"
+                    title="Open company website"
+                  >
                     <img src="public/images/arrow.png" alt="Arrow icon" />
                   </button>
                 </div>
@@ -219,22 +229,8 @@ const Home = () => {
                     ? dashboardData.company.description
                     : "Company description will appear here once you complete your profile..."}
                 </p>
-                {dashboardData.company?.website && (
-                  <p className="font-[Jost-Regular] text-sm text-blue-600 mt-2">
-                    <a
-                      href={
-                        dashboardData.company.website.startsWith("http")
-                          ? dashboardData.company.website
-                          : `https://${dashboardData.company.website}`
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:underline"
-                    >
-                      {dashboardData.company.website}
-                    </a>
-                  </p>
-                )}
+                {/* Website is intentionally not displayed as a visible link.
+                    The arrow button at the top-right opens the site in a new tab. */}
               </div>
             </div>
           </div>
