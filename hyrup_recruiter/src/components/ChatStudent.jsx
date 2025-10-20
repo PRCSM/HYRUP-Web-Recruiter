@@ -2,14 +2,31 @@ import React from 'react'
 import { useChat } from '../contexts/ChatContext'
 
 function ChatStudent() {
-  const { chats, selectedChatId, selectChat } = useChat()
+  const { chats, selectedChatId, selectChat, loading, currentUser } = useChat()
+
+  if (!currentUser) {
+    return (
+      <div className="bg-[#FFF7E4] rounded-[10px] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] w-[95%] md:w-[60%] lg:w-[25%] h-[87vh] p-4">
+        <h1 className="text-xl text-left md:text-2xl font-[BungeeShade] mb-3 text-black">Applicants</h1>
+        <div className="w-[95%] text-sm text-center text-neutral-600">
+          Please sign in to view chats
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="bg-[#FFF7E4]  rounded-[10px] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] w-[95%] md:w-[60%]  lg:w-[25%] h-[87vh] p-4">
+    <div className="bg-[#FFF7E4] rounded-[10px] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] w-[95%] md:w-[60%] lg:w-[25%] h-[87vh] p-4">
       <h1 className="text-xl text-left md:text-2xl font-[BungeeShade] mb-3 text-black">Applicants</h1>
 
+      {loading && (
+        <div className="w-[95%] text-sm text-center text-neutral-600 mb-4">
+          Loading chats...
+        </div>
+      )}
+
       <div className="flex flex-col gap-4 items-center">
-        {chats.length === 0 && (
+        {chats.length === 0 && !loading && (
           <div className="w-[95%] text-sm text-center text-neutral-600">
             No chats yet. Open a profile and press Chat to start.
           </div>
@@ -23,11 +40,18 @@ function ChatStudent() {
               selectedChatId === c.id ? 'bg-[#FFEDD5]' : 'hover:bg-[#FFEDD5]'
             }`}
           >
-            <img className="h-full rounded-full object-cover border border-black" src={c.img} alt={`${c.name} profile`} />
-            <div className="flex flex-col justify-center items-start overflow-hidden">
-              <h2 className="text-lg font-[Jost-Bold] text-black truncate max-w-[180px]">{c.name}</h2>
-              <p className="text-sm font-[Jost-Regular] text-[#00000091] truncate max-w-[220px]">
-                {c.lastMessage || 'Say hello 👋'}
+            <img 
+              className="h-12 w-12 rounded-full object-cover border border-black" 
+              src={c.img} 
+              alt={`${c.name} profile`}
+              onError={(e) => {
+                e.target.src = 'https://via.placeholder.com/100x100?text=Avatar';
+              }}
+            />
+            <div className="flex flex-col justify-center items-start overflow-hidden flex-1">
+              <h2 className="text-lg font-[Jost-Bold] text-black truncate w-full">{c.name}</h2>
+              <p className="text-sm font-[Jost-Regular] text-[#00000091] truncate w-full">
+                {c.lastMessage}
               </p>
             </div>
           </div>

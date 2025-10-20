@@ -106,18 +106,18 @@ function ChatTextingArea() {
     setShowPreview(false)
   }
 
-  const send = () => {
-    const text = message.trim()
-    if (!selectedChat) return
-    if (!text && !attachment) return
-    const payload = attachment
-      ? [text, makeFileTag(attachment)].filter(Boolean).join('\n')
-      : text
-    sendMessage(payload, true)
-    setMessage('')
-    clearAttachment()
-    setShowPreview(false) // close preview after sending
-  }
+const send = () => {
+  const text = message.trim();
+  if (!selectedChat) return;
+  if (!text && !attachment) return;
+  
+  // Use the Firebase sendMessage function
+  sendMessage(text, attachment || null);
+  
+  setMessage('');
+  clearAttachment();
+  setShowPreview(false);
+};
 
   const onKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
