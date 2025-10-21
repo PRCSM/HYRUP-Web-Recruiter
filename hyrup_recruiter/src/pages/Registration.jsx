@@ -20,10 +20,7 @@ const Registration = () => {
     country: "",
     description: "",
     logo: null,
-    industry: "",
-    size: "",
     companyType: "",
-    founded: "",
     // Recruiter specific data
     recruiterName: "",
     phone: "",
@@ -181,30 +178,15 @@ const Registration = () => {
     try {
       console.log("Starting registration process...");
 
-      // Test basic connectivity first
-      try {
-        console.log("Testing API connectivity...");
-        const testResponse = await fetch(
-          `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/`
-        );
-        console.log("API connectivity test response:", testResponse.status);
-      } catch (connectivityError) {
-        console.error("API connectivity test failed:", connectivityError);
-      }
-
-      // Get Firebase user ID
       const uid = currentUser?.uid;
       if (!uid) {
         throw new Error("User not authenticated");
       }
 
-      // First, register the company - match backend API format exactly
       const companyData = {
-        // Company fields
         companyName: formData.companyName.trim(),
-        companyEmail: formData.email.trim(), // Company email from form
-        industry: formData.industry || "Technology",
-        companySize: formData.size || "1-10",
+        companyEmail: formData.email.trim(),
+        companyType: formData.companyType || "Startup",
         website: formData.website.trim(),
         description: formData.description.trim(),
         location: {
@@ -214,10 +196,8 @@ const Registration = () => {
           country: formData.country.trim(),
           zipcode: formData.pincode.trim(),
         },
-
-        // Recruiter fields (required by backend)
         recruiterName: formData.recruiterName.trim(),
-        recruiterEmail: currentUser.email, // Use Firebase user's email
+        recruiterEmail: currentUser.email,
         recruiterPhone: formData.phone.trim(),
         position: formData.designation || "Recruiter",
         uid: uid,
@@ -378,6 +358,28 @@ const Registration = () => {
                               focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] transition-all duration-200"
                       required
                     />
+                  </div>
+
+                  {/* Company Type Dropdown */}
+                  <div>
+                    <label className="block text-sm md:text-[24px] font-[Jost-Semibold] text-gray-700 mb-2">
+                      Company Type *
+                    </label>
+                    <select
+                      name="companyType"
+                      value={formData.companyType}
+                      onChange={handleInputChange}
+                      className="w-full md:w-[300px] lg:w-[400px] px-3 py-4 bg-[#FFF7E4] border-2 border-black rounded-[10px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] 
+                            focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] transition-all duration-200"
+                      required
+                    >
+                      <option value="">Select Company Type</option>
+                      <option value="Startup">Startup</option>
+                      <option value="MNC">MNC</option>
+                      <option value="SME">SME</option>
+                      <option value="Government">Government</option>
+                      <option value="Non-Profit">Non-Profit</option>
+                    </select>
                   </div>
 
                   {/* Logo Upload */}
