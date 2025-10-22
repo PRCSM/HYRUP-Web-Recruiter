@@ -10,7 +10,7 @@ import animationData from "../../public/animations/business workshop.json";
 import { useAuth } from "../hooks/useAuth";
 const SignUp = () => {
   const navigate = useNavigate();
-  const { currentUser, userType, loading, error, signInWithGoogle, setError } =
+  const { currentUser, userType, loading, error, signInWithGoogle, logout, setError } =
     useAuth();
   const [showErrorModal, setShowErrorModal] = useState(false);
 
@@ -18,10 +18,9 @@ const SignUp = () => {
   useEffect(() => {
     if (currentUser && userType === "recruiter") {
       navigate("/");
-    } else if (currentUser && userType === null) {
-      // User is authenticated but not registered as recruiter
-      navigate("/registration");
     }
+    // Remove the automatic redirect to registration
+    // Let users choose to go to registration manually
   }, [currentUser, userType, navigate]);
 
   // Show error modal when there's an auth error
@@ -111,20 +110,62 @@ const SignUp = () => {
                   </div>
                 )}
 
-                <GoogleSignInButton
-                  className="w-full max-w-[420px] mx-auto px-6 sm:px-8 md:px-10 border-4 gap-5 border-black rounded-[10px]
-                    py-4 flex bg-white justify-center items-center 
-                    hover:cursor-pointer hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.7)] hover:translate-x-[-2px] hover:translate-y-[-2px] 
-                    transition-all duration-200 ease-out active:translate-x-[2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)]
-                    disabled:opacity-50 disabled:cursor-not-allowed font-[Jost-Medium] text-sm sm:text-base"
-                  onSuccess={() => console.log("Sign-in successful")}
-                  onError={(error) => console.error("Sign-in failed:", error)}
-                >
-                  <span className="flex gap-3 items-center justify-center">
-                    Continue with Google
-                    <FaArrowRightLong />
-                  </span>
-                </GoogleSignInButton>
+                {/* Show different content based on authentication status */}
+                {currentUser && userType === null ? (
+                  // User is authenticated but not registered
+                  <div className="space-y-4">
+                    <div className="w-full max-w-[420px] mx-auto p-4 bg-green-100 border-2 border-green-400 rounded-[10px] text-green-700 text-center">
+                      <p className="font-[Jost-Medium] text-sm">
+                        Welcome back! You're signed in as <strong>{currentUser.email}</strong>
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => navigate("/registration")}
+                      className="w-full max-w-[420px] mx-auto px-6 sm:px-8 md:px-10 border-4 gap-5 border-black rounded-[10px]
+                        py-4 flex bg-[#6AB8FA] text-white justify-center items-center 
+                        hover:cursor-pointer hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.7)] hover:translate-x-[-2px] hover:translate-y-[-2px] 
+                        transition-all duration-200 ease-out active:translate-x-[2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)]
+                        font-[Jost-Medium] text-sm sm:text-base"
+                    >
+                      <span className="flex gap-3 items-center justify-center">
+                        Complete Registration
+                        <FaArrowRightLong />
+                      </span>
+                    </button>
+                    <button
+                      onClick={async () => {
+                        try {
+                          await logout();
+                          // The component will automatically re-render with the sign-in button
+                        } catch (error) {
+                          console.error("Error signing out:", error);
+                        }
+                      }}
+                      className="w-full max-w-[420px] mx-auto px-6 sm:px-8 md:px-10 border-2 gap-5 border-gray-400 rounded-[10px]
+                        py-3 flex bg-transparent text-gray-600 justify-center items-center 
+                        hover:cursor-pointer hover:bg-gray-100 transition-all duration-200 ease-out
+                        font-[Jost-Medium] text-sm sm:text-base"
+                    >
+                      Sign in with different account
+                    </button>
+                  </div>
+                ) : (
+                  // User is not authenticated, show Google sign in
+                  <GoogleSignInButton
+                    className="w-full max-w-[420px] mx-auto px-6 sm:px-8 md:px-10 border-4 gap-5 border-black rounded-[10px]
+                      py-4 flex bg-white justify-center items-center 
+                      hover:cursor-pointer hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.7)] hover:translate-x-[-2px] hover:translate-y-[-2px] 
+                      transition-all duration-200 ease-out active:translate-x-[2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)]
+                      disabled:opacity-50 disabled:cursor-not-allowed font-[Jost-Medium] text-sm sm:text-base"
+                    onSuccess={() => console.log("Sign-in successful")}
+                    onError={(error) => console.error("Sign-in failed:", error)}
+                  >
+                    <span className="flex gap-3 items-center justify-center">
+                      Continue with Google
+                      <FaArrowRightLong />
+                    </span>
+                  </GoogleSignInButton>
+                )}
               </div>
             </div>
           </div>

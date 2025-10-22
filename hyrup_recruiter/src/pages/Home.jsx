@@ -60,7 +60,7 @@ const Home = () => {
         console.log("Extracted company data:", companyData);
         console.log("Extracted recruiter data:", recruiterData);
 
-        // Fetch jobs for this recruiter if we have recruiter ID
+        // Fetch jobs and applications for this recruiter if we have recruiter ID
         let jobs = [];
         let applications = [];
 
@@ -74,13 +74,34 @@ const Home = () => {
               jobs = jobsResponse.data || [];
               console.log("Fetched jobs:", jobs);
             }
+
+            // Fetch applications for this recruiter
+            console.log("Fetching applications for recruiter ID:", recruiterData.id);
+            const applicationsResponse = await apiService.getApplicationsByRecruiter(
+              recruiterData.id
+            );
+            if (applicationsResponse.success) {
+              applications = applicationsResponse.data || [];
+              console.log("Fetched applications:", applications);
+            }
           } catch (jobError) {
-            console.error("Error fetching jobs:", jobError);
-            // Continue with empty jobs array
+            console.error("Error fetching jobs or applications:", jobError);
+            // Continue with empty arrays
           }
         }
 
-        // Calculate stats
+        // Map applications to their respective jobs and calculate stats
+        const jobsWithApplications = jobs.map((job) => {
+          const jobApplications = applications.filter(
+            (app) => app.job && app.job._id === job._id
+          );
+          return {
+            ...job,
+            applications: jobApplications,
+            applicantCount: jobApplications.length,
+          };
+        });
+
         const totalJobs = jobs.length;
         const totalApplications = applications.length;
         const shortlisted = applications.filter(
@@ -91,7 +112,7 @@ const Home = () => {
 
         setDashboardData({
           company: companyData,
-          jobs: jobs.slice(0, 4), // Top 4 jobs for display
+          jobs: jobsWithApplications.slice(0, 4), // Top 4 jobs for display
           applications,
           stats: {
             totalJobs,
@@ -317,7 +338,7 @@ const Home = () => {
                     </div>
                     <div className="flex flex-col justify-center items-center text-center flex-shrink-0 ml-2">
                       <h1 className="font-[BungeeInline] text-[20px]">
-                        {job.applications?.length || 0}
+                        {job.applicantCount || 0}
                       </h1>
                       <h1 className="font-[Jost-ExtraBold] text-[16px]">
                         Applicants
