@@ -30,6 +30,13 @@ export function AuthProvider({ children }) {
       // First, try popup method
       try {
         const result = await signInWithPopup(auth, googleProvider);
+        // After a successful popup sign-in, proactively check backend registration
+        try {
+          await checkUserType();
+        } catch (err) {
+          console.warn("checkUserType after popup sign-in failed:", err);
+        }
+
         return result;
       } catch (popupError) {
         console.log("Popup authentication failed:", popupError);
@@ -221,7 +228,12 @@ export function AuthProvider({ children }) {
         if (result) {
           // Successfully signed in via redirect
           console.log("Successfully signed in via redirect:", result.user);
-          // The onAuthStateChanged listener will handle the rest
+          // Proactively check backend registration so SignUp/other pages can react
+          try {
+            await checkUserType();
+          } catch (err) {
+            console.warn("checkUserType after redirect sign-in failed:", err);
+          }
         }
       } catch (error) {
         console.error("Error handling redirect result:", error);
@@ -234,10 +246,35 @@ export function AuthProvider({ children }) {
 
   // Monitor auth state changes
   useEffect(() => {
+    let postRegisterTimeout = null;
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
 
       if (user) {
+        // If we just registered and redirected here, skip an immediate check to avoid redirect flapping.
+        try {
+          const justRegistered = sessionStorage.getItem("hyrup:justRegistered");
+          if (justRegistered) {
+            sessionStorage.removeItem("hyrup:justRegistered");
+            console.log(
+              "Detected recent registration — deferring user-type check to avoid redirect loop."
+            );
+            // Defer the check slightly so that any backend state has time to settle.
+            setLoading(true);
+            postRegisterTimeout = setTimeout(async () => {
+              try {
+                await checkUserType();
+              } catch (err) {
+                console.error("Deferred checkUserType failed:", err);
+              } finally {
+                setLoading(false);
+              }
+            }, 900);
+            return;
+          }
+        } catch {
+          // ignore sessionStorage errors
+        }
         // Only check user type if we're not on the registration or signup page
         // This prevents redirect loops for new users
         const currentPath = window.location.pathname;
@@ -259,7 +296,10 @@ export function AuthProvider({ children }) {
       }
     });
 
-    return unsubscribe;
+    return () => {
+      if (postRegisterTimeout) clearTimeout(postRegisterTimeout);
+      unsubscribe();
+    };
   }, []);
 
   const value = {

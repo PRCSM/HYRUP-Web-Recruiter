@@ -13,11 +13,14 @@ const Registration = () => {
     companyName: "",
     website: "",
     email: "",
+    industry: "",
     street: "",
     city: "",
     pincode: "",
     state: "",
     country: "",
+    companySize: "",
+    foundedYear: "",
     description: "",
     logo: null,
     companyType: "",
@@ -31,6 +34,7 @@ const Registration = () => {
   const [validationErrors, setValidationErrors] = useState({});
   const [registrationChecked, setRegistrationChecked] = useState(false);
   const [isCheckingRegistration, setIsCheckingRegistration] = useState(false);
+  const redirectTimeoutRef = React.useRef(null);
 
   // Check if user is already registered and redirect accordingly
   useEffect(() => {
@@ -50,10 +54,17 @@ const Registration = () => {
 
     const checkRegistrationStatus = async () => {
       if (!currentUser && !loading) {
-        // User is not authenticated, redirect to signup
-        console.log("User not authenticated, redirecting to signup");
-        navigate("/signup");
-        setRegistrationChecked(true);
+        // User is not authenticated, redirect to signup.
+        // Add a short debounce to avoid redirect flapping while auth state settles.
+        console.log("User not authenticated - scheduling redirect to signup");
+        redirectTimeoutRef.current = setTimeout(() => {
+          // Only redirect if still on this page and still not authenticated
+          if (!currentUser && !loading) {
+            console.log("Redirecting to signup now");
+            navigate("/signup");
+            setRegistrationChecked(true);
+          }
+        }, 300);
         return;
       }
 
@@ -70,7 +81,8 @@ const Registration = () => {
             console.log("User is already registered, redirecting to home...");
             console.log("User data:", response.data);
 
-            // User is already registered, redirect to home immediately
+            // Mark that we've checked and redirect to home immediately
+            setRegistrationChecked(true);
             navigate("/", { replace: true });
           } else {
             console.log(
@@ -83,12 +95,19 @@ const Registration = () => {
           // If there's an error checking, let them try to register
         } finally {
           setIsCheckingRegistration(false);
-          setRegistrationChecked(true);
+          // If we didn't already set registrationChecked in the registered branch, set it now
+          setRegistrationChecked((prev) => prev || true);
         }
       }
     };
 
     checkRegistrationStatus();
+    return () => {
+      if (redirectTimeoutRef.current) {
+        clearTimeout(redirectTimeoutRef.current);
+        redirectTimeoutRef.current = null;
+      }
+    };
   }, [
     currentUser,
     loading,
@@ -188,6 +207,7 @@ const Registration = () => {
         companyEmail: formData.email.trim(),
         companyType: formData.companyType || "Startup",
         website: formData.website.trim(),
+        industry: formData.industry?.trim() || "",
         description: formData.description.trim(),
         location: {
           address: formData.street.trim(),
@@ -196,6 +216,10 @@ const Registration = () => {
           country: formData.country.trim(),
           zipcode: formData.pincode.trim(),
         },
+        size: formData.companySize?.trim() || "",
+        founded: formData.foundedYear
+          ? parseInt(formData.foundedYear, 10)
+          : undefined,
         recruiterName: formData.recruiterName.trim(),
         recruiterEmail: currentUser.email,
         recruiterPhone: formData.phone.trim(),
@@ -243,6 +267,12 @@ const Registration = () => {
       // Navigate to dashboard after a short delay to ensure state is updated
       setTimeout(() => {
         console.log("Navigating to home page after registration...");
+        // Mark that we just registered so the auth handler can avoid immediate re-checks
+        try {
+          sessionStorage.setItem("hyrup:justRegistered", "1");
+        } catch (err) {
+          console.warn("Could not set session flag:", err?.message || err);
+        }
         navigate("/", { replace: true });
       }, 500);
     } catch (error) {
@@ -339,6 +369,36 @@ const Registration = () => {
                       required
                     />
                   </div>
+                  {/* Industry */}
+                  <div>
+                    <label className="block text-sm md:text-[24px] font-[Jost-Semibold] text-gray-700 mb-2">
+                      Industry
+                    </label>
+                    <input
+                      type="text"
+                      name="industry"
+                      value={formData.industry}
+                      onChange={handleInputChange}
+                      placeholder="e.g., Technology, Healthcare, Finance"
+                      className="w-full md:w-[300px] lg:w-[400px] px-3 py-4 bg-[#FFF7E4] border-2 border-black rounded-[10px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] 
+                              focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] transition-all duration-200"
+                    />
+                  </div>
+                  {/* Company Size */}
+                  <div>
+                    <label className="block text-sm md:text-[24px] font-[Jost-Semibold] text-gray-700 mb-2">
+                      Company Size
+                    </label>
+                    <input
+                      type="text"
+                      name="companySize"
+                      value={formData.companySize}
+                      onChange={handleInputChange}
+                      placeholder="e.g., 1-10, 11-50, 51-200"
+                      className="w-full md:w-[300px] lg:w-[400px] px-3 py-4 bg-[#FFF7E4] border-2 border-black rounded-[10px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] 
+                              focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] transition-all duration-200"
+                    />
+                  </div>
                 </div>
 
                 {/* Right Column */}
@@ -380,6 +440,22 @@ const Registration = () => {
                       <option value="Government">Government</option>
                       <option value="Non-Profit">Non-Profit</option>
                     </select>
+                  </div>
+
+                  {/* Founded Year */}
+                  <div>
+                    <label className="block text-sm md:text-[24px] font-[Jost-Semibold] text-gray-700 mb-2">
+                      Founded Year
+                    </label>
+                    <input
+                      type="text"
+                      name="foundedYear"
+                      value={formData.foundedYear}
+                      onChange={handleInputChange}
+                      placeholder="e.g., 2020"
+                      className="w-full md:w-[300px] lg:w-[400px] px-3 py-4 bg-[#FFF7E4] border-2 border-black rounded-[10px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] 
+                              focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] transition-all duration-200"
+                    />
                   </div>
 
                   {/* Logo Upload */}

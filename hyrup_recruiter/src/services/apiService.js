@@ -26,13 +26,17 @@ class ApiService {
     async makeRequest(endpoint, options = {}) {
         const token = await this.getAuthToken();
 
+        // Don't force Content-Type on GET requests (avoids unnecessary preflight)
         const config = {
             headers: {
-                'Content-Type': 'application/json',
                 ...options.headers,
             },
             ...options,
         };
+
+        if (options.body && !(options.method && options.method.toUpperCase() === 'GET')) {
+            config.headers['Content-Type'] = 'application/json';
+        }
 
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -67,11 +71,14 @@ class ApiService {
     async makePublicRequest(endpoint, options = {}) {
         const config = {
             headers: {
-                'Content-Type': 'application/json',
                 ...options.headers,
             },
             ...options,
         };
+
+        if (options.body && !(options.method && options.method.toUpperCase() === 'GET')) {
+            config.headers['Content-Type'] = 'application/json';
+        }
 
         const url = `${this.baseURL}${endpoint}`;
 
@@ -211,7 +218,28 @@ class ApiService {
 
     // Get company by UID (public endpoint - no auth required)
     async getCompanyByUID(uid) {
-        return this.makePublicRequest(`/company/by-uid/${uid}`);
+        try {
+            return await this.makePublicRequest(`/company/by-uid/${uid}`);
+        } catch (err) {
+            console.warn('Primary API request failed for getCompanyByUID:', err.message);
+            // Fallback to localhost in development if the configured API is unreachable
+            if (this.baseURL && !this.baseURL.includes('localhost')) {
+                const originalBase = this.baseURL;
+                try {
+                    this.baseURL = 'http://localhost:3000';
+                    const fallbackResp = await this.makePublicRequest(`/company/by-uid/${uid}`);
+                    return fallbackResp;
+                } catch (fallbackErr) {
+                    console.error('Fallback API request also failed:', fallbackErr.message);
+                    // restore original baseURL
+                    this.baseURL = originalBase;
+                    throw fallbackErr;
+                } finally {
+                    this.baseURL = originalBase;
+                }
+            }
+            throw err;
+        }
     }
 
     // Get all companies
