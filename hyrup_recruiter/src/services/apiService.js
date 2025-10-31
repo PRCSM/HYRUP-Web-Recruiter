@@ -348,6 +348,14 @@ class ApiService {
         });
     }
 
+    // Get specific student details by id (recruiter/admin fetching a candidate)
+    async getStudentById(studentId) {
+        return this.makeRequest('/student/StudentDetails', {
+            method: 'POST',
+            body: JSON.stringify({ studentId }),
+        });
+    }
+
     // Get jobs for students
     async getStudentJobs() {
         return this.makeRequest('/student/jobs');

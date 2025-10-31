@@ -29,6 +29,7 @@ function Applicants({
 }) {
   const [viewAll, setViewAll] = useState(false);
   const [selectedApplicant, setSelectedApplicant] = useState(null);
+  const [isFetchingApplicant, setIsFetchingApplicant] = useState(false);
 
   // This is the key change: check if the screen is smaller than the 'md' breakpoint (768px)
   const isSmallScreen = useMediaQuery("(max-width: 767px)");
@@ -62,10 +63,75 @@ function Applicants({
   };
 
   // Reusable component for rendering a single applicant card
+  const handleApplicantClick = async (app) => {
+    // If applicant already has detailed fields, open immediately
+    const hasDetails =
+      app.skills?.length ||
+      app.experience?.length ||
+      app.projects ||
+      app.college;
+
+    if (hasDetails) {
+      setSelectedApplicant(app);
+      return;
+    }
+
+    // Otherwise attempt to fetch full student details from the backend
+    // Determine a candidate/student id from common fields
+    const studentId =
+      app.candidate?._id ||
+      app.candidate?.id ||
+      app.candidateId ||
+      app.profile?._id ||
+      app.userId;
+
+    if (!studentId) {
+      // Fall back to opening with whatever data we have
+      setSelectedApplicant(app);
+      return;
+    }
+
+    try {
+      setIsFetchingApplicant(true);
+      const resp = await apiService.getStudentById(studentId);
+      if (resp && resp.success && resp.data) {
+        const data = resp.data;
+        const detailed = {
+          ...app,
+          // prefer structured fields from server
+          name: data.name || app.name,
+          email: data.email || app.email,
+          phone: data.profile?.phoneNumber || app.phone || "",
+          bio: data.profile?.bio || app.desc || "",
+          img: data.profile?.profilePicture || app.img || "/images/profile.png",
+          skills: Array.isArray(data.skills)
+            ? data.skills
+            : Object.keys(data.user_skills || {}) || app.skills || [],
+          experience: data.experience || app.experience || [],
+          experiences: data.experience || app.experience || [],
+          projects: data.projects || [],
+          college: data.college || data.education || {},
+        };
+
+        setSelectedApplicant(detailed);
+        return;
+      }
+
+      // If response not successful, fall back to partial data
+      setSelectedApplicant(app);
+    } catch (err) {
+      console.error("Failed to fetch student details:", err);
+      // show partial data if fetch fails
+      setSelectedApplicant(app);
+    } finally {
+      setIsFetchingApplicant(false);
+    }
+  };
+
   const renderApplicantCard = (app) => (
     <div
       key={app.id}
-      onClick={() => setSelectedApplicant(app)}
+      onClick={() => handleApplicantClick(app)}
       className="w-full h-[90px] bg-[#FFFFF3] border-2 border-black rounded-[12px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] flex items-center px-4 justify-between cursor-pointer hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] transition-shadow"
     >
       <div className="flex items-center gap-3 overflow-hidden">
@@ -190,6 +256,16 @@ function Applicants({
             applicant={selectedApplicant}
             onClose={() => setSelectedApplicant(null)}
           />
+        </div>
+      )}
+
+      {/* Loading overlay while fetching full applicant details */}
+      {isFetchingApplicant && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white p-6 rounded-[10px] border-2 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,0.7)] flex flex-col items-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mb-4"></div>
+            <div className="text-center">Loading profile…</div>
+          </div>
         </div>
       )}
     </>

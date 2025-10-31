@@ -67,7 +67,46 @@ function Application() {
 
         setApplications(allApplications);
 
-        // Map applications to their respective jobs
+        // Fetch detailed student profiles for all applicants (deduped) and merge into applicant objects
+        const studentIdForApp = (app) =>
+          app.candidate?._id ||
+          app.candidate?.id ||
+          app.candidateId ||
+          app.profile?._id ||
+          app.userId;
+
+        // collect unique student ids
+        const studentIdSet = new Set();
+        allApplications.forEach((app) => {
+          const sid = studentIdForApp(app);
+          if (sid) studentIdSet.add(sid);
+        });
+
+        const studentIds = Array.from(studentIdSet);
+        const studentMap = {}; // id -> details
+
+        if (studentIds.length > 0) {
+          // fetch in parallel with graceful error handling
+          await Promise.all(
+            studentIds.map(async (sid) => {
+              try {
+                const resp = await apiService.getStudentById(sid);
+                if (resp && resp.success && resp.data) {
+                  studentMap[sid] = resp.data;
+                }
+              } catch (err) {
+                console.warn(
+                  "Failed to fetch student details for",
+                  sid,
+                  err?.message || err
+                );
+                // leave studentMap[sid] undefined - we'll fall back to app data
+              }
+            })
+          );
+        }
+
+        // Map applications to their respective jobs and merge student details
         const jobsWithApplications = jobs.map((job) => {
           const jobApplications = allApplications.filter(
             (app) => app.job && app.job._id === job._id
@@ -76,23 +115,53 @@ function Application() {
           return {
             ...job,
             id: job._id, // For compatibility with existing component
-            applicants: jobApplications.map((app) => ({
-              id: app._id,
-              name:
-                app.candidate?.name ||
-                app.candidate?.profile?.FullName ||
-                "Unknown",
-              email: app.candidate?.email || "",
-              profilePicture:
-                app.candidate?.profile?.profilePicture || "/images/profile.png",
-              skills: Object.keys(app.candidate?.user_skills || {}),
-              experience: app.candidate?.experience || [],
-              status: app.status || "applied",
-              appliedAt: app.createdAt,
-              matchScore: app.matchScore || 0,
-              applicationId: app._id,
-              ...app,
-            })),
+            applicants: jobApplications.map((app) => {
+              const sid = studentIdForApp(app);
+              const studentData = sid ? studentMap[sid] : null;
+
+              // helper to extract profile picture and basic fields from either app or studentData
+              const profilePic =
+                studentData?.profile?.profilePicture ||
+                app.candidate?.profile?.profilePicture ||
+                "/images/profile.png";
+
+              const normalized = {
+                id: app._id,
+                name:
+                  studentData?.name ||
+                  app.candidate?.name ||
+                  app.candidate?.profile?.FullName ||
+                  "Unknown",
+                email: studentData?.email || app.candidate?.email || "",
+                profilePicture: profilePic,
+                img: profilePic,
+                desc:
+                  studentData?.profile?.bio ||
+                  app.candidate?.profile?.bio ||
+                  app.candidate?.profile?.about ||
+                  app.candidate?.email ||
+                  "",
+                skills: Array.isArray(studentData?.skills)
+                  ? studentData.skills
+                  : Object.keys(studentData?.user_skills || {}) ||
+                    Object.keys(app.candidate?.user_skills || {}),
+                experiences:
+                  studentData?.experience ||
+                  studentData?.experiences ||
+                  app.candidate?.experience ||
+                  [],
+                projects: studentData?.projects || [],
+                college: studentData?.college || studentData?.education || {},
+                status: app.status || "applied",
+                appliedAt: app.createdAt,
+                matchScore: app.matchScore || 0,
+                match: app.matchScore || 0,
+                applicationId: app._id,
+                ...app,
+              };
+
+              return normalized;
+            }),
           };
         });
 
