@@ -38,14 +38,7 @@ const Registration = () => {
 
   // Check if user is already registered and redirect accordingly
   useEffect(() => {
-    console.log(
-      "Registration page - currentUser:",
-      currentUser,
-      "loading:",
-      loading,
-      "registrationChecked:",
-      registrationChecked
-    );
+    // Registration page mount - logging removed
 
     // Prevent multiple checks
     if (registrationChecked || isCheckingRegistration) {
@@ -56,11 +49,9 @@ const Registration = () => {
       if (!currentUser && !loading) {
         // User is not authenticated, redirect to signup.
         // Add a short debounce to avoid redirect flapping while auth state settles.
-        console.log("User not authenticated - scheduling redirect to signup");
         redirectTimeoutRef.current = setTimeout(() => {
           // Only redirect if still on this page and still not authenticated
           if (!currentUser && !loading) {
-            console.log("Redirecting to signup now");
             navigate("/signup");
             setRegistrationChecked(true);
           }
@@ -72,26 +63,22 @@ const Registration = () => {
         setIsCheckingRegistration(true);
 
         try {
-          console.log("Checking if user is already registered...");
           const response = await apiService.checkUserRegistration(
             currentUser.uid
           );
 
           if (response.success && response.isRegistered) {
-            console.log("User is already registered, redirecting to home...");
-            console.log("User data:", response.data);
+            // User is already registered - redirect
 
             // Mark that we've checked and redirect to home immediately
             setRegistrationChecked(true);
             navigate("/", { replace: true });
           } else {
-            console.log(
-              "User is not registered yet, showing registration form"
-            );
+            // User is not registered yet, showing registration form
             // User is authenticated but not registered, stay on registration page
           }
         } catch (error) {
-          console.error("Error checking registration status:", error);
+          // Error checking registration status
           // If there's an error checking, let them try to register
         } finally {
           setIsCheckingRegistration(false);
@@ -195,7 +182,7 @@ const Registration = () => {
     setError(null);
 
     try {
-      console.log("Starting registration process...");
+      // Starting registration process
 
       const uid = currentUser?.uid;
       if (!uid) {
@@ -240,13 +227,7 @@ const Registration = () => {
         );
       }
 
-      console.log("Registering company with data:", companyData);
       const companyResponse = await apiService.registerCompany(companyData);
-      console.log("Company registration response:", companyResponse);
-
-      // The backend handles both company and recruiter registration in one call
-      console.log("Registration successful!");
-      console.log("Registration response data:", companyResponse);
 
       // Update the AuthContext with the new user data after successful registration
       if (companyResponse.success && companyResponse.data) {
@@ -254,10 +235,7 @@ const Registration = () => {
         try {
           await checkUserType();
         } catch (authError) {
-          console.error(
-            "Error updating auth context after registration:",
-            authError
-          );
+          // Error updating auth context after registration
         }
       }
 
@@ -266,17 +244,16 @@ const Registration = () => {
 
       // Navigate to dashboard after a short delay to ensure state is updated
       setTimeout(() => {
-        console.log("Navigating to home page after registration...");
         // Mark that we just registered so the auth handler can avoid immediate re-checks
         try {
           sessionStorage.setItem("hyrup:justRegistered", "1");
         } catch (err) {
-          console.warn("Could not set session flag:", err?.message || err);
+          // Could not set session flag
         }
         navigate("/", { replace: true });
       }, 500);
     } catch (error) {
-      console.error("Registration error:", error);
+      // Registration error
 
       // Provide more specific error messages
       let errorMessage = "Registration failed. Please try again.";

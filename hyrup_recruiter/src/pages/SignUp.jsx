@@ -10,8 +10,15 @@ import animationData from "../../public/animations/business workshop.json";
 import { useAuth } from "../hooks/useAuth";
 const SignUp = () => {
   const navigate = useNavigate();
-  const { currentUser, userType, loading, error, signInWithGoogle, logout, setError } =
-    useAuth();
+  const {
+    currentUser,
+    userType,
+    loading,
+    error,
+    signInWithGoogle,
+    logout,
+    setError,
+  } = useAuth();
   const [showErrorModal, setShowErrorModal] = useState(false);
 
   // Check if user is already authenticated and redirect accordingly
@@ -34,7 +41,7 @@ const SignUp = () => {
     try {
       await signInWithGoogle();
     } catch (error) {
-      console.error("Retry sign-in failed:", error);
+      // Retry sign-in failed (suppressed)
     }
   };
 
@@ -116,7 +123,8 @@ const SignUp = () => {
                   <div className="space-y-4">
                     <div className="w-full max-w-[420px] mx-auto p-4 bg-green-100 border-2 border-green-400 rounded-[10px] text-green-700 text-center">
                       <p className="font-[Jost-Medium] text-sm">
-                        Welcome back! You're signed in as <strong>{currentUser.email}</strong>
+                        Welcome back! You're signed in as{" "}
+                        <strong>{currentUser.email}</strong>
                       </p>
                     </div>
                     <button
@@ -138,7 +146,8 @@ const SignUp = () => {
                           await logout();
                           // The component will automatically re-render with the sign-in button
                         } catch (error) {
-                          console.error("Error signing out:", error);
+                          if (import.meta.env.DEV)
+                            console.error("Error signing out:", error);
                         }
                       }}
                       className="w-full max-w-[420px] mx-auto px-6 sm:px-8 md:px-10 border-2 gap-5 border-gray-400 rounded-[10px]
@@ -157,8 +166,8 @@ const SignUp = () => {
                       hover:cursor-pointer hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.7)] hover:translate-x-[-2px] hover:translate-y-[-2px] 
                       transition-all duration-200 ease-out active:translate-x-[2px] active:translate-y-[2px] active:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)]
                       disabled:opacity-50 disabled:cursor-not-allowed font-[Jost-Medium] text-sm sm:text-base"
-                    onSuccess={() => console.log("Sign-in successful")}
-                    onError={(error) => console.error("Sign-in failed:", error)}
+                    onSuccess={() => {}}
+                    onError={(error) => {}}
                   >
                     <span className="flex gap-3 items-center justify-center">
                       Continue with Google

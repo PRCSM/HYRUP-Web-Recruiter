@@ -105,20 +105,20 @@ export const getMessagingInstance = async () => {
     const supported = await isSupported();
     if (supported) {
       messaging = getMessaging(app);
-      
+
       // Optional: Check if VAPID key is available
       if (!import.meta.env.VITE_FIREBASE_VAPID_KEY) {
-        console.warn('VAPID key not found. Push notifications may not work.');
+        // VAPID key not found - push notifications may not be available
       }
-      
+
       return messaging;
     }
-    console.warn('Firebase Messaging not supported');
+    if (import.meta.env.DEV) console.warn('Firebase Messaging not supported');
     return null;
   } catch (error) {
-    console.error('Error initializing messaging:', error);
+    // Error initializing messaging - suppress console output
     return null;
   }
 };
 
-export default app;
+export default app;

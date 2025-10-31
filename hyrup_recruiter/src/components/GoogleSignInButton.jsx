@@ -25,7 +25,7 @@ const GoogleSignInButton = ({
         onSuccess(result);
       }
     } catch (error) {
-      console.error("Sign-in error:", error);
+      // Sign-in error (suppressed)
       onError(error);
     } finally {
       setIsLoading(false);

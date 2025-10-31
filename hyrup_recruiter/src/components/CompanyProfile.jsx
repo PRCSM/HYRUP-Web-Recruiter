@@ -18,19 +18,18 @@ function CompanyProfile() {
           throw new Error("User not authenticated");
         }
 
-        console.log("Fetching company data for UID:", currentUser.uid);
+        // Fetching company data for UID (logs removed)
 
         // Use the public endpoint that doesn't require authentication
         const response = await apiService.getCompanyByUID(currentUser.uid);
 
         if (response.success && response.data) {
           setCompanyData(response.data);
-          console.log("Company data fetched successfully:", response.data);
         } else {
           throw new Error(response.message || "Failed to fetch company data");
         }
       } catch (error) {
-        console.error("Error fetching company data:", error);
+        // Error fetching company data
         setError(error.message);
 
         // Set fallback data if available from userData

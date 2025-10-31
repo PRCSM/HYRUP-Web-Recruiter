@@ -27,13 +27,7 @@ const Home = () => {
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-      console.log("fetchDashboardData called with:", {
-        currentUser: currentUser?.uid,
-        userData: userData,
-      });
-
       if (!currentUser?.uid) {
-        console.log("No currentUser.uid, setting loading false");
         setLoading(false);
         return;
       }
@@ -42,11 +36,9 @@ const Home = () => {
         setLoading(true);
 
         // Fetch company information using UID (public endpoint)
-        console.log("Fetching company data for UID:", currentUser.uid);
         const companyResponse = await apiService.getCompanyByUID(
           currentUser.uid
         );
-        console.log("Company response:", companyResponse);
 
         if (!companyResponse.success) {
           throw new Error(
@@ -57,8 +49,7 @@ const Home = () => {
         // Extract company data
         const companyData = companyResponse.data?.company || null;
         const recruiterData = companyResponse.data?.recruiter || null;
-        console.log("Extracted company data:", companyData);
-        console.log("Extracted recruiter data:", recruiterData);
+        // extracted company and recruiter data (logging removed)
 
         // Fetch jobs and applications for this recruiter if we have recruiter ID
         let jobs = [];
@@ -66,26 +57,21 @@ const Home = () => {
 
         if (recruiterData?.id) {
           try {
-            console.log("Fetching jobs for recruiter ID:", recruiterData.id);
             const jobsResponse = await apiService.getJobsByRecruiter(
               recruiterData.id
             );
             if (jobsResponse.success) {
               jobs = jobsResponse.data || [];
-              console.log("Fetched jobs:", jobs);
             }
 
             // Fetch applications for this recruiter
-            console.log("Fetching applications for recruiter ID:", recruiterData.id);
-            const applicationsResponse = await apiService.getApplicationsByRecruiter(
-              recruiterData.id
-            );
+            const applicationsResponse =
+              await apiService.getApplicationsByRecruiter(recruiterData.id);
             if (applicationsResponse.success) {
               applications = applicationsResponse.data || [];
-              console.log("Fetched applications:", applications);
             }
           } catch (jobError) {
-            console.error("Error fetching jobs or applications:", jobError);
+            // Error fetching jobs or applications
             // Continue with empty arrays
           }
         }
@@ -122,7 +108,7 @@ const Home = () => {
           },
         });
       } catch (error) {
-        console.error("Error fetching dashboard data:", error);
+        // Error fetching dashboard data
 
         // Check if it's a "company not found" error vs other errors
         if (
@@ -164,7 +150,6 @@ const Home = () => {
   // Check if we returned from posting a job and refresh data
   useEffect(() => {
     if (location.state?.jobPosted) {
-      console.log("Job was posted, refreshing dashboard data...");
       // Clear the state to prevent repeated refreshes
       navigate(location.pathname, { replace: true });
       // The main useEffect will automatically refetch due to dependency changes
@@ -230,7 +215,9 @@ const Home = () => {
                     onClick={() => {
                       const site = dashboardData.company?.website;
                       if (!site) return;
-                      const url = site.startsWith("http") ? site : `https://${site}`;
+                      const url = site.startsWith("http")
+                        ? site
+                        : `https://${site}`;
                       window.open(url, "_blank", "noopener,noreferrer");
                     }}
                     aria-label="Open company website"

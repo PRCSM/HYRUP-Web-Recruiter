@@ -34,12 +34,13 @@ export function AuthProvider({ children }) {
         try {
           await checkUserType();
         } catch (err) {
-          console.warn("checkUserType after popup sign-in failed:", err);
+          if (import.meta.env.DEV)
+            console.warn("checkUserType after popup sign-in failed:", err);
         }
 
         return result;
       } catch (popupError) {
-        console.log("Popup authentication failed:", popupError);
+        // Popup authentication failed
 
         // Check if it's a popup blocked error
         if (
@@ -47,7 +48,7 @@ export function AuthProvider({ children }) {
           popupError.code === "auth/cancelled-popup-request" ||
           popupError.message.includes("popup")
         ) {
-          console.log("Popup was blocked, falling back to redirect...");
+          // Popup was blocked, falling back to redirect
 
           // Show user a message about redirect
           setError("Popup was blocked. Redirecting to Google Sign-In...");
@@ -68,7 +69,7 @@ export function AuthProvider({ children }) {
         }
       }
     } catch (error) {
-      console.error("Error signing in with Google:", error);
+      // Error signing in with Google
       setError(error.message);
       throw error;
     }
@@ -82,7 +83,7 @@ export function AuthProvider({ children }) {
       setUserType(null);
       setUserData(null);
     } catch (error) {
-      console.error("Error signing out:", error);
+      // Error signing out
       setError(error.message);
       throw error;
     }
@@ -96,7 +97,7 @@ export function AuthProvider({ children }) {
       // Get current user UID
       const currentUserUid = auth.currentUser?.uid;
       if (!currentUserUid) {
-        console.log("No current user UID available");
+        // No current user UID available
         setUserType(null);
         setUserData(null);
         return { type: null, data: null };
@@ -104,15 +105,12 @@ export function AuthProvider({ children }) {
 
       // First, check if user is registered as a company/recruiter using our public endpoint
       try {
-        console.log("Checking if user is registered as recruiter/company...");
+        // Checking if user is registered as recruiter/company
         const registrationResponse = await apiService.checkUserRegistration(
           currentUserUid
         );
         if (registrationResponse.success && registrationResponse.isRegistered) {
-          console.log(
-            "User found as registered recruiter:",
-            registrationResponse.data
-          );
+          // User found as registered recruiter
           setUserType("recruiter");
           setUserData({
             id: registrationResponse.data.recruiterId,
@@ -132,11 +130,8 @@ export function AuthProvider({ children }) {
             },
           };
         }
-      } catch (error) {
-        console.log(
-          "Registration check failed, trying other methods:",
-          error.message
-        );
+      } catch {
+        // Registration check failed, trying other methods
       }
 
       // Try to check if user exists as student
@@ -149,7 +144,6 @@ export function AuthProvider({ children }) {
         }
       } catch {
         // Student check failed
-        console.log("User is not a student");
       }
 
       // Try recruiter login (legacy check)
@@ -161,16 +155,16 @@ export function AuthProvider({ children }) {
           return { type: "recruiter", data: recruiterResponse.user };
         }
       } catch {
-        console.log("Legacy recruiter check failed");
+        // Legacy recruiter check failed
       }
 
       // User doesn't exist in any system
-      console.log("User not found in any system");
+      // User not found in any system
       setUserType(null);
       setUserData(null);
       return { type: null, data: null };
     } catch (error) {
-      console.error("Error checking user type:", error);
+      // Error checking user type
       setError(error.message);
       setUserType(null);
       setUserData(null);
@@ -191,7 +185,7 @@ export function AuthProvider({ children }) {
       }, 500);
       return response;
     } catch (error) {
-      console.error("Error registering recruiter:", error);
+      // Error registering recruiter
       setError(error.message);
       throw error;
     }
@@ -206,7 +200,7 @@ export function AuthProvider({ children }) {
       setUserData(response.user);
       return response;
     } catch (error) {
-      console.error("Error registering student:", error);
+      // Error registering student
       setError(error.message);
       throw error;
     }
@@ -227,16 +221,15 @@ export function AuthProvider({ children }) {
         const result = await getRedirectResult(auth);
         if (result) {
           // Successfully signed in via redirect
-          console.log("Successfully signed in via redirect:", result.user);
           // Proactively check backend registration so SignUp/other pages can react
           try {
             await checkUserType();
           } catch (err) {
-            console.warn("checkUserType after redirect sign-in failed:", err);
+            // checkUserType after redirect sign-in failed
           }
         }
       } catch (error) {
-        console.error("Error handling redirect result:", error);
+        // Error handling redirect result
         setError(error.message);
       }
     };
@@ -256,16 +249,14 @@ export function AuthProvider({ children }) {
           const justRegistered = sessionStorage.getItem("hyrup:justRegistered");
           if (justRegistered) {
             sessionStorage.removeItem("hyrup:justRegistered");
-            console.log(
-              "Detected recent registration — deferring user-type check to avoid redirect loop."
-            );
+            // Detected recent registration — deferring user-type check to avoid redirect loop.
             // Defer the check slightly so that any backend state has time to settle.
             setLoading(true);
             postRegisterTimeout = setTimeout(async () => {
               try {
                 await checkUserType();
               } catch (err) {
-                console.error("Deferred checkUserType failed:", err);
+                // Deferred checkUserType failed
               } finally {
                 setLoading(false);
               }
@@ -281,9 +272,8 @@ export function AuthProvider({ children }) {
         if (currentPath !== "/registration" && currentPath !== "/signup") {
           try {
             await checkUserType();
-          } catch (error) {
-            console.error("Error checking user type:", error);
-            // Don't set error here as it might be normal for new users
+          } catch {
+            // Error checking user type
           }
         }
         // Always set loading to false after handling auth state

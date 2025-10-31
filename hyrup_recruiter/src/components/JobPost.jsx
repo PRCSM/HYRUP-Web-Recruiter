@@ -73,7 +73,7 @@ const PostJob = () => {
         const skills = await apiService.getSkills();
         setAllSkills(skills);
       } catch (error) {
-        console.error("Error fetching skills:", error);
+        // Error fetching skills - fallback to defaults
         // Fallback to default skills
         setAllSkills([
           "JavaScript",
@@ -112,7 +112,7 @@ const PostJob = () => {
           : [];
         setAllLocations(locs);
       } catch (err) {
-        console.error("Error fetching locations:", err);
+        // Error fetching locations - fallback to defaults
         // Fallback to some common cities
         setAllLocations([
           "Bengaluru",
@@ -134,10 +134,9 @@ const PostJob = () => {
           );
           if (companyResponse.success && companyResponse.data?.recruiter?.id) {
             setRecruiterId(companyResponse.data.recruiter.id);
-            console.log("Set recruiter ID:", companyResponse.data.recruiter.id);
           }
         } catch (error) {
-          console.error("Error fetching recruiter ID:", error);
+          // Error fetching recruiter ID
         }
       }
     };
@@ -165,11 +164,13 @@ const PostJob = () => {
                 new window.google.maps.places.AutocompleteService();
             }
           } catch (err) {
-            console.warn("Google Maps Places failed to initialize:", err);
+            if (import.meta.env.DEV)
+              console.warn("Google Maps Places failed to initialize:", err);
           }
         };
         s.onerror = (e) => {
-          console.warn("Failed to load Google Maps script", e);
+          if (import.meta.env.DEV)
+            console.warn("Failed to load Google Maps script", e);
         };
         document.head.appendChild(s);
       } else {
@@ -250,7 +251,7 @@ const PostJob = () => {
               setFilteredLocations(filtered);
             }
           } catch (err) {
-            console.warn("Places predictions error:", err);
+            // Places predictions failed; use local filtering
             const filtered = allLocations.filter((loc) =>
               loc.toLowerCase().includes(v.toLowerCase())
             );
@@ -406,7 +407,7 @@ const PostJob = () => {
         }
       });
 
-      console.log("Submitting job data:", submissionData);
+      // Submitting job data (debug logs removed)
 
       const response = await apiService.postJob(submissionData);
 
@@ -418,7 +419,7 @@ const PostJob = () => {
         throw new Error(response.message || "Failed to post job");
       }
     } catch (error) {
-      console.error("Error posting job:", error);
+      // Error posting job
       setError(error.message || "Failed to post job. Please try again.");
     } finally {
       setIsSubmitting(false);

@@ -32,7 +32,6 @@ function Application() {
         setError(null);
 
         // First get the recruiter ID
-        console.log("Fetching company data for UID:", currentUser.uid);
         const companyResponse = await apiService.getCompanyByUID(
           currentUser.uid
         );
@@ -47,7 +46,6 @@ function Application() {
         }
 
         setRecruiterId(recruiterData.id);
-        console.log("Found recruiter ID:", recruiterData.id);
 
         // Fetch jobs by recruiter ID
         const jobsResponse = await apiService.getJobsByRecruiter(
@@ -62,8 +60,7 @@ function Application() {
           ? applicationsResponse.data || []
           : [];
 
-        console.log("Fetched jobs:", jobs);
-        console.log("Fetched applications:", allApplications);
+        // fetched jobs and applications (logging removed)
 
         setApplications(allApplications);
 
@@ -91,15 +88,14 @@ function Application() {
             studentIds.map(async (sid) => {
               try {
                 const resp = await apiService.getStudentById(sid);
-                if (resp && resp.success && resp.data) {
-                  studentMap[sid] = resp.data;
+                // API returns { success: true, student: {...} } per docs
+                const data =
+                  resp && (resp.student || resp.data || resp.user || resp);
+                if (resp && resp.success && data) {
+                  studentMap[sid] = data;
                 }
               } catch (err) {
-                console.warn(
-                  "Failed to fetch student details for",
-                  sid,
-                  err?.message || err
-                );
+                // Failed to fetch student details for sid; ignore and continue
                 // leave studentMap[sid] undefined - we'll fall back to app data
               }
             })
@@ -128,6 +124,8 @@ function Application() {
               const normalized = {
                 id: app._id,
                 name:
+                  studentData?.profile?.FullName ||
+                  studentData?.profile?.fullName ||
                   studentData?.name ||
                   app.candidate?.name ||
                   app.candidate?.profile?.FullName ||
@@ -137,6 +135,7 @@ function Application() {
                 img: profilePic,
                 desc:
                   studentData?.profile?.bio ||
+                  studentData?.profile?.about ||
                   app.candidate?.profile?.bio ||
                   app.candidate?.profile?.about ||
                   app.candidate?.email ||
@@ -166,7 +165,6 @@ function Application() {
         });
 
         setJobs(jobsWithApplications);
-        console.log("Processed jobs with applications:", jobsWithApplications);
 
         // If there's a job ID from URL, find and select that job
         if (jobIdFromUrl && jobsWithApplications.length > 0) {
@@ -175,13 +173,10 @@ function Application() {
           );
           if (jobIndex !== -1) {
             setSelectedIdx(jobIndex);
-            console.log(
-              `Pre-selected job at index ${jobIndex} for ID: ${jobIdFromUrl}`
-            );
           }
         }
       } catch (error) {
-        console.error("Error fetching jobs and applications:", error);
+        // Error fetching jobs and applications
         setError(`Failed to load applications data: ${error.message}`);
         // Set fallback empty state
         setJobs([]);
@@ -216,7 +211,8 @@ function Application() {
         })
       );
     } catch (error) {
-      console.error("Error updating application status:", error);
+      if (import.meta.env.DEV)
+        console.error("Error updating application status:", error);
       alert("Failed to update application status. Please try again.");
     }
   };
@@ -226,6 +222,31 @@ function Application() {
     setSelectedIdx(idx);
     // On any screen, set this to true to trigger the modal on smaller devices.
     setShowApplicantsModal(true);
+  };
+
+  // Handler called when a job is removed on the server. Update local state accordingly.
+  const handleRemoveJob = (jobId) => {
+    setJobs((currentJobs) => {
+      const index = currentJobs.findIndex(
+        (j) => j.id === jobId || j._id === jobId
+      );
+      const newJobs = currentJobs.filter(
+        (j) => j.id !== jobId && j._id !== jobId
+      );
+
+      // Adjust selected index to a valid position
+      setSelectedIdx((curIdx) => {
+        if (newJobs.length === 0) return 0;
+        if (index === -1) return curIdx; // removed job not found in current list
+        if (index < curIdx) return Math.max(0, curIdx - 1);
+        if (index === curIdx) return 0; // select first job if the selected one was removed
+        return curIdx;
+      });
+
+      // Close any open applicants modal
+      setShowApplicantsModal(false);
+      return newJobs;
+    });
   };
 
   // Prepares a simplified list of jobs for the Intership component.
@@ -291,6 +312,7 @@ function Application() {
                 <Applicants
                   selectedJob={jobs[selectedIdx]}
                   onUpdateStatus={handleUpdateApplicantStatus}
+                  onRemoveJob={handleRemoveJob}
                 />
               )}
             </div>
@@ -306,6 +328,7 @@ function Application() {
             selectedJob={jobs[selectedIdx]}
             onUpdateStatus={handleUpdateApplicantStatus}
             onClose={() => setShowApplicantsModal(false)}
+            onRemoveJob={handleRemoveJob}
           />
         </div>
       )}

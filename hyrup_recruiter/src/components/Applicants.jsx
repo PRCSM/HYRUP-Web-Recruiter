@@ -94,16 +94,25 @@ function Applicants({
     try {
       setIsFetchingApplicant(true);
       const resp = await apiService.getStudentById(studentId);
-      if (resp && resp.success && resp.data) {
-        const data = resp.data;
+      // API may return { success: true, student: {...} } or older shapes with data/user
+      const data = resp && (resp.student || resp.data || resp.user || resp);
+      if (resp && resp.success && data) {
         const detailed = {
           ...app,
-          // prefer structured fields from server
-          name: data.name || app.name,
+          // prefer structured fields from server according to API docs
+          name:
+            data.profile?.FullName ||
+            data.profile?.fullName ||
+            data.name ||
+            app.name,
           email: data.email || app.email,
-          phone: data.profile?.phoneNumber || app.phone || "",
-          bio: data.profile?.bio || app.desc || "",
-          img: data.profile?.profilePicture || app.img || "/images/profile.png",
+          phone: data.phone || data.profile?.phone || app.phone || "",
+          bio: data.profile?.bio || data.profile?.about || app.desc || "",
+          img:
+            data.profile?.profilePicture ||
+            data.profile?.profilepicture ||
+            app.img ||
+            "/images/profile.png",
           skills: Array.isArray(data.skills)
             ? data.skills
             : Object.keys(data.user_skills || {}) || app.skills || [],
@@ -120,8 +129,7 @@ function Applicants({
       // If response not successful, fall back to partial data
       setSelectedApplicant(app);
     } catch (err) {
-      console.error("Failed to fetch student details:", err);
-      // show partial data if fetch fails
+      // Failed to fetch student details; show partial data
       setSelectedApplicant(app);
     } finally {
       setIsFetchingApplicant(false);
@@ -307,7 +315,8 @@ function Applicants({
           break;
         } catch (error) {
           lastErr = error;
-          console.warn(`Attempt ${attempt} to delete job failed:`, error);
+          if (import.meta.env.DEV)
+            console.warn(`Attempt ${attempt} to delete job failed:`, error);
           // Try to detect auth/permission issues
           const msg = (error && error.message) || "";
           const status = error?.status || null;
@@ -332,7 +341,8 @@ function Applicants({
       }
 
       if (lastErr) {
-        console.error("Failed to delete job after retries:", lastErr);
+        if (import.meta.env.DEV)
+          console.error("Failed to delete job after retries:", lastErr);
         // Distinguish network-level failures (couldn't reach backend) from server errors
         const msg =
           lastErr?.message || "Failed to delete job. Please try again later.";

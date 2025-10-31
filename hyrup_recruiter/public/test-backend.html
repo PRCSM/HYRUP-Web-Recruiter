@@ -17,7 +17,7 @@
             const resultDiv = document.getElementById('result');
 
             try {
-                console.log('Testing backend connectivity...');
+                // console.log('Testing backend connectivity...');
                 resultDiv.innerHTML = '<p>Testing backend connection...</p>';
 
                 // Test basic connectivity
@@ -28,7 +28,7 @@
                     }
                 });
 
-                console.log('Response:', response);
+                // console.log('Response:', response);
                 resultDiv.innerHTML = `
                     <p><strong>Backend Status:</strong> ${response.status} ${response.statusText}</p>
                     <p><strong>Response OK:</strong> ${response.ok}</p>
@@ -61,7 +61,7 @@
                 });
 
                 const companyResult = await companyResponse.text();
-                console.log('Company registration response:', companyResult);
+                // console.log('Company registration response:', companyResult);
 
                 resultDiv.innerHTML += `
                     <p><strong>Company Registration Test:</strong> ${companyResponse.status} ${companyResponse.statusText}</p>
@@ -69,7 +69,7 @@
                 `;
 
             } catch (error) {
-                console.error('Backend test error:', error);
+                // console.error('Backend test error:', error);
                 resultDiv.innerHTML = `
                     <p><strong>Error:</strong> ${error.message}</p>
                     <p><strong>Error Type:</strong> ${error.name}</p>

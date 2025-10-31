@@ -16,8 +16,8 @@ class ApiService {
                 return await user.getIdToken();
             }
             return null;
-        } catch (error) {
-            console.error('Error getting auth token:', error);
+        } catch {
+            // Failed to get auth token; return null and let callers handle unauthenticated flows
             return null;
         }
     }
@@ -44,27 +44,16 @@ class ApiService {
 
         const url = `${this.baseURL}${endpoint}`;
 
-        console.log(`Making API request to: ${url}`);
-        console.log('Request config:', { ...config, headers: { ...config.headers } });
+        // Debug logs removed for production/security reasons
 
-        try {
-            const response = await fetch(url, config);
+        const response = await fetch(url, config);
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ message: 'Network error' }));
-                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-            }
-
-            return await response.json();
-        } catch (error) {
-            console.error(`API request failed: ${endpoint}`, error);
-            console.error('Error details:', {
-                name: error.name,
-                message: error.message,
-                stack: error.stack
-            });
-            throw error;
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: 'Network error' }));
+            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
         }
+
+        return await response.json();
     }
 
     // Helper method for public (non-authenticated) requests
@@ -82,27 +71,16 @@ class ApiService {
 
         const url = `${this.baseURL}${endpoint}`;
 
-        console.log(`Making public API request to: ${url}`);
-        console.log('Request config:', { ...config, headers: { ...config.headers } });
+        // Debug logs removed for production/security reasons
 
-        try {
-            const response = await fetch(url, config);
+        const response = await fetch(url, config);
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ message: 'Network error' }));
-                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-            }
-
-            return await response.json();
-        } catch (error) {
-            console.error(`Public API request failed: ${endpoint}`, error);
-            console.error('Error details:', {
-                name: error.name,
-                message: error.message,
-                stack: error.stack
-            });
-            throw error;
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: 'Network error' }));
+            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
         }
+
+        return await response.json();
     }
 
     // Helper method for file uploads
@@ -121,19 +99,14 @@ class ApiService {
 
         const url = `${this.baseURL}${endpoint}`;
 
-        try {
-            const response = await fetch(url, config);
+        const response = await fetch(url, config);
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ message: 'Network error' }));
-                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-            }
-
-            return await response.json();
-        } catch (error) {
-            console.error(`File upload failed: ${endpoint}`, error);
-            throw error;
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: 'Network error' }));
+            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
         }
+
+        return await response.json();
     }
 
     // ============ AUTHENTICATION ============
@@ -221,7 +194,7 @@ class ApiService {
         try {
             return await this.makePublicRequest(`/company/by-uid/${uid}`);
         } catch (err) {
-            console.warn('Primary API request failed for getCompanyByUID:', err.message);
+            // Primary request failed - trying fallback. Avoid logging sensitive details.
             // Fallback to localhost in development if the configured API is unreachable
             if (this.baseURL && !this.baseURL.includes('localhost')) {
                 const originalBase = this.baseURL;
@@ -230,7 +203,8 @@ class ApiService {
                     const fallbackResp = await this.makePublicRequest(`/company/by-uid/${uid}`);
                     return fallbackResp;
                 } catch (fallbackErr) {
-                    console.error('Fallback API request also failed:', fallbackErr.message);
+                    // Fallback also failed; propagate error
+
                     // restore original baseURL
                     this.baseURL = originalBase;
                     throw fallbackErr;
