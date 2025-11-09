@@ -24,6 +24,7 @@ const Home = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [logoUrl, setLogoUrl] = useState("public/images/default-logo.webp");
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -70,7 +71,7 @@ const Home = () => {
             if (applicationsResponse.success) {
               applications = applicationsResponse.data || [];
             }
-          } catch (jobError) {
+          } catch {
             // Error fetching jobs or applications
             // Continue with empty arrays
           }
@@ -156,6 +157,31 @@ const Home = () => {
     }
   }, [location.state?.jobPosted, navigate, location.pathname]);
 
+  useEffect(() => {
+    const fetchLogoFromLocalStorageAndCache = async () => {
+      try {
+        const localStorageLogo = localStorage.getItem("companyLogo");
+        if (localStorageLogo) {
+          setLogoUrl(localStorageLogo);
+        } else if ("caches" in window) {
+          const cache = await caches.open("logo-cache");
+          const response = await cache.match(
+            `/uploadedLogo/${localStorage.getItem("companyLogoName")}`
+          );
+          if (response) {
+            const blob = await response.blob();
+            const objectURL = URL.createObjectURL(blob);
+            setLogoUrl(objectURL);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching logo from localStorage or cache:", error);
+      }
+    };
+
+    fetchLogoFromLocalStorageAndCache();
+  }, []);
+
   if (loading) {
     return (
       <div className="bg-[#FFFFF3] min-h-screen flex items-center justify-center">
@@ -189,10 +215,7 @@ const Home = () => {
                 <div className="w-[100px] h-[80px] sm:w-[120px] sm:h-[98px] bg-[#FBF3E7] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] rounded-[10px] flex justify-center items-center flex-shrink-0">
                   <img
                     className="w-[59px] h-[59px]"
-                    src={
-                      dashboardData.company?.logo ||
-                      "public/images/Googlelogo.webp"
-                    }
+                    src={logoUrl}
                     alt="Company Logo"
                   />
                 </div>
@@ -302,7 +325,7 @@ const Home = () => {
         <div className="flex flex-col justify-center items-center sm:items-end lg:justify-center lg:items-center w-full lg:w-auto">
           <h1 className="font-[BungeeShade] text-3xl mb-2">OPEN POSITIONS</h1>
           <div className="w-full max-w-md bg-[#FBF3E7] border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] rounded-[10px] flex flex-col justify-between items-center gap-6 p-6">
-            <div className="flex flex-col justify-center items-center gap-4 w-full">
+            <div className="flex flex-col justify_center items-center gap-4 w-full">
               {dashboardData.jobs.length > 0 ? (
                 dashboardData.jobs.map((job) => (
                   <div

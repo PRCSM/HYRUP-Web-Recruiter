@@ -141,6 +141,36 @@ const Registration = () => {
         ...prev,
         logo: file,
       }));
+
+      // Display the uploaded image
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const uploadedImage = event.target.result;
+        const imagePreviewElement = document.getElementById("logo-preview");
+        const statusElement = document.getElementById("upload-status");
+        if (imagePreviewElement) {
+          imagePreviewElement.src = uploadedImage;
+        }
+        if (statusElement) {
+          statusElement.textContent = `Uploaded: ${file.name}`;
+        }
+
+        // Store the uploaded image in a cookie
+        document.cookie = `uploadedLogo=${uploadedImage}; path=/; max-age=86400`; // Expires in 1 day
+
+        // Store the uploaded image in web cache
+        if ("caches" in window) {
+          caches.open("logo-cache").then((cache) => {
+            const blob = new Blob([uploadedImage], { type: file.type });
+            const response = new Response(blob);
+            cache.put(`/uploadedLogo/${file.name}`, response);
+          });
+        }
+
+        // Store the uploaded image in localStorage
+        localStorage.setItem("companyLogo", uploadedImage);
+      };
+      reader.readAsDataURL(file);
     } else {
       alert("File size must be less than 1.2 MB");
     }
@@ -235,7 +265,7 @@ const Registration = () => {
         try {
           await checkUserType();
         } catch (authError) {
-          // Error updating auth context after registration
+          console.error(authError); // Log the error for debugging
         }
       }
 
@@ -248,7 +278,7 @@ const Registration = () => {
         try {
           sessionStorage.setItem("hyrup:justRegistered", "1");
         } catch (err) {
-          // Could not set session flag
+          console.error(err); // Log the error for debugging
         }
         navigate("/", { replace: true });
       }, 500);
@@ -459,6 +489,19 @@ const Registration = () => {
                         <p className="text-xs text-gray-500">
                           (Max. File size: 1.2 MB)
                         </p>
+                        {/* Preview and status display */}
+                        <div className="mt-2">
+                          <img
+                            id="logo-preview"
+                            src=""
+                            alt="Logo Preview"
+                            className="hidden w-24 h-24 object-cover rounded-full mx-auto"
+                          />
+                          <p
+                            id="upload-status"
+                            className="text-xs text-center text-gray-500"
+                          ></p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -698,6 +741,13 @@ const Registration = () => {
                 </button>
               </div>
             </form>
+
+            <img
+              id="logo-preview"
+              src=""
+              alt="Logo Preview"
+              className="hidden w-24 h-24 object-cover rounded-full mx-auto"
+            />
           </div>
         </div>
       </div>

@@ -18,18 +18,19 @@ function CompanyProfile() {
           throw new Error("User not authenticated");
         }
 
-        // Fetching company data for UID (logs removed)
+        console.log("Fetching company data for UID:", currentUser.uid);
 
         // Use the public endpoint that doesn't require authentication
         const response = await apiService.getCompanyByUID(currentUser.uid);
 
         if (response.success && response.data) {
           setCompanyData(response.data);
+          console.log("Company data fetched successfully:", response.data);
         } else {
           throw new Error(response.message || "Failed to fetch company data");
         }
       } catch (error) {
-        // Error fetching company data
+        console.error("Error fetching company data:", error);
         setError(error.message);
 
         // Set fallback data if available from userData
@@ -96,11 +97,56 @@ function CompanyProfile() {
 
       <div className="w-full h-auto custom-scrollbar overflow-y-auto md:w-[600px] lg:w-[830px] md:h-auto lg:h-[540px] p-8 bg-[#FBF3E7] relative border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] rounded-[10px] flex flex-col items-start justify-start gap-5">
         <div className="flex flex-col md:flex-row justify-start items-center md:items-start md:gap-10 w-full">
-          <img
-            className="scale-75 md:scale-100 w-[200px] h-[160px] rounded-[10px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] object-contain border-2 border-black"
-            src={company.logo || "/images/Googlelogo.webp"}
-            alt={`${company.name || "Company"} Logo`}
-          />
+          <div className="relative w-[200px] h-[160px] rounded-[10px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] object-contain border-2 border-black">
+            <img
+              className="w-full h-full object-cover"
+              src={company.logo || "/images/Googlelogo.webp"}
+              alt={`${company.name || "Company"} Logo`}
+            />
+            <button
+              className="absolute top-2 right-2 bg-gray-200 rounded-full p-1 hover:bg-gray-300"
+              onClick={() => {
+                const fileInput = document.createElement("input");
+                fileInput.type = "file";
+                fileInput.accept = "image/*";
+                fileInput.onchange = (e) => {
+                  const file = e.target.files[0];
+                  if (file && file.size <= 1.2 * 1024 * 1024) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                      const uploadedImage = event.target.result;
+                      setCompanyData((prev) => ({
+                        ...prev,
+                        company: {
+                          ...prev.company,
+                          logo: uploadedImage,
+                        },
+                      }));
+
+                      // Store the uploaded image in localStorage
+                      localStorage.setItem("companyLogo", uploadedImage);
+
+                      // Store the uploaded image in web cache
+                      if ("caches" in window) {
+                        caches.open("logo-cache").then((cache) => {
+                          const blob = new Blob([file], { type: file.type });
+                          const response = new Response(blob);
+                          cache.put(`/uploadedLogo/${file.name}`, response);
+                          console.log("Stored logo in cache:", response); // Debugging log
+                        });
+                      }
+                    };
+                    reader.readAsDataURL(file);
+                  } else {
+                    alert("File size must be less than 1.2 MB");
+                  }
+                };
+                fileInput.click();
+              }}
+            >
+              ✏️
+            </button>
+          </div>
           <div className="flex flex-col justify-center gap-3 items-center md:items-start w-[90%] md:w-[55%]">
             <h1 className="font-[Jost-ExtraBold] text-5xl">
               {company.name || "Your Company"}
