@@ -94,32 +94,50 @@ function Applicants({
     try {
       setIsFetchingApplicant(true);
       const resp = await apiService.getStudentById(studentId);
-      // API may return { success: true, student: {...} } or older shapes with data/user
-      const data = resp && (resp.student || resp.data || resp.user || resp);
+
+      // API returns { success: true, student: {...}, user: {...} }
+      const data = resp && (resp.student || resp.user || resp.data || resp);
+
       if (resp && resp.success && data) {
+        // Map backend Student model fields to StudentProfile component props
         const detailed = {
           ...app,
-          // prefer structured fields from server according to API docs
-          name:
-            data.profile?.FullName ||
-            data.profile?.fullName ||
-            data.name ||
-            app.name,
-          email: data.email || app.email,
-          phone: data.phone || data.profile?.phone || app.phone || "",
-          bio: data.profile?.bio || data.profile?.about || app.desc || "",
+          // Basic Info
+          name: data.profile?.FullName || data.name || app.name || "N/A",
+          email: data.email || app.email || "N/A",
+          phone: data.phone || app.phone || "N/A",
+
+          // Bio and About
+          bio:
+            data.profile?.bio ||
+            data.profile?.about ||
+            app.desc ||
+            "No bio provided.",
+
+          // Profile Picture
           img:
             data.profile?.profilePicture ||
-            data.profile?.profilepicture ||
             app.img ||
-            "/images/profile.png",
-          skills: Array.isArray(data.skills)
+            "https://i.pravatar.cc/150",
+
+          // Skills - convert object to array of skill names
+          skills: data.user_skills
+            ? Object.keys(data.user_skills)
+            : Array.isArray(data.skills)
             ? data.skills
-            : Object.keys(data.user_skills || {}) || app.skills || [],
-          experience: data.experience || app.experience || [],
-          experiences: data.experience || app.experience || [],
-          projects: data.projects || [],
-          college: data.college || data.education || {},
+            : app.skills || [],
+
+          // Experience - normalize to array
+          experience: Array.isArray(data.experience) ? data.experience : [],
+          experiences: Array.isArray(data.experience) ? data.experience : [],
+
+          // Projects - normalize to array
+          projects: Array.isArray(data.projects) ? data.projects : [],
+          project: Array.isArray(data.projects) ? data.projects : [],
+
+          // Education/College Info
+          college: data.education || data.college || {},
+          education: data.education || data.college || {},
         };
 
         setSelectedApplicant(detailed);
@@ -129,6 +147,7 @@ function Applicants({
       // If response not successful, fall back to partial data
       setSelectedApplicant(app);
     } catch (err) {
+      console.error("Failed to fetch student details:", err);
       // Failed to fetch student details; show partial data
       setSelectedApplicant(app);
     } finally {

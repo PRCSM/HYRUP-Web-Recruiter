@@ -11,6 +11,8 @@ import {
   doc,
   addDoc,
   setDoc,
+  getDoc,
+  deleteDoc,
   onSnapshot,
   query,
   where,
@@ -33,6 +35,9 @@ export const ChatProvider = ({ children }) => {
   const [pendingChat, setPendingChat] = useState(null);
   const [authInitialized, setAuthInitialized] = useState(false);
   const [chatsError, setChatsError] = useState(null);
+
+  // ✅ Track ongoing chat creation to prevent duplicates
+  const [creatingChats, setCreatingChats] = useState(new Set());
 
   // ✅ Generate consistent chat ID for two users
   const generateChatId = (userId1, userId2) => {
@@ -221,31 +226,51 @@ export const ChatProvider = ({ children }) => {
     return () => unsubscribe();
   }, [selectedChatId]);
 
-  // ✅ Add or find existing chat - FIXED TO USE setDoc INSTEAD OF updateDoc
+  // ✅ Add or find existing chat - PREVENTS DUPLICATES
   const addChat = async (applicant) => {
     if (!currentUser || !applicant) {
       // Missing current user or applicant
       return null;
     }
 
+    // Generate consistent chat ID based on sorted user IDs
+    const chatId = generateChatId(currentUser.uid, applicant.id);
+
+    // Check if we're already creating this chat (prevent rapid duplicate calls)
+    if (creatingChats.has(chatId)) {
+      // Already creating this chat, just select it and return
+      setSelectedChatId(chatId);
+      return chatId;
+    }
+
     setLoading(true);
+
+    // Mark this chat as being created
+    setCreatingChats((prev) => new Set(prev).add(chatId));
+
     try {
-      // Generate consistent chat ID
-      const chatId = generateChatId(currentUser.uid, applicant.id);
+      // First, check if chat already exists in local state
+      const existingLocalChat = chats.find((chat) => chat.id === chatId);
 
-      // Checking for existing chat id and local state
-
-      // Check if chat already exists in local state
-      const existingChat = chats.find((chat) => chat.id === chatId);
-
-      if (existingChat) {
+      if (existingLocalChat) {
         // Found existing chat in local state
-        setSelectedChatId(existingChat.id);
+        setSelectedChatId(existingLocalChat.id);
         setLoading(false);
-        return existingChat.id;
+        return existingLocalChat.id;
       }
 
-      // No existing chat found, creating new one...
+      // Also check if chat exists in Firestore directly (in case local state isn't synced yet)
+      const chatDocRef = doc(db, "chats", chatId);
+      const chatSnapshot = await getDoc(chatDocRef);
+
+      if (chatSnapshot.exists()) {
+        // Chat already exists in Firestore, just select it
+        setSelectedChatId(chatId);
+        setLoading(false);
+        return chatId;
+      }
+
+      // No existing chat found, create new one
       setPendingChat({
         applicantId: applicant.id,
         name: applicant.name,
@@ -274,10 +299,8 @@ export const ChatProvider = ({ children }) => {
         createdAt: serverTimestamp(),
       };
 
-      // Creating chat with data (logs removed)
-
-      // ✅ FIX: Use setDoc instead of updateDoc for new documents
-      await setDoc(doc(db, "chats", chatId), chatData);
+      // Use setDoc with merge option to avoid overwriting if created simultaneously
+      await setDoc(doc(db, "chats", chatId), chatData, { merge: true });
 
       // New chat created
       setSelectedChatId(chatId);
@@ -288,11 +311,83 @@ export const ChatProvider = ({ children }) => {
       return null;
     } finally {
       setLoading(false);
+      // Remove from creating set after a short delay to allow Firestore listener to sync
+      setTimeout(() => {
+        setCreatingChats((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(chatId);
+          return newSet;
+        });
+      }, 1000);
     }
   };
 
   // ✅ Select chat manually
   const selectChat = (id) => setSelectedChatId(id);
+
+  // ✅ Remove duplicate chats - keeps only the chat with the proper ID format
+  const removeDuplicateChats = async () => {
+    if (!currentUser || chats.length === 0) return;
+
+    try {
+      // Group chats by participants (ignoring chat ID)
+      const chatGroups = new Map();
+
+      chats.forEach((chat) => {
+        if (!chat.applicantId) return;
+
+        // Generate the correct chat ID
+        const correctChatId = generateChatId(currentUser.uid, chat.applicantId);
+
+        if (!chatGroups.has(correctChatId)) {
+          chatGroups.set(correctChatId, []);
+        }
+        chatGroups.get(correctChatId).push(chat);
+      });
+
+      // For each group with duplicates, delete all except the one with correct ID
+      const deletePromises = [];
+
+      for (const [correctChatId, duplicates] of chatGroups.entries()) {
+        if (duplicates.length > 1) {
+          // Keep the chat with the correct ID, delete others
+          duplicates.forEach((chat) => {
+            if (chat.id !== correctChatId) {
+              deletePromises.push(deleteDoc(doc(db, "chats", chat.id)));
+            }
+          });
+        }
+      }
+
+      if (deletePromises.length > 0) {
+        await Promise.all(deletePromises);
+        // Duplicates removed successfully
+      }
+    } catch {
+      // Error removing duplicate chats
+    }
+  };
+
+  // ✅ Delete a specific chat
+  const deleteChat = async (chatId) => {
+    if (!chatId) return;
+
+    try {
+      // Delete the chat document from Firestore
+      await deleteDoc(doc(db, "chats", chatId));
+
+      // If the deleted chat was selected, clear selection
+      if (selectedChatId === chatId) {
+        setSelectedChatId(null);
+        localStorage.removeItem("selectedChatId");
+      }
+
+      return true;
+    } catch {
+      // Error deleting chat
+      return false;
+    }
+  };
 
   // ✅ Send message
   // const sendMessage = async (text, attachment = null) => {
@@ -518,6 +613,8 @@ export const ChatProvider = ({ children }) => {
     currentUser,
     parseFileTag,
     chatsError,
+    removeDuplicateChats,
+    deleteChat,
   };
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;

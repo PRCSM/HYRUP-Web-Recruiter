@@ -31,6 +31,7 @@ function StudentProfile({ applicant, onClose }) {
     img = "https://i.pravatar.cc/150", // A default placeholder image
     // backend may return skills as array or as object under user_skills
     skills: skillsFromProp = [],
+    user_skills: userSkillsObj = null,
     // experience may be sent as `experience` or `experiences`
     experiences: experiencesProp = [],
     experience: experienceProp = [],
@@ -42,11 +43,15 @@ function StudentProfile({ applicant, onClose }) {
     education: educationProp = null,
   } = applicant;
 
-  // Normalize collections to prefer the populated variant
-  const skills = Array.isArray(skillsFromProp)
-    ? skillsFromProp
-    : Object.keys(skillsFromProp || {});
+  // Normalize skills - backend returns as object { skillName: { level: "beginner" } }
+  const skills =
+    userSkillsObj && typeof userSkillsObj === "object"
+      ? Object.keys(userSkillsObj)
+      : Array.isArray(skillsFromProp)
+      ? skillsFromProp
+      : [];
 
+  // Normalize experience arrays
   const experiences =
     (Array.isArray(experiencesProp) &&
       experiencesProp.length &&
@@ -56,11 +61,13 @@ function StudentProfile({ applicant, onClose }) {
       experienceProp) ||
     [];
 
+  // Normalize projects arrays
   const projects =
     (Array.isArray(projectsProp) && projectsProp.length && projectsProp) ||
     (Array.isArray(projectProp) && projectProp.length && projectProp) ||
     [];
 
+  // Normalize college/education object
   const college = collegeProp || educationProp || {};
 
   return (
@@ -162,10 +169,10 @@ function StudentProfile({ applicant, onClose }) {
                   <p>
                     Organization:{" "}
                     <span className="font-[Jost-SemiBold]">
-                      {exp.organization ||
+                      {exp.nameOfOrg ||
+                        exp.organization ||
                         exp.company ||
                         exp.employer ||
-                        exp.org ||
                         "N/A"}
                     </span>
                   </p>
@@ -212,9 +219,9 @@ function StudentProfile({ applicant, onClose }) {
                   <p>
                     Name of Project:{" "}
                     <span className="font-[Jost-SemiBold]">
-                      {proj.name ||
+                      {proj.projectName ||
+                        proj.name ||
                         proj.title ||
-                        proj.projectName ||
                         "Untitled"}
                     </span>
                   </p>
@@ -253,20 +260,21 @@ function StudentProfile({ applicant, onClose }) {
         <h1 className="font-[Jost-Medium] text-[27px]">College :</h1>
         <div className="w-full bg-white border-2 border-black rounded-[8px] p-4 text-[14px] flex flex-col gap-1 font-[Jost-Regular] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)]">
           <p>
-            College Name:{" "}
+            College:{" "}
             <span className="font-[Jost-SemiBold]">
-              {college.name ||
+              {college.college ||
+                college.name ||
                 college.collegeName ||
                 college.institution ||
                 "N/A"}
             </span>
           </p>
           <p>
-            University:{" "}
+            University Type:{" "}
             <span className="font-[Jost-SemiBold]">
-              {college.university ||
+              {college.universityType ||
+                college.university ||
                 college.univ ||
-                college.institutionUniversity ||
                 "N/A"}
             </span>
           </p>
@@ -279,6 +287,17 @@ function StudentProfile({ applicant, onClose }) {
                 "N/A"}
             </span>
           </p>
+          <p>
+            Year of Passing:{" "}
+            <span className="font-[Jost-SemiBold]">
+              {college.yearOfPassing || "N/A"}
+            </span>
+          </p>
+          {college.cgpa && (
+            <p>
+              CGPA: <span className="font-[Jost-SemiBold]">{college.cgpa}</span>
+            </p>
+          )}
         </div>
       </div>
     </div>
