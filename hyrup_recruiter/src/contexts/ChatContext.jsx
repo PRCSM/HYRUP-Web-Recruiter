@@ -107,22 +107,66 @@ export const ChatProvider = ({ children }) => {
           return timeB.getTime() - timeA.getTime(); // Descending order
         });
 
-        let formattedChats = sortedChats.map((chat) => {
-          const participantIds = chat.users || chat.participantIds || [];
-          const otherParticipantId = participantIds.find(
-            (id) => id !== currentUser.uid
-          );
+        let formattedChats = sortedChats
+          .map((chat) => {
+            const participantIds = chat.users || chat.participantIds || [];
+            let otherParticipantFirebaseId = participantIds.find(
+              (id) => id !== currentUser.uid
+            );
 
-          return {
-            id: chat.id,
-            name: chat.participantNames?.[otherParticipantId] || "User",
-            img:
-              chat.participantImages?.[otherParticipantId] ||
-              "/api/placeholder/100/100",
-            lastMessage: chat.lastMessage || "",
-            applicantId: otherParticipantId,
-          };
-        });
+            // FALLBACK for old chats: Extract participant ID from chat ID if not in arrays
+            if (!otherParticipantFirebaseId && chat.id) {
+              const idsFromChatId = chat.id.split("_");
+              otherParticipantFirebaseId = idsFromChatId.find(
+                (id) => id !== currentUser.uid
+              );
+              console.warn(
+                `Chat ${chat.id}: No participant in users array, extracted from chatId:`,
+                otherParticipantFirebaseId
+              );
+
+              // If still no valid participant ID, skip this broken chat
+              if (!otherParticipantFirebaseId) {
+                console.error(
+                  `Chat ${chat.id}: BROKEN CHAT - Cannot extract participant. Skipping.`
+                );
+                return null; // Will be filtered out
+              }
+            }
+
+            // Convert Firebase UID back to MongoDB ID for data fetching
+            // Use mongoIdMapping if available, otherwise fall back to participantIds (old chats)
+            const otherParticipantMongoId =
+              chat.mongoIdMapping?.[otherParticipantFirebaseId] ||
+              chat.participantIds?.find((id) => id !== currentUser.uid) ||
+              otherParticipantFirebaseId;
+
+            console.log(`Chat ${chat.id} participant lookup:`, {
+              currentUserUid: currentUser.uid,
+              otherParticipantFirebaseId,
+              otherParticipantMongoId,
+              participantNamesKeys: Object.keys(chat.participantNames || {}),
+              foundName:
+                chat.participantNames?.[otherParticipantMongoId] ||
+                chat.participantNames?.[otherParticipantFirebaseId],
+            });
+
+            return {
+              id: chat.id,
+              name:
+                chat.participantNames?.[otherParticipantMongoId] ||
+                chat.participantNames?.[otherParticipantFirebaseId] ||
+                "User",
+              img:
+                chat.participantImages?.[otherParticipantMongoId] ||
+                chat.participantImages?.[otherParticipantFirebaseId] ||
+                "/api/placeholder/100/100",
+              lastMessage: chat.lastMessage || "",
+              applicantId: otherParticipantMongoId, // Use MongoDB ID for backend API calls
+              firebaseId: otherParticipantFirebaseId, // Keep Firebase UID for messaging
+            };
+          })
+          .filter((chat) => chat !== null); // Remove broken chats
 
         // If any chat is missing a real name or image, fetch student details from backend
         const needFetch = formattedChats.filter(
@@ -233,8 +277,19 @@ export const ChatProvider = ({ children }) => {
       return null;
     }
 
-    // Generate consistent chat ID based on sorted user IDs
-    const chatId = generateChatId(currentUser.uid, applicant.id);
+    // CRITICAL: Use Firebase UIDs for BOTH participants to ensure consistent chatId
+    // Get the applicant's Firebase UID (might be in firebaseId field or use id as fallback)
+    const applicantFirebaseId = applicant.firebaseId || applicant.id;
+
+    // Generate consistent chat ID based on sorted Firebase UIDs
+    const chatId = generateChatId(currentUser.uid, applicantFirebaseId);
+
+    console.log("Creating/Finding chat with Firebase UIDs:", {
+      currentUserUid: currentUser.uid,
+      applicantFirebaseId: applicantFirebaseId,
+      applicantMongoId: applicant.id,
+      generatedChatId: chatId,
+    });
 
     // Check if we're already creating this chat (prevent rapid duplicate calls)
     if (creatingChats.has(chatId)) {
@@ -253,9 +308,14 @@ export const ChatProvider = ({ children }) => {
       const existingLocalChat = chats.find((chat) => chat.id === chatId);
 
       if (existingLocalChat) {
-        // Found existing chat in local state
+        console.log(`✅ Found existing chat in local state: ${chatId}`);
         setSelectedChatId(existingLocalChat.id);
         setLoading(false);
+        setCreatingChats((prev) => {
+          const next = new Set(prev);
+          next.delete(chatId);
+          return next;
+        });
         return existingLocalChat.id;
       }
 
@@ -264,9 +324,14 @@ export const ChatProvider = ({ children }) => {
       const chatSnapshot = await getDoc(chatDocRef);
 
       if (chatSnapshot.exists()) {
-        // Chat already exists in Firestore, just select it
+        console.log(`✅ Found existing chat in Firestore: ${chatId}`);
         setSelectedChatId(chatId);
         setLoading(false);
+        setCreatingChats((prev) => {
+          const next = new Set(prev);
+          next.delete(chatId);
+          return next;
+        });
         return chatId;
       }
 
@@ -276,30 +341,50 @@ export const ChatProvider = ({ children }) => {
         name: applicant.name,
       });
 
+      // applicantFirebaseId already declared above - no need to redeclare
+      console.log("Creating NEW chat document with Firebase UIDs:", {
+        recruiter: currentUser.uid,
+        applicant: applicantFirebaseId,
+        applicantMongoId: applicant.id,
+        chatId: chatId,
+      });
+
       // Create chat document with BOTH old and new structure for compatibility
       const chatData = {
-        // NEW STRUCTURE
-        users: [currentUser.uid, applicant.id],
+        // NEW STRUCTURE - Uses Firebase UIDs for message routing
+        users: [currentUser.uid, applicantFirebaseId],
         lastMessageTime: serverTimestamp(),
 
-        // OLD STRUCTURE (for compatibility)
+        // OLD STRUCTURE (for compatibility) - Uses MongoDB ID for data fetching
         participantIds: [currentUser.uid, applicant.id],
         lastUpdated: serverTimestamp(),
 
         // Firebase ID Mapping - Maps MongoDB ID to Firebase UID for message routing
         firebaseIdMapping: {
-          [applicant.id]: applicant.firebaseId || applicant.id, // MongoDB ID -> Firebase UID
+          [applicant.id]: applicantFirebaseId, // MongoDB ID -> Firebase UID
           [currentUser.uid]: currentUser.uid, // Recruiter already uses Firebase UID
         },
 
-        // COMMON FIELDS
+        // Reverse mapping - Maps Firebase UID to MongoDB ID for data fetching
+        mongoIdMapping: {
+          [applicantFirebaseId]: applicant.id, // Firebase UID -> MongoDB ID
+          [currentUser.uid]: currentUser.uid, // Recruiter uses same ID
+        },
+
+        // COMMON FIELDS - Store with BOTH Firebase UID and MongoDB ID as keys for compatibility
         participantNames: {
+          // Recruiter (same ID for both)
           [currentUser.uid]: currentUser.displayName || "Recruiter",
+          // Student (store with both Firebase UID and MongoDB ID)
           [applicant.id]: applicant.name || "Applicant",
+          [applicantFirebaseId]: applicant.name || "Applicant",
         },
         participantImages: {
+          // Recruiter (same ID for both)
           [currentUser.uid]: currentUser.photoURL || "",
+          // Student (store with both Firebase UID and MongoDB ID)
           [applicant.id]: applicant.img || "/api/placeholder/100/100",
+          [applicantFirebaseId]: applicant.img || "/api/placeholder/100/100",
         },
         lastMessage: "",
         createdAt: serverTimestamp(),
