@@ -174,6 +174,13 @@ class ApiService {
         });
     }
 
+    // Delete an application (public endpoint)
+    async deleteApplication(applicationId) {
+        return this.makePublicRequest(`/applications/${applicationId}`, {
+            method: 'DELETE',
+        });
+    }
+
     // ============ COMPANY ROUTES ============
 
     // Check if user is already registered by Firebase UID (public endpoint)

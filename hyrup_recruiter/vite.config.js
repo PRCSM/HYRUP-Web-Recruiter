@@ -1,22 +1,25 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  server: {
-    // Proxy API requests starting with /api to the backend defined in .env (VITE_API_URL)
-    proxy: {
-      '/api': {
-        // import.meta.env is available in Vite config when exported as a function,
-        // but since we're in a static config we provide a sensible default here.
-        target: (import.meta.env && import.meta.env.VITE_API_URL) || 'http://localhost:3000',
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+export default defineConfig(({ mode }) => {
+  // Load env file based on `mode` in the current working directory.
+  const env = loadEnv(mode, '.', '')
+
+  return {
+    plugins: [react(), tailwindcss()],
+    server: {
+      // Proxy API requests starting with /api to the backend defined in .env (VITE_API_URL)
+      proxy: {
+        '/api': {
+          target: env.VITE_API_URL || 'https://hyrup-730899264601.asia-south1.run.app',
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/api/, ''),
+        },
       },
     },
-  },
+  }
 })

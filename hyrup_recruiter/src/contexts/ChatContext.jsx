@@ -286,6 +286,12 @@ export const ChatProvider = ({ children }) => {
         participantIds: [currentUser.uid, applicant.id],
         lastUpdated: serverTimestamp(),
 
+        // Firebase ID Mapping - Maps MongoDB ID to Firebase UID for message routing
+        firebaseIdMapping: {
+          [applicant.id]: applicant.firebaseId || applicant.id, // MongoDB ID -> Firebase UID
+          [currentUser.uid]: currentUser.uid, // Recruiter already uses Firebase UID
+        },
+
         // COMMON FIELDS
         participantNames: {
           [currentUser.uid]: currentUser.displayName || "Recruiter",
@@ -453,13 +459,36 @@ export const ChatProvider = ({ children }) => {
     }
 
     try {
-      // Determine receiver ID from chat ID
+      // Determine receiver ID from chat ID (this might be MongoDB ID)
       const chatUsers = selectedChatId.split("_");
-      const receiverId = chatUsers.find((id) => id !== currentUser.uid);
+      let receiverId = chatUsers.find((id) => id !== currentUser.uid);
 
       if (!receiverId) {
         // Could not determine receiver ID
         return;
+      }
+
+      // Get the chat document to access Firebase ID mapping
+      const chatDocRef = doc(db, "chats", selectedChatId);
+      const chatDoc = await getDoc(chatDocRef);
+
+      if (chatDoc.exists()) {
+        const chatData = chatDoc.data();
+        // If firebaseIdMapping exists, use it to convert MongoDB ID -> Firebase UID
+        if (
+          chatData.firebaseIdMapping &&
+          chatData.firebaseIdMapping[receiverId]
+        ) {
+          const firebaseUid = chatData.firebaseIdMapping[receiverId];
+          console.log(`Mapping receiver: ${receiverId} -> ${firebaseUid}`);
+          receiverId = firebaseUid;
+        } else {
+          // Fallback: If no mapping exists (old chats), receiverId stays as-is
+          console.warn(
+            "No Firebase ID mapping found for receiver:",
+            receiverId
+          );
+        }
       }
 
       let fileUrl = "";

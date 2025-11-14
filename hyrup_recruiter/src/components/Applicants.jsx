@@ -98,10 +98,23 @@ function Applicants({
       // API returns { success: true, student: {...}, user: {...} }
       const data = resp && (resp.student || resp.user || resp.data || resp);
 
+      // Debug logging
+      console.log("Backend response:", { resp, data, originalApp: app });
+      console.log("FirebaseId sources:", {
+        fromData: data?.firebaseId,
+        fromCandidate: app.candidate?.firebaseId,
+        fromApp: app.firebaseId,
+      });
+
       if (resp && resp.success && data) {
         // Map backend Student model fields to StudentProfile component props
         const detailed = {
           ...app,
+          // IDs - CRITICAL for chat functionality
+          id: data._id || app.id, // MongoDB ID
+          firebaseId:
+            data.firebaseId || app.candidate?.firebaseId || app.firebaseId, // Firebase UID for chat - fallback to original
+
           // Basic Info
           name: data.profile?.FullName || data.name || app.name || "N/A",
           email: data.email || app.email || "N/A",
