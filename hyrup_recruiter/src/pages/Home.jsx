@@ -52,6 +52,11 @@ const Home = () => {
         const recruiterData = companyResponse.data?.recruiter || null;
         // extracted company and recruiter data (logging removed)
 
+        // Set logo from company data
+        if (companyData?.logo) {
+          setLogoUrl(companyData.logo);
+        }
+
         // Fetch jobs and applications for this recruiter if we have recruiter ID
         let jobs = [];
         let applications = [];
@@ -157,30 +162,6 @@ const Home = () => {
     }
   }, [location.state?.jobPosted, navigate, location.pathname]);
 
-  useEffect(() => {
-    const fetchLogoFromLocalStorageAndCache = async () => {
-      try {
-        const localStorageLogo = localStorage.getItem("companyLogo");
-        if (localStorageLogo) {
-          setLogoUrl(localStorageLogo);
-        } else if ("caches" in window) {
-          const cache = await caches.open("logo-cache");
-          const response = await cache.match(
-            `/uploadedLogo/${localStorage.getItem("companyLogoName")}`
-          );
-          if (response) {
-            const blob = await response.blob();
-            const objectURL = URL.createObjectURL(blob);
-            setLogoUrl(objectURL);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching logo from localStorage or cache:", error);
-      }
-    };
-
-    fetchLogoFromLocalStorageAndCache();
-  }, []);
 
   if (loading) {
     return (
@@ -256,7 +237,7 @@ const Home = () => {
                   title={dashboardData.company?.description}
                 >
                   {dashboardData.company?.description &&
-                  dashboardData.company.description.trim()
+                    dashboardData.company.description.trim()
                     ? dashboardData.company.description
                     : "Company description will appear here once you complete your profile..."}
                 </p>

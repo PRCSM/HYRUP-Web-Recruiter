@@ -65,6 +65,7 @@ const PostJob = () => {
   ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [apiDebugInfo, setApiDebugInfo] = useState(null);
 
   // Fetch available skills and recruiter ID on component mount
   useEffect(() => {
@@ -108,8 +109,8 @@ const PostJob = () => {
         const locs = Array.isArray(res)
           ? res
           : Array.isArray(res?.data)
-          ? res.data
-          : [];
+            ? res.data
+            : [];
         setAllLocations(locs);
       } catch (err) {
         // Error fetching locations - fallback to defaults
@@ -122,6 +123,12 @@ const PostJob = () => {
           "Delhi",
           "Mumbai",
           "Chennai",
+          "Hyderabad",
+          "Pune",
+          "Kolkata",
+          "Ahmedabad",
+          "Gurugram",
+          "Noida",
         ]);
       }
     };
@@ -235,7 +242,10 @@ const PostJob = () => {
       // If Google Autocomplete service is available, use it
       const svc = googleAutocompleteServiceRef.current;
       if (svc && svc.getPlacePredictions) {
-        svc.getPlacePredictions({ input: v }, (preds, status) => {
+        svc.getPlacePredictions({ input: v, types: ['(cities)'] }, (preds, status) => {
+          console.log("Google Maps API Status:", status);
+          setApiDebugInfo(`Status: ${status}`);
+
           try {
             if (
               status === window.google.maps.places.PlacesServiceStatus.OK &&
@@ -244,6 +254,7 @@ const PostJob = () => {
               const mapped = preds.map((p) => p.description);
               setFilteredLocations(mapped);
             } else {
+              console.warn("Google Maps API failed or returned no results. Status:", status);
               // Fallback to local filtering
               const filtered = allLocations.filter((loc) =>
                 loc.toLowerCase().includes(v.toLowerCase())
@@ -251,6 +262,7 @@ const PostJob = () => {
               setFilteredLocations(filtered);
             }
           } catch (err) {
+            console.error("Error processing Google Maps predictions:", err);
             // Places predictions failed; use local filtering
             const filtered = allLocations.filter((loc) =>
               loc.toLowerCase().includes(v.toLowerCase())
@@ -744,6 +756,12 @@ const PostJob = () => {
                     className="w-full px-3 py-3 bg-[#FFF7E4] border-2 border-black rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)]"
                     required
                   />
+                  {/* Debug Info */}
+                  {apiDebugInfo && (
+                    <div className="text-xs text-red-500 mt-1">
+                      API Debug: {apiDebugInfo}
+                    </div>
+                  )}
                   {filteredLocations.length > 0 && (
                     <div className="absolute z-30 w-full mt-1 bg-[#FFF7E4] border-2 border-black rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] max-h-40 overflow-y-auto">
                       {filteredLocations.map((loc, i) => (

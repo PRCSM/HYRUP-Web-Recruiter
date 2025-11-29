@@ -1,18 +1,39 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useChat } from '../contexts/ChatContext'
-import { BackIcon, RxCross2 } from '../assets/Icons' 
+import { useAuth } from '../hooks/useAuth'
+import apiService from '../services/apiService'
+import { BackIcon, RxCross2 } from '../assets/Icons'
 
 function ChatTextingArea() {
   const [message, setMessage] = useState('')
   const [attachment, setAttachment] = useState(null)
   const [showPreview, setShowPreview] = useState(false) // NEW: modal preview
+  const [recruiterLogo, setRecruiterLogo] = useState(null)
   const fileInputRef = useRef(null)
   const { selectedChat, messages, sendMessage, selectChat } = useChat()
+  const { currentUser } = useAuth()
   const listRef = useRef(null)
 
   useEffect(() => {
     if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight
   }, [messages, selectedChat])
+
+  // Fetch recruiter logo
+  useEffect(() => {
+    const fetchLogo = async () => {
+      if (currentUser?.uid) {
+        try {
+          const response = await apiService.getCompanyByUID(currentUser.uid);
+          if (response.success && response.data?.company?.logo) {
+            setRecruiterLogo(response.data.company.logo);
+          }
+        } catch (error) {
+          console.error("Error fetching recruiter logo:", error);
+        }
+      }
+    };
+    fetchLogo();
+  }, [currentUser]);
 
   // Encodes an attachment into a simple tag inside message text.
   const makeFileTag = (a) =>
@@ -54,9 +75,8 @@ function ChatTextingArea() {
   // PREVIEW CARD (WhatsApp-like)
   const AttachmentCard = ({ file }) => (
     <div
-      className={`relative overflow-hidden rounded-2xl border-2 border-neutral-800 bg-black/5 ${
-        file.isImage ? 'w-[200px] h-[320px] sm:w-[340px] sm:h-[360px]' : 'w-[200px]'
-      } group cursor-pointer`}
+      className={`relative overflow-hidden rounded-2xl border-2 border-neutral-800 bg-black/5 ${file.isImage ? 'w-[200px] h-[320px] sm:w-[340px] sm:h-[360px]' : 'w-[200px]'
+        } group cursor-pointer`}
       onClick={() => { setAttachment(file); setShowPreview(true) }}
       title={file.name}
     >
@@ -106,18 +126,18 @@ function ChatTextingArea() {
     setShowPreview(false)
   }
 
-const send = () => {
-  const text = message.trim();
-  if (!selectedChat) return;
-  if (!text && !attachment) return;
-  
-  // Use the Firebase sendMessage function
-  sendMessage(text, attachment || null);
-  
-  setMessage('');
-  clearAttachment();
-  setShowPreview(false);
-};
+  const send = () => {
+    const text = message.trim();
+    if (!selectedChat) return;
+    if (!text && !attachment) return;
+
+    // Use the Firebase sendMessage function
+    sendMessage(text, attachment || null);
+
+    setMessage('');
+    clearAttachment();
+    setShowPreview(false);
+  };
 
   const onKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -187,17 +207,20 @@ const send = () => {
                 return (
                   <div key={m.id} className={`flex items-start gap-2 ${m.isUser ? 'justify-end' : 'justify-start'}`}>
                     {!m.isUser && (
-                      <div className="h-10 w-10 shrink-0 rounded-full bg-sky-300 ring-2 ring-neutral-800" />
+                      <img
+                        src={selectedChat?.img || "/api/placeholder/100/100"}
+                        alt={selectedChat?.name || "User"}
+                        className="h-10 w-10 shrink-0 rounded-full border-2 border-neutral-800 object-cover"
+                      />
                     )}
 
                     <div className="flex max-w-[89%] md:max-w-[75%] flex-col items-start gap-2">
                       {cleanText && (
                         <div
-                          className={`whitespace-pre-wrap break-words border-2 p-3 text-sm leading-relaxed text-neutral-900 ${
-                            m.isUser
-                              ? 'rounded-2xl rounded-br-md border-neutral-800 bg-violet-200'
-                              : 'rounded-2xl rounded-bl-md border-neutral-800 bg-white'
-                          }`}
+                          className={`whitespace-pre-wrap break-words border-2 p-3 text-sm leading-relaxed text-neutral-900 ${m.isUser
+                            ? 'rounded-2xl rounded-br-md border-neutral-800 bg-violet-200'
+                            : 'rounded-2xl rounded-bl-md border-neutral-800 bg-white'
+                            }`}
                         >
                           {cleanText}
                         </div>
@@ -207,7 +230,15 @@ const send = () => {
                     </div>
 
                     {m.isUser && (
-                      <div className="h-10 w-10 shrink-0 rounded-full bg-orange-300 ring-2 ring-neutral-800" />
+                      recruiterLogo ? (
+                        <img
+                          src={recruiterLogo}
+                          alt="You"
+                          className="h-10 w-10 shrink-0 rounded-full border-2 border-neutral-800 object-cover"
+                        />
+                      ) : (
+                        <div className="h-10 w-10 shrink-0 rounded-full bg-orange-300 ring-2 ring-neutral-800" />
+                      )
                     )}
                   </div>
                 )

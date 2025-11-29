@@ -29,6 +29,7 @@ function StudentProfile({ applicant, onClose }) {
     email = "N/A",
     bio = "No bio provided.",
     img = "https://i.pravatar.cc/150", // A default placeholder image
+    resume = "", // Resume URL from backend
     // backend may return skills as array or as object under user_skills
     skills: skillsFromProp = [],
     user_skills: userSkillsObj = null,
@@ -48,8 +49,8 @@ function StudentProfile({ applicant, onClose }) {
     userSkillsObj && typeof userSkillsObj === "object"
       ? Object.keys(userSkillsObj)
       : Array.isArray(skillsFromProp)
-      ? skillsFromProp
-      : [];
+        ? skillsFromProp
+        : [];
 
   // Normalize experience arrays
   const experiences =
@@ -70,8 +71,11 @@ function StudentProfile({ applicant, onClose }) {
   // Normalize college/education object
   const college = collegeProp || educationProp || {};
 
+  // Debug logging
+  console.log("StudentProfile resume:", { resume, applicant });
+
   return (
-    <div className="w-[95vw] md:w-[700px] relative h-[550px] bg-[#FBF3E7] border-2 border-black rounded-[10px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] px-1 md:px-3 pt-5 md:pt-14 custom-scrollbar flex flex-col justify-start items-center overflow-x-hidden z-50">
+    <div className="w-[95vw] md:w-[700px] relative h-[550px] bg-[#FBF3E7] border-2 border-black rounded-[10px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] px-1 md:px-3 pt-14 custom-scrollbar flex flex-col justify-start items-center overflow-x-hidden z-50">
       {/* Close button that triggers the onClose function passed from the parent */}
       <div
         onClick={onClose}
@@ -84,7 +88,7 @@ function StudentProfile({ applicant, onClose }) {
       {isShortlisted ? (
         <div
           onClick={handleToggleShortlist}
-          className="absolute right-4 md:right-16 cursor-pointer top-16 md:top-14 px-1.5 md:px-3 py-1 bg-[#FEAAAB] rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] border-2 border-black flex justify-center items-center gap-1"
+          className="absolute right-16 top-3 cursor-pointer px-1.5 md:px-3 py-1 bg-[#FEAAAB] rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] border-2 border-black flex justify-center items-center gap-1"
         >
           <RxCross2 size={25} />
           <h1 className="font-[Jost-Medium] text-[16px]">Reject</h1>
@@ -92,7 +96,7 @@ function StudentProfile({ applicant, onClose }) {
       ) : (
         <div
           onClick={handleToggleShortlist}
-          className="absolute right-4 md:right-16 cursor-pointer top-16 md:top-11 px-1.5 md:px-3 py-1 bg-[#6AB8FA] rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] border-2 border-black flex justify-center items-center"
+          className="absolute right-16 top-3 cursor-pointer px-1.5 md:px-3 py-1 bg-[#6AB8FA] rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] border-2 border-black flex justify-center items-center"
         >
           <TiTick size={30} />
           <h1 className="font-[Jost-Medium] text-[16px]">Shortlist</h1>
@@ -113,13 +117,27 @@ function StudentProfile({ applicant, onClose }) {
             <span>{email}</span>
           </h1>
           <div className="flex gap-4 justify-center items-center flex-wrap">
-            <div className="w-[150px] h-[39px] flex items-center justify-center font-[Jost-Medium] text-[20px] bg-[#E3FEAA] border-2 border-black rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] cursor-pointer">
-              Resume
-            </div>
+            {resume ? (
+              <a
+                href={resume}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-[150px] h-[39px] flex items-center justify-center font-[Jost-Medium] text-[20px] bg-[#E3FEAA] border-2 border-black rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] cursor-pointer hover:bg-[#d4f091] transition-colors"
+              >
+                Resume
+              </a>
+            ) : (
+              <div className="w-[150px] h-[39px] flex items-center justify-center font-[Jost-Medium] text-[20px] bg-gray-200 border-2 border-black rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] cursor-not-allowed text-gray-500">
+                No Resume
+              </div>
+            )}
             <div
               className="px-6 py-1 flex items-center justify-center font-[Jost-Medium] text-[20px] bg-orange-300 border-2 border-black rounded-[8px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] cursor-pointer"
-              onClick={() => {
-                addChat(applicant);
+              onClick={async () => {
+                await addChat({
+                  ...applicant,
+                  id: applicant.studentId || applicant.id
+                });
                 onClose?.();
                 navigate("/chats");
               }}

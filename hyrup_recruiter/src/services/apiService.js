@@ -331,7 +331,7 @@ class ApiService {
 
     // Get specific student details by id (recruiter/admin fetching a candidate)
     async getStudentById(studentId) {
-        return this.makeRequest('/student/StudentDetails', {
+        return this.makeRequest('/student/getById', {
             method: 'POST',
             body: JSON.stringify({ studentId }),
         });

@@ -22,11 +22,13 @@ import {
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, db, storage } from "../config/firebase";
+import { useAuth } from "../hooks/useAuth";
 
 // ✅ Create context
 const ChatContext = createContext(undefined);
 
 export const ChatProvider = ({ children }) => {
+  const { userData } = useAuth();
   const [chats, setChats] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [messagesByChat, setMessagesByChat] = useState({});
@@ -114,6 +116,12 @@ export const ChatProvider = ({ children }) => {
               (id) => id !== currentUser.uid
             );
 
+            // SELF-CHAT SUPPORT: If no other participant is found, it means both participants are the same user (self-chat).
+            // In this case, the "other" participant is actually the current user themselves (acting as Student).
+            if (!otherParticipantFirebaseId && participantIds.includes(currentUser.uid)) {
+              otherParticipantFirebaseId = currentUser.uid;
+            }
+
             // FALLBACK for old chats: Extract participant ID from chat ID if not in arrays
             if (!otherParticipantFirebaseId && chat.id) {
               const idsFromChatId = chat.id.split("_");
@@ -171,18 +179,29 @@ export const ChatProvider = ({ children }) => {
         // If any chat is missing a real name or image, fetch student details from backend
         const needFetch = formattedChats.filter(
           (c) =>
-            (c.name === "User" || c.img === "/api/placeholder/100/100") &&
-            c.applicantId
+            (c.name === "User" ||
+              !c.name ||
+              c.img === "/api/placeholder/100/100") &&
+            (c.applicantId || c.firebaseId)
         );
+
         if (needFetch.length > 0) {
           (async () => {
             try {
-              await Promise.all(
+              const updates = await Promise.all(
                 needFetch.map(async (c) => {
                   try {
-                    const resp = await apiService.getStudentById(c.applicantId);
+                    // Try fetching by applicantId (MongoID) OR Firebase UID
+                    let resp = null;
+                    if (c.applicantId) {
+                      resp = await apiService.getStudentById(c.applicantId);
+                    } else if (c.firebaseId) {
+                      resp = await apiService.getStudentById(c.firebaseId);
+                    }
+
                     const data =
                       resp && (resp.student || resp.data || resp.user || resp);
+
                     if (resp && resp.success && data) {
                       const fullName =
                         data.profile?.FullName ||
@@ -190,32 +209,49 @@ export const ChatProvider = ({ children }) => {
                         data.name;
                       const pic =
                         data.profile?.profilePicture ||
-                        data.profile?.profilepicture ||
-                        c.img;
-                      formattedChats = formattedChats.map((fc) =>
-                        fc.applicantId === c.applicantId
-                          ? {
-                              ...fc,
-                              name: fullName || fc.name,
-                              img: pic || fc.img,
-                            }
-                          : fc
-                      );
+                        data.profile?.profile_picture ||
+                        data.img ||
+                        data.image;
+
+                      return {
+                        id: c.id,
+                        name: fullName || c.name,
+                        img: pic || c.img
+                      };
                     }
-                  } catch {
-                    // fetching student for chat failed; ignore and continue
+                  } catch (err) {
+                    console.error(
+                      `Failed to fetch details for chat ${c.id}:`,
+                      err
+                    );
                   }
+                  return null;
                 })
               );
-            } catch {
-              // Error while fetching participant details; suppress console output
-            } finally {
-              setChats(formattedChats);
+
+              // Apply updates locally
+              const validUpdates = updates.filter(u => u !== null);
+              if (validUpdates.length > 0) {
+                setChats(prevChats => {
+                  return prevChats.map(chat => {
+                    const update = validUpdates.find(u => u.id === chat.id);
+                    if (update) {
+                      if (chat.name !== update.name || chat.img !== update.img) {
+                        return { ...chat, ...update };
+                      }
+                    }
+                    return chat;
+                  });
+                });
+              }
+
+            } catch (err) {
+              console.error("Error in batch fetch:", err);
             }
           })();
-        } else {
-          setChats(formattedChats);
         }
+
+        setChats(formattedChats);
 
         if (pendingChat && formattedChats.length > 0) {
           const foundChat = formattedChats.find(
@@ -279,7 +315,35 @@ export const ChatProvider = ({ children }) => {
 
     // CRITICAL: Use Firebase UIDs for BOTH participants to ensure consistent chatId
     // Get the applicant's Firebase UID (might be in firebaseId field or use id as fallback)
-    const applicantFirebaseId = applicant.firebaseId || applicant.id;
+    let applicantFirebaseId = applicant.firebaseId;
+    const applicantMongoId = applicant.id || applicant.studentId;
+
+    console.log("addChat called with:", {
+      name: applicant.name,
+      firebaseId: applicant.firebaseId,
+      id: applicant.id,
+      studentId: applicant.studentId,
+      applicantMongoId
+    });
+
+    // If firebaseId is missing, try to fetch it from backend
+    if (!applicantFirebaseId && applicantMongoId) {
+      try {
+        console.log(`Fetching missing firebaseId for student: ${applicantMongoId}`);
+        const resp = await apiService.getStudentById(applicantMongoId);
+        const data = resp && (resp.student || resp.data || resp.user || resp);
+
+        if (data && data.firebaseId) {
+          applicantFirebaseId = data.firebaseId;
+          console.log(`✅ Fetched firebaseId: ${applicantFirebaseId}`);
+        }
+      } catch (err) {
+        console.error("Failed to fetch student details in addChat", err);
+      }
+    }
+
+    // Fallback to MongoID if still missing (legacy behavior)
+    applicantFirebaseId = applicantFirebaseId || applicantMongoId;
 
     // Generate consistent chat ID based on sorted Firebase UIDs
     const chatId = generateChatId(currentUser.uid, applicantFirebaseId);
@@ -374,14 +438,14 @@ export const ChatProvider = ({ children }) => {
         // COMMON FIELDS - Store with BOTH Firebase UID and MongoDB ID as keys for compatibility
         participantNames: {
           // Recruiter (same ID for both)
-          [currentUser.uid]: currentUser.displayName || "Recruiter",
+          [currentUser.uid]: userData?.name || userData?.recruiterName || currentUser.displayName || "Recruiter",
           // Student (store with both Firebase UID and MongoDB ID)
           [applicant.id]: applicant.name || "Applicant",
           [applicantFirebaseId]: applicant.name || "Applicant",
         },
         participantImages: {
           // Recruiter (same ID for both)
-          [currentUser.uid]: currentUser.photoURL || "",
+          [currentUser.uid]: userData?.profilePhoto || currentUser.photoURL || "",
           // Student (store with both Firebase UID and MongoDB ID)
           [applicant.id]: applicant.img || "/api/placeholder/100/100",
           [applicantFirebaseId]: applicant.img || "/api/placeholder/100/100",
@@ -480,61 +544,6 @@ export const ChatProvider = ({ children }) => {
     }
   };
 
-  // ✅ Send message
-  // const sendMessage = async (text, attachment = null) => {
-  //   const messageText = text?.trim();
-  //   if ((!messageText && !attachment) || !selectedChatId || !currentUser) {
-  //     console.error("Cannot send message: missing required data");
-  //     return;
-  //   }
-
-  //   try {
-  //     // Determine receiver ID from chat ID
-  //     const chatUsers = selectedChatId.split('_');
-  //     const receiverId = chatUsers.find(id => id !== currentUser.uid);
-
-  //     if (!receiverId) {
-  //       console.error("Could not determine receiver ID");
-  //       return;
-  //     }
-
-  //     // Create message data in YOUR DESIRED FORMAT
-  //     const messageData = {
-  //       // Your requested fields
-  //       isRead: false,
-  //       receiverId: receiverId,
-  //       senderId: currentUser.uid,
-  //       timestamp: serverTimestamp(),
-  //       type: attachment ? (attachment.isImage ? "image" : "file") : "text",
-  //       isUser: true, // Keep isUser field
-  //     };
-
-  //     // Handle file attachment
-  //     if (attachment) {
-  //       messageData.fileName = attachment.name; // File name
-  //       messageData.message = attachment.url;   // Firebase Storage URL
-  //     } else {
-  //       messageData.fileName = "";              // Empty for text messages
-  //       messageData.message = messageText;      // Text content
-  //     }
-
-  //     console.log("Sending message with data:", messageData);
-
-  //     await addDoc(collection(db, "chats", selectedChatId, "messages"), messageData);
-
-  //     // Update chat document
-  //     await updateDoc(doc(db, "chats", selectedChatId), {
-  //       lastMessage: attachment ? `📎 ${attachment.name}` : messageText,
-  //       lastMessageTime: serverTimestamp(),
-  //       lastUpdated: serverTimestamp(),
-  //     });
-
-  //     console.log("Message sent successfully");
-  //   } catch (error) {
-  //     console.error("Error sending message:", error);
-  //   }
-  // };
-
   // ✅ Send message with file upload to Firebase Storage
   const sendMessage = async (text, attachment = null) => {
     const messageText = text?.trim();
@@ -548,9 +557,9 @@ export const ChatProvider = ({ children }) => {
       const chatUsers = selectedChatId.split("_");
       let receiverId = chatUsers.find((id) => id !== currentUser.uid);
 
+      // SELF-CHAT SUPPORT: If no other ID found, it's a self-chat
       if (!receiverId) {
-        // Could not determine receiver ID
-        return;
+        receiverId = currentUser.uid;
       }
 
       // Get the chat document to access Firebase ID mapping
@@ -606,6 +615,7 @@ export const ChatProvider = ({ children }) => {
         timestamp: serverTimestamp(),
         type: attachment ? (attachment.isImage ? "image" : "file") : "text",
         isUser: true,
+        role: "recruiter", // ADDED: Role tag to distinguish Recruiter messages
       };
 
       // Set message content based on attachment
@@ -690,10 +700,17 @@ export const ChatProvider = ({ children }) => {
           text = msg.message || "";
         }
 
+        const isSenderMe = msg.senderId === currentUser?.uid;
+        // Logic:
+        // 1. If I sent it AND role is 'recruiter', it's ME (Recruiter) -> Right side
+        // 2. If I sent it BUT role is NOT 'recruiter' (missing or 'student'), it's the OTHER ME (Student) -> Left side
+        // 3. If I didn't send it, it's the OTHER person -> Left side
+        const isUser = isSenderMe && msg.role === 'recruiter';
+
         return {
           ...msg,
           text: text,
-          isUser: msg.senderId === currentUser?.uid,
+          isUser: isUser,
           hasAttachment: !!msg.fileName && msg.fileName !== "",
         };
       }

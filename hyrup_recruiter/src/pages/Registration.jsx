@@ -4,6 +4,7 @@ import Nav_sign from "../components/Nav_sign";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { useAuth } from "../hooks/useAuth";
 import apiService from "../services/apiService";
+import { uploadCompanyLogo } from "../services/firebaseService";
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -243,6 +244,25 @@ const Registration = () => {
         position: formData.designation || "Recruiter",
         uid: uid,
       };
+
+      // Upload logo if selected
+      if (formData.logo) {
+        try {
+          const logoUrl = await uploadCompanyLogo(
+            formData.logo,
+            formData.companyName
+          );
+          companyData.logo = logoUrl;
+        } catch (uploadError) {
+          console.error("Logo upload failed:", uploadError);
+          // Continue with registration even if logo upload fails, or handle as needed
+          // For now, we'll alert the user but proceed (or you could throw to stop)
+          if (!window.confirm("Logo upload failed. Do you want to continue without a logo?")) {
+            setIsSubmitting(false);
+            return;
+          }
+        }
+      }
 
       // Validate required fields before making API call
       if (

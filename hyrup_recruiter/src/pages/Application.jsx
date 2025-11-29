@@ -53,12 +53,20 @@ function Application() {
         );
         const jobs = jobsResponse.success ? jobsResponse.data || [] : [];
 
-        // Fetch applications by recruiter ID
-        const applicationsResponse =
-          await apiService.getApplicationsByRecruiter(recruiterData.id);
-        const allApplications = applicationsResponse.success
-          ? applicationsResponse.data || []
-          : [];
+        // Fetch applications for each job individually to ensure we get all applicants
+        // regardless of the recruiter's activeJobs array state
+        const applicationsPromises = jobs.map((job) =>
+          apiService
+            .getApplicationsByJob(job._id || job.id)
+            .then((res) => (res.success ? res.data || [] : []))
+            .catch((err) => {
+              console.error(`Failed to fetch apps for job ${job._id}:`, err);
+              return [];
+            })
+        );
+
+        const applicationsArrays = await Promise.all(applicationsPromises);
+        const allApplications = applicationsArrays.flat();
 
         // fetched jobs and applications (logging removed)
 
@@ -123,6 +131,7 @@ function Application() {
 
               const normalized = {
                 id: app._id,
+                studentId: sid, // Added studentId for ChatContext
                 name:
                   studentData?.profile?.FullName ||
                   studentData?.profile?.fullName ||
@@ -140,10 +149,20 @@ function Application() {
                   app.candidate?.profile?.about ||
                   app.candidate?.email ||
                   "",
+                resume:
+                  studentData?.profile?.resume ||
+                  studentData?.resume ||
+                  app.candidate?.profile?.resume ||
+                  app.resume ||
+                  "",
+                firebaseId:
+                  studentData?.firebaseId ||
+                  app.candidate?.firebaseId ||
+                  app.firebaseId,
                 skills: Array.isArray(studentData?.skills)
                   ? studentData.skills
                   : Object.keys(studentData?.user_skills || {}) ||
-                    Object.keys(app.candidate?.user_skills || {}),
+                  Object.keys(app.candidate?.user_skills || {}),
                 experiences:
                   studentData?.experience ||
                   studentData?.experiences ||
@@ -156,8 +175,19 @@ function Application() {
                 matchScore: app.matchScore || 0,
                 match: app.matchScore || 0,
                 applicationId: app._id,
+                applicationId: app._id,
                 ...app,
               };
+
+              if (normalized.name === "Harish Siddartha" || normalized.name === "User") {
+                console.log("Application.jsx normalized:", {
+                  name: normalized.name,
+                  id: normalized.id,
+                  studentId: normalized.studentId,
+                  firebaseId: normalized.firebaseId,
+                  candidateFirebaseId: app.candidate?.firebaseId
+                });
+              }
 
               return normalized;
             }),

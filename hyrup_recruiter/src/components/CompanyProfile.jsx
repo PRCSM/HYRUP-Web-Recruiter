@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import apiService from "../services/apiService";
+import { uploadCompanyLogo } from "../services/firebaseService";
 
 function CompanyProfile() {
   const { userData, currentUser } = useAuth();
@@ -109,34 +110,44 @@ function CompanyProfile() {
                 const fileInput = document.createElement("input");
                 fileInput.type = "file";
                 fileInput.accept = "image/*";
-                fileInput.onchange = (e) => {
+                fileInput.onchange = async (e) => {
                   const file = e.target.files[0];
                   if (file && file.size <= 1.2 * 1024 * 1024) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                      const uploadedImage = event.target.result;
-                      setCompanyData((prev) => ({
-                        ...prev,
-                        company: {
-                          ...prev.company,
-                          logo: uploadedImage,
-                        },
-                      }));
+                    try {
+                      // Show loading state or optimistic update if needed
+                      // For now, we'll just upload and then update
 
-                      // Store the uploaded image in localStorage
-                      localStorage.setItem("companyLogo", uploadedImage);
+                      // 1. Upload to Firebase Storage
+                      const logoUrl = await uploadCompanyLogo(
+                        file,
+                        company.name || "Company"
+                      );
 
-                      // Store the uploaded image in web cache
-                      if ("caches" in window) {
-                        caches.open("logo-cache").then((cache) => {
-                          const blob = new Blob([file], { type: file.type });
-                          const response = new Response(blob);
-                          cache.put(`/uploadedLogo/${file.name}`, response);
-                          console.log("Stored logo in cache:", response); // Debugging log
-                        });
+                      if (logoUrl) {
+                        // 2. Update Backend
+                        const updateResponse = await apiService.updateCompany(
+                          companyData.recruiter.id, // Assuming recruiter ID is used for updates or we need company ID
+                          { logo: logoUrl }
+                        );
+
+                        if (updateResponse.success) {
+                          // 3. Update Local State
+                          setCompanyData((prev) => ({
+                            ...prev,
+                            company: {
+                              ...prev.company,
+                              logo: logoUrl,
+                            },
+                          }));
+                          alert("Logo updated successfully!");
+                        } else {
+                          throw new Error("Failed to update company profile");
+                        }
                       }
-                    };
-                    reader.readAsDataURL(file);
+                    } catch (err) {
+                      console.error("Error updating logo:", err);
+                      alert(`Failed to update logo: ${err.message}`);
+                    }
                   } else {
                     alert("File size must be less than 1.2 MB");
                   }
@@ -200,7 +211,7 @@ function CompanyProfile() {
             <p>
               <span className="font-[Jost-Medium]">Street :</span>{" "}
               {company.location?.address &&
-              company.location.address.trim() !== ""
+                company.location.address.trim() !== ""
                 ? company.location.address
                 : "Not provided during registration"}
             </p>
@@ -219,14 +230,14 @@ function CompanyProfile() {
             <p>
               <span className="font-[Jost-Medium]">Country :</span>{" "}
               {company.location?.country &&
-              company.location.country.trim() !== ""
+                company.location.country.trim() !== ""
                 ? company.location.country
                 : "Not specified"}
             </p>
             <p>
               <span className="font-[Jost-Medium]">Pincode :</span>{" "}
               {company.location?.zipcode &&
-              company.location.zipcode.trim() !== ""
+                company.location.zipcode.trim() !== ""
                 ? company.location.zipcode
                 : "Not specified"}
             </p>

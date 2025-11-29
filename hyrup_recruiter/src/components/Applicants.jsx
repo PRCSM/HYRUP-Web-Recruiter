@@ -151,7 +151,18 @@ function Applicants({
           // Education/College Info
           college: data.education || data.college || {},
           education: data.education || data.college || {},
+
+          // Resume URL
+          resume: data.profile?.resume || data.resume || app.resume || "",
         };
+
+        console.log("Student data with resume:", {
+          studentId: data._id,
+          firebaseId: data.firebaseId,
+          resume: detailed.resume,
+          profileResume: data.profile?.resume,
+          dataResume: data.resume
+        });
 
         setSelectedApplicant(detailed);
         return;
