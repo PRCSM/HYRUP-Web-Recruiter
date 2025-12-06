@@ -398,10 +398,6 @@ export const ChatProvider = ({ children }) => {
         });
         return chatId;
       }
-      const recruiterName =
-  userData?.companyName ||
-  "Recruiter";
-
 
       // No existing chat found, create new one
       setPendingChat({
@@ -424,7 +420,7 @@ export const ChatProvider = ({ children }) => {
         lastMessageTime: serverTimestamp(),
 
         // OLD STRUCTURE (for compatibility) - Uses MongoDB ID for data fetching
-        participantIds: [currentUser.uid, applicantFirebaseId],
+        participantIds: [currentUser.uid, applicant.id],
         lastUpdated: serverTimestamp(),
 
         // Firebase ID Mapping - Maps MongoDB ID to Firebase UID for message routing
@@ -435,7 +431,7 @@ export const ChatProvider = ({ children }) => {
 
         // Reverse mapping - Maps Firebase UID to MongoDB ID for data fetching
         mongoIdMapping: {
-          [applicantFirebaseId]: applicantFirebaseId, // Firebase UID -> MongoDB ID
+          [applicantFirebaseId]: applicant.id, // Firebase UID -> MongoDB ID
           [currentUser.uid]: currentUser.uid, // Recruiter uses same ID
         },
 
@@ -447,7 +443,6 @@ export const ChatProvider = ({ children }) => {
           [applicant.id]: applicant.name || "Applicant",
           [applicantFirebaseId]: applicant.name || "Applicant",
         },
-        otherusername:  recruiterName,
         participantImages: {
           // Recruiter (same ID for both)
           [currentUser.uid]: userData?.profilePhoto || currentUser.photoURL || "",
@@ -760,5 +755,5 @@ export const ChatProvider = ({ children }) => {
 export const useChat = () => {
   const ctx = useContext(ChatContext);
   if (!ctx) throw new Error("useChat must be used within ChatProvider");
-  return ctx;
+  return ctx;
 };
