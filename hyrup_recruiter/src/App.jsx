@@ -31,7 +31,6 @@ const App = () => {
                 path="/registration"
                 element={
                   <ProtectedRoute redirectTo="/signup">
-                    {hideSidebarAndPostJob && <SideNav />}
                     <Registration />
                   </ProtectedRoute>
                 }

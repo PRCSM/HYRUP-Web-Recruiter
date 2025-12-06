@@ -33,6 +33,8 @@ const Registration = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
+  const [logoPreview, setLogoPreview] = useState(null);
+  const [showOtherIndustry, setShowOtherIndustry] = useState(false);
   const [registrationChecked, setRegistrationChecked] = useState(false);
   const [isCheckingRegistration, setIsCheckingRegistration] = useState(false);
   const redirectTimeoutRef = React.useRef(null);
@@ -147,14 +149,7 @@ const Registration = () => {
       const reader = new FileReader();
       reader.onload = (event) => {
         const uploadedImage = event.target.result;
-        const imagePreviewElement = document.getElementById("logo-preview");
-        const statusElement = document.getElementById("upload-status");
-        if (imagePreviewElement) {
-          imagePreviewElement.src = uploadedImage;
-        }
-        if (statusElement) {
-          statusElement.textContent = `Uploaded: ${file.name}`;
-        }
+        setLogoPreview(uploadedImage);
 
         // Store the uploaded image in a cookie
         document.cookie = `uploadedLogo=${uploadedImage}; path=/; max-age=86400`; // Expires in 1 day
@@ -386,11 +381,11 @@ const Registration = () => {
                       Website
                     </label>
                     <input
-                      type="url"
+                      type="text"
                       name="website"
                       value={formData.website}
                       onChange={handleInputChange}
-                      placeholder="Enter the url of your Company Website"
+                      placeholder="e.g., company.com or company.in"
                       className="w-full md:w-[300px] lg:w-[400px] px-3 py-4 bg-[#FFF7E4] border-2 border-black rounded-[10px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] 
                               focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] transition-all duration-200"
                       required
@@ -401,15 +396,60 @@ const Registration = () => {
                     <label className="block text-sm md:text-[24px] font-[Jost-Semibold] text-gray-700 mb-2">
                       Industry
                     </label>
-                    <input
-                      type="text"
-                      name="industry"
-                      value={formData.industry}
-                      onChange={handleInputChange}
-                      placeholder="e.g., Technology, Healthcare, Finance"
-                      className="w-full md:w-[300px] lg:w-[400px] px-3 py-4 bg-[#FFF7E4] border-2 border-black rounded-[10px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] 
-                              focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] transition-all duration-200"
-                    />
+                    <div className="relative w-full md:w-[300px] lg:w-[400px]">
+                      <select
+                        name="industry"
+                        value={showOtherIndustry ? "Other" : formData.industry}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value === "Other") {
+                            setShowOtherIndustry(true);
+                            setFormData((prev) => ({ ...prev, industry: "" }));
+                          } else {
+                            setShowOtherIndustry(false);
+                            setFormData((prev) => ({ ...prev, industry: value }));
+                          }
+                        }}
+                        className="w-full px-3 py-4 bg-[#FFF7E4] border-2 border-black rounded-[10px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] 
+                                focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] transition-all duration-200
+                                appearance-none cursor-pointer font-[Jost-Regular] text-gray-700 pr-10"
+                      >
+                        <option value="">Select Industry</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Education">Education</option>
+                        <option value="E-commerce">E-commerce</option>
+                        <option value="Manufacturing">Manufacturing</option>
+                        <option value="Retail">Retail</option>
+                        <option value="Real Estate">Real Estate</option>
+                        <option value="Media & Entertainment">Media & Entertainment</option>
+                        <option value="Hospitality">Hospitality</option>
+                        <option value="Logistics">Logistics</option>
+                        <option value="Consulting">Consulting</option>
+                        <option value="Telecommunications">Telecommunications</option>
+                        <option value="Automotive">Automotive</option>
+                        <option value="Agriculture">Agriculture</option>
+                        <option value="Energy">Energy</option>
+                        <option value="Other">Other</option>
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <svg className="h-5 w-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+                    {showOtherIndustry && (
+                      <input
+                        type="text"
+                        name="industry"
+                        value={formData.industry}
+                        onChange={handleInputChange}
+                        placeholder="Enter your industry"
+                        className="w-full md:w-[300px] lg:w-[400px] px-3 py-4 mt-2 bg-[#FFF7E4] border-2 border-black rounded-[10px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] 
+                                focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] transition-all duration-200"
+                      />
+                    )}
                   </div>
                   {/* Company Size */}
                   <div>
@@ -452,21 +492,29 @@ const Registration = () => {
                     <label className="block text-sm md:text-[24px] font-[Jost-Semibold] text-gray-700 mb-2">
                       Company Type *
                     </label>
-                    <select
-                      name="companyType"
-                      value={formData.companyType}
-                      onChange={handleInputChange}
-                      className="w-full md:w-[300px] lg:w-[400px] px-3 py-4 bg-[#FFF7E4] border-2 border-black rounded-[10px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] 
-                            focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] transition-all duration-200"
-                      required
-                    >
-                      <option value="">Select Company Type</option>
-                      <option value="Startup">Startup</option>
-                      <option value="MNC">MNC</option>
-                      <option value="SME">SME</option>
-                      <option value="Government">Government</option>
-                      <option value="Non-Profit">Non-Profit</option>
-                    </select>
+                    <div className="relative w-full md:w-[300px] lg:w-[400px]">
+                      <select
+                        name="companyType"
+                        value={formData.companyType}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-4 bg-[#FFF7E4] border-2 border-black rounded-[10px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] 
+                              focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.7)] transition-all duration-200
+                              appearance-none cursor-pointer font-[Jost-Regular] text-gray-700 pr-10"
+                        required
+                      >
+                        <option value="">Select Company Type</option>
+                        <option value="Startup">Startup</option>
+                        <option value="MNC">MNC</option>
+                        <option value="SME">SME</option>
+                        <option value="Government">Government</option>
+                        <option value="Non-Profit">Non-Profit</option>
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <svg className="h-5 w-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Founded Year */}
@@ -495,33 +543,38 @@ const Registration = () => {
                         type="file"
                         accept="image/*"
                         onChange={handleFileUpload}
-                        className="absolute inset-0 w-[374px] h-full opacity-0 cursor-pointer"
+                        className="absolute inset-0 w-[374px] h-full opacity-0 cursor-pointer z-10"
                       />
                       <div
                         className="w-full md:w-[300px] lg:w-[400px] h-[168px] bg-[#FFF7E4] border-2 border-black rounded-[10px] 
                                     shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] flex flex-col items-center justify-center
-                                    hover:bg-[#F0F0F0] transition-colors duration-200"
+                                    hover:bg-[#F0F0F0] transition-colors duration-200 overflow-hidden"
                       >
-                        <FaCloudUploadAlt className="text-lg text-[#6AB8FA] mb-2" />
-                        <p className="text-xs font-[Jost-Medium] text-[#6AB8FA]">
-                          Click to Upload or drag and drop
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          (Max. File size: 1.2 MB)
-                        </p>
-                        {/* Preview and status display */}
-                        <div className="mt-2">
-                          <img
-                            id="logo-preview"
-                            src=""
-                            alt="Logo Preview"
-                            className="hidden w-24 h-24 object-cover rounded-full mx-auto"
-                          />
-                          <p
-                            id="upload-status"
-                            className="text-xs text-center text-gray-500"
-                          ></p>
-                        </div>
+                        {logoPreview ? (
+                          <div className="flex flex-col items-center justify-center h-full">
+                            <img
+                              src={logoPreview}
+                              alt="Logo Preview"
+                              className="w-20 h-20 object-cover rounded-full border-2 border-black"
+                            />
+                            <p className="text-xs font-[Jost-Medium] text-green-600 mt-2">
+                              {formData.logo?.name || "Logo uploaded"}
+                            </p>
+                            <p className="text-xs text-[#6AB8FA] mt-1">
+                              Click to change
+                            </p>
+                          </div>
+                        ) : (
+                          <>
+                            <FaCloudUploadAlt className="text-4xl text-[#6AB8FA] mb-2" />
+                            <p className="text-xs font-[Jost-Medium] text-[#6AB8FA]">
+                              Click to Upload or drag and drop
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              (Max. File size: 1.2 MB)
+                            </p>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -761,13 +814,6 @@ const Registration = () => {
                 </button>
               </div>
             </form>
-
-            <img
-              id="logo-preview"
-              src=""
-              alt="Logo Preview"
-              className="hidden w-24 h-24 object-cover rounded-full mx-auto"
-            />
           </div>
         </div>
       </div>

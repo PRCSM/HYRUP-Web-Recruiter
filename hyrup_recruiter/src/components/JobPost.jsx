@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import apiService from "../services/apiService";
+import skillsData from "../demodata/skills.json";
 
 const PostJob = () => {
   const navigate = useNavigate();
@@ -66,40 +67,126 @@ const PostJob = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [apiDebugInfo, setApiDebugInfo] = useState(null);
+  const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
+  const [isGeneratingRoles, setIsGeneratingRoles] = useState(false);
+
+  // AI Content Generation using free Hugging Face API
+  const generateAIContent = async (type) => {
+    const jobTitle = jobData.title.trim();
+    
+    if (!jobTitle) {
+      alert("Please enter a job title first to generate AI content.");
+      return;
+    }
+
+    const isDescription = type === "description";
+    
+    if (isDescription) {
+      setIsGeneratingDescription(true);
+    } else {
+      setIsGeneratingRoles(true);
+    }
+
+    try {
+      const prompt = isDescription
+        ? `Write a professional job description for a ${jobTitle} position. Include an overview of the role, key qualifications, and what makes this opportunity exciting. Keep it concise and engaging, around 150-200 words.`
+        : `List 6-8 key roles and responsibilities for a ${jobTitle} position. Format as bullet points starting with action verbs. Be specific and professional.`;
+
+      // Using Hugging Face free inference API with Mistral model
+      const response = await fetch(
+        "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(import.meta.env.VITE_HF_API_KEY && {
+              "Authorization": `Bearer ${import.meta.env.VITE_HF_API_KEY}`,
+            }),
+          },
+          body: JSON.stringify({
+            inputs: `<s>[INST] ${prompt} [/INST]`,
+            parameters: {
+              max_new_tokens: 500,
+              temperature: 0.7,
+              top_p: 0.95,
+              do_sample: true,
+            },
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        // If Hugging Face fails, use fallback templates
+        throw new Error("API unavailable");
+      }
+
+      const data = await response.json();
+      
+      let generatedText = "";
+      if (Array.isArray(data) && data[0]?.generated_text) {
+        // Extract only the response part (after [/INST])
+        const fullText = data[0].generated_text;
+        const instEnd = fullText.lastIndexOf("[/INST]");
+        generatedText = instEnd !== -1 
+          ? fullText.substring(instEnd + 7).trim() 
+          : fullText.trim();
+      } else if (data.error) {
+        throw new Error(data.error);
+      }
+
+      if (generatedText) {
+        if (isDescription) {
+          setJobData((prev) => ({ ...prev, description: generatedText }));
+        } else {
+          setJobData((prev) => ({ ...prev, rolesAndResponsibilities: generatedText }));
+        }
+      } else {
+        throw new Error("No content generated");
+      }
+    } catch (error) {
+      console.error("AI generation error:", error);
+      
+      // Fallback to template-based content
+      const fallbackContent = generateFallbackContent(jobTitle, isDescription);
+      if (isDescription) {
+        setJobData((prev) => ({ ...prev, description: fallbackContent }));
+      } else {
+        setJobData((prev) => ({ ...prev, rolesAndResponsibilities: fallbackContent }));
+      }
+    } finally {
+      if (isDescription) {
+        setIsGeneratingDescription(false);
+      } else {
+        setIsGeneratingRoles(false);
+      }
+    }
+  };
+
+  // Fallback content generator when AI API is unavailable
+  const generateFallbackContent = (jobTitle, isDescription) => {
+    if (isDescription) {
+      return `We are looking for a talented ${jobTitle} to join our dynamic team. In this role, you will have the opportunity to work on exciting projects and contribute to our company's growth.
+
+The ideal candidate will bring a combination of technical expertise and collaborative spirit. You will work closely with cross-functional teams to deliver high-quality solutions that meet our business objectives.
+
+This is an excellent opportunity for someone who is passionate about their craft and eager to make a meaningful impact. We offer a supportive work environment, competitive compensation, and opportunities for professional growth.`;
+    } else {
+      return `• Lead and execute projects related to ${jobTitle} responsibilities
+• Collaborate with cross-functional teams to deliver high-quality results
+• Analyze requirements and develop effective solutions
+• Maintain documentation and ensure best practices are followed
+• Participate in code reviews, planning sessions, and team meetings
+• Stay updated with industry trends and emerging technologies
+• Mentor junior team members and contribute to knowledge sharing
+• Communicate progress and findings to stakeholders effectively`;
+    }
+  };
 
   // Fetch available skills and recruiter ID on component mount
   useEffect(() => {
-    const fetchSkills = async () => {
-      try {
-        const skills = await apiService.getSkills();
-        setAllSkills(skills);
-      } catch (error) {
-        // Error fetching skills - fallback to defaults
-        // Fallback to default skills
-        setAllSkills([
-          "JavaScript",
-          "React",
-          "Node.js",
-          "Python",
-          "Django",
-          "Flask",
-          "Java",
-          "Spring Boot",
-          "HTML",
-          "CSS",
-          "Tailwind CSS",
-          "SQL",
-          "MongoDB",
-          "Docker",
-          "Kubernetes",
-          "AWS",
-          "Vue.js",
-          "Angular",
-          "TypeScript",
-          "Ruby on Rails",
-          "PHP",
-        ]);
-      }
+    const loadSkills = () => {
+      // Load skills from local JSON file
+      setAllSkills(skillsData);
     };
 
     const fetchLocations = async () => {
@@ -148,7 +235,7 @@ const PostJob = () => {
       }
     };
 
-    fetchSkills();
+    loadSkills();
     fetchLocations();
     fetchRecruiterId();
     // Try to load Google Maps Places script if API key provided
@@ -478,9 +565,37 @@ const PostJob = () => {
 
           {/* Job Description */}
           <div>
-            <label className="block text-sm md:text-[24px] font-[Jost-Semibold] text-gray-700 mb-2">
-              Job Description
-            </label>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm md:text-[24px] font-[Jost-Semibold] text-gray-700">
+                Job Description
+              </label>
+              <button
+                type="button"
+                onClick={() => generateAIContent("description")}
+                disabled={isGeneratingDescription || !jobData.title.trim()}
+                className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-purple-500 to-blue-500 text-white text-sm font-[Jost-Medium] rounded-lg
+                  hover:from-purple-600 hover:to-blue-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed
+                  shadow-md hover:shadow-lg"
+                title={!jobData.title.trim() ? "Enter job title first" : "Generate with AI"}
+              >
+                {isGeneratingDescription ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    <span>Generating...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span>AI Generate</span>
+                  </>
+                )}
+              </button>
+            </div>
             <textarea
               name="description"
               value={jobData.description}
@@ -496,9 +611,37 @@ const PostJob = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Roles and Responsibilities */}
             <div>
-              <label className="block text-sm md:text-lg font-[Jost-Semibold] text-gray-700 mb-2">
-                Roles & Responsibilities
-              </label>
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-sm md:text-lg font-[Jost-Semibold] text-gray-700">
+                  Roles & Responsibilities
+                </label>
+                <button
+                  type="button"
+                  onClick={() => generateAIContent("roles")}
+                  disabled={isGeneratingRoles || !jobData.title.trim()}
+                  className="flex items-center gap-1.5 px-2 py-1 bg-gradient-to-r from-purple-500 to-blue-500 text-white text-xs font-[Jost-Medium] rounded-md
+                    hover:from-purple-600 hover:to-blue-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed
+                    shadow-md hover:shadow-lg"
+                  title={!jobData.title.trim() ? "Enter job title first" : "Generate with AI"}
+                >
+                  {isGeneratingRoles ? (
+                    <>
+                      <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      <span>Generating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      <span>AI Generate</span>
+                    </>
+                  )}
+                </button>
+              </div>
               <textarea
                 name="rolesAndResponsibilities"
                 value={jobData.rolesAndResponsibilities}

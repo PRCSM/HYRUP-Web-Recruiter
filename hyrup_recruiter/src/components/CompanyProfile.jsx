@@ -192,7 +192,7 @@ function CompanyProfile() {
             </p>
             <p>
               <span className="font-[Jost-Medium]">Company Size :</span>{" "}
-              {company.size || "Not specified"}
+              {company.size || company.companySize || "Not specified"}
             </p>
             <p>
               <span className="font-[Jost-Medium]">Founded :</span>{" "}

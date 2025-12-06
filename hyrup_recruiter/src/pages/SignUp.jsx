@@ -24,10 +24,12 @@ const SignUp = () => {
   // Check if user is already authenticated and redirect accordingly
   useEffect(() => {
     if (currentUser && userType === "recruiter") {
+      // Existing recruiter - go to home
       navigate("/");
+    } else if (currentUser && userType === null) {
+      // New user (authenticated but not registered) - go to registration
+      navigate("/registration");
     }
-    // Remove the automatic redirect to registration
-    // Let users choose to go to registration manually
   }, [currentUser, userType, navigate]);
 
   // Show error modal when there's an auth error
