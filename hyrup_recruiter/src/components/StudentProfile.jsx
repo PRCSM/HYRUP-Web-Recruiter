@@ -5,14 +5,25 @@ import { useNavigate } from "react-router-dom";
 import { useChat } from "../contexts/ChatContext";
 import "../../src/index.css";
 
-function StudentProfile({ applicant, onClose }) {
-  // This state is self-contained within the modal to track shortlisting status.
-  const [isShortlisted, setIsShortlisted] = useState(false);
+function StudentProfile({ applicant, onClose, onUpdateStatus, jobId }) {
   const navigate = useNavigate();
   const { addChat } = useChat();
 
-  const handleToggleShortlist = () => {
-    setIsShortlisted(!isShortlisted);
+  // Derive shortlisted state from applicant status
+  const isShortlisted = applicant?.status === "shortlisted";
+
+  const handleToggleShortlist = async () => {
+    if (!onUpdateStatus || !jobId || !applicant?.id) return;
+
+    // Toggle between shortlisted and rejected
+    // If currently shortlisted, action is to reject
+    // If currently anything else (applied, rejected), action is to shortlist
+    const newStatus = isShortlisted ? "rejected" : "shortlisted";
+
+    await onUpdateStatus(jobId, applicant.id, newStatus);
+
+    // Note: The parent component (Application.jsx) updates the state, 
+    // which will flow down here and update `applicant.status`
   };
 
   // If no applicant data is passed to the component, it renders nothing.

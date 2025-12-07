@@ -58,7 +58,7 @@ function Applicants({
 
   const handleStatusToggle = (e, applicantId, currentStatus) => {
     e.stopPropagation(); // Prevents the profile modal from opening
-    const newStatus = currentStatus === "accepted" ? "rejected" : "accepted";
+    const newStatus = currentStatus === "shortlisted" ? "rejected" : "shortlisted";
     onUpdateStatus(selectedJob.id, applicantId, newStatus);
   };
 
@@ -205,10 +205,10 @@ function Applicants({
         <button
           onClick={(e) => handleStatusToggle(e, app.id, app.status)}
           className={`w-[35px] h-[35px] flex items-center justify-center border-2 border-black rounded-md shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] cursor-pointer ${
-            app.status === "accepted" ? "bg-[#C8F7C5]" : "bg-white"
+            app.status === "shortlisted" ? "bg-[#C8F7C5]" : "bg-white"
           }`}
         >
-          {app.status === "accepted" ? (
+          {app.status === "shortlisted" ? (
             <TiTick size={20} />
           ) : (
             <RxCross2 size={20} />
@@ -306,6 +306,8 @@ function Applicants({
           <StudentProfile
             applicant={selectedApplicant}
             onClose={() => setSelectedApplicant(null)}
+            onUpdateStatus={onUpdateStatus}
+            jobId={selectedJob.id}
           />
         </div>
       )}
