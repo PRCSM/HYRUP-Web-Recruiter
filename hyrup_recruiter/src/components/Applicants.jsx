@@ -34,10 +34,62 @@ function Applicants({
   // This is the key change: check if the screen is smaller than the 'md' breakpoint (768px)
   const isSmallScreen = useMediaQuery("(max-width: 767px)");
 
+  const [filterStatus, setFilterStatus] = useState("All");
+
   // Reset local state when the selected job changes
+  useEffect(() => {
+    // If we have a selected applicant, try to find them in the new selectedJob list
+    // This handles the case where we just updated their status
+    if (selectedApplicant && selectedJob) {
+      const updatedApplicant = selectedJob.applicants?.find(
+        (app) => app.id === selectedApplicant.id
+      );
+
+      if (updatedApplicant) {
+        // We found the applicant in the updated list.
+        // We need to preserve the detailed profile info we fetched (skills, etc.)
+        // but update the status and other fields that might have changed on the job object.
+        setSelectedApplicant((prev) => ({
+          ...prev,
+          ...updatedApplicant,
+          // Ensure we don't overwrite detailed fields with potentially less detailed ones from the job list
+          // if the job list version doesn't have them.
+          // However, updatedApplicant comes from Application.jsx which merges some details.
+          // The critical part is the status.
+          status: updatedApplicant.status,
+        }));
+        return;
+      }
+    }
+
+    // If we're switching to a completely different job (different ID), reset everything
+    if (selectedJob?.id !== selectedApplicant?.jobId) { // Assuming we can track job ID or just rely on the fact that if we didn't find the applicant, it's likely a new job or they were removed.
+      // Actually, the dependency array [selectedJob?.id] means this effect runs when ID changes.
+      // But wait, if we update status, selectedJob reference changes but ID stays same.
+      // So we need to separate the "reset on new job" logic from "update on same job" logic.
+    }
+  }, [selectedJob]);
+
+  // Effect to reset view when switching jobs (ID changes)
   useEffect(() => {
     setViewAll(false);
     setSelectedApplicant(null);
+    setFilterStatus("All");
+  }, [selectedJob?.id]);
+
+  // Effect to sync selectedApplicant with selectedJob updates (same job ID)
+  useEffect(() => {
+    if (selectedApplicant && selectedJob) {
+      const updatedApplicant = selectedJob.applicants?.find(
+        (app) => app.id === selectedApplicant.id
+      );
+      if (updatedApplicant && updatedApplicant.status !== selectedApplicant.status) {
+        setSelectedApplicant(prev => ({
+          ...prev,
+          status: updatedApplicant.status
+        }));
+      }
+    }
   }, [selectedJob]);
 
   // Placeholder for desktop view when no job is selected
@@ -55,6 +107,13 @@ function Applicants({
   }
 
   const applicants = selectedJob.applicants || [];
+
+  const filteredApplicants = applicants.filter((app) => {
+    if (filterStatus === "All") return true;
+    if (filterStatus === "Shortlisted") return app.status === "shortlisted";
+    if (filterStatus === "Rejected") return app.status === "rejected";
+    return true;
+  });
 
   const handleStatusToggle = (e, applicantId, currentStatus) => {
     e.stopPropagation(); // Prevents the profile modal from opening
@@ -137,8 +196,8 @@ function Applicants({
           skills: data.user_skills
             ? Object.keys(data.user_skills)
             : Array.isArray(data.skills)
-            ? data.skills
-            : app.skills || [],
+              ? data.skills
+              : app.skills || [],
 
           // Experience - normalize to array
           experience: Array.isArray(data.experience) ? data.experience : [],
@@ -204,9 +263,8 @@ function Applicants({
         </span>
         <button
           onClick={(e) => handleStatusToggle(e, app.id, app.status)}
-          className={`w-[35px] h-[35px] flex items-center justify-center border-2 border-black rounded-md shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] cursor-pointer ${
-            app.status === "shortlisted" ? "bg-[#C8F7C5]" : "bg-white"
-          }`}
+          className={`w-[35px] h-[35px] flex items-center justify-center border-2 border-black rounded-md shadow-[3px_3px_0px_0px_rgba(0,0,0,0.7)] cursor-pointer ${app.status === "shortlisted" ? "bg-[#C8F7C5]" : "bg-white"
+            }`}
         >
           {app.status === "shortlisted" ? (
             <TiTick size={20} />
@@ -215,6 +273,24 @@ function Applicants({
           )}
         </button>
       </div>
+    </div>
+  );
+
+  const FilterButtons = () => (
+    <div className="flex gap-2 mb-4 overflow-x-auto pb-2 no-scrollbar">
+      {["All", "Shortlisted", "Rejected"].map((status) => (
+        <button
+          key={status}
+          onClick={() => setFilterStatus(status)}
+          className={`px-4 py-2 border-2 border-black rounded-[10px] font-[Jost-Medium] text-sm whitespace-nowrap transition-all
+            ${filterStatus === status
+              ? "bg-[#C8F7C5] shadow-[2px_2px_0px_0px_rgba(0,0,0,0.7)] translate-x-[-1px] translate-y-[-1px]"
+              : "bg-white hover:bg-gray-50"
+            }`}
+        >
+          {status}
+        </button>
+      ))}
     </div>
   );
 
@@ -242,8 +318,17 @@ function Applicants({
             <RemoveJobButton />
           </div>
         </div>
+
+        <FilterButtons />
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto pr-2 flex-1">
-          {applicants.map(renderApplicantCard)}
+          {filteredApplicants.length > 0 ? (
+            filteredApplicants.map(renderApplicantCard)
+          ) : (
+            <div className="col-span-full flex items-center justify-center h-full text-gray-500 font-[Jost-Regular]">
+              No applicants found for this filter.
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -253,8 +338,8 @@ function Applicants({
   const CompactContent = () => {
     // Conditionally show all applicants or just the first 4 based on screen size
     const applicantsToShow = isSmallScreen
-      ? applicants
-      : applicants.slice(0, 4);
+      ? filteredApplicants
+      : filteredApplicants.slice(0, 4);
 
     return (
       <div className="w-full h-full bg-[#FBF3E7] border-2 border-black rounded-[10px] shadow-[6px_6px_0px_0px_rgba(0,0,0,0.7)] p-6 flex flex-col gap-5">
@@ -288,8 +373,17 @@ function Applicants({
             </div>
           ) : null}
         </div>
+
+        <FilterButtons />
+
         <div className="flex flex-col gap-4 overflow-y-auto py-2 pr-2 flex-1">
-          {applicantsToShow.map(renderApplicantCard)}
+          {applicantsToShow.length > 0 ? (
+            applicantsToShow.map(renderApplicantCard)
+          ) : (
+            <div className="flex items-center justify-center h-full text-gray-500 font-[Jost-Regular]">
+              No applicants found.
+            </div>
+          )}
         </div>
       </div>
     );
