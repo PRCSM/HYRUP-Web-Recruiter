@@ -44,7 +44,7 @@ class ApiService {
 
         const url = `${this.baseURL}${endpoint}`;
 
-        // Debug logs removed for production/security reasons
+
 
         const response = await fetch(url, config);
 

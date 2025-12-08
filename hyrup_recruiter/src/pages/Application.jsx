@@ -243,7 +243,7 @@ function Application() {
     } catch (error) {
       if (import.meta.env.DEV)
         console.error("Error updating application status:", error);
-      alert("Failed to update application status. Please try again.");
+      alert(`Failed to update application status: ${error.message}`);
     }
   };
 
